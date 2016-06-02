@@ -1,0 +1,87 @@
+%h3.page-title
+  SMS
+  %small
+    from telerivet
+
+.row.inbox
+  .col-md-2
+    %ul.inbox-nav.margin-bottom-10
+      %li.compose-btn
+        %a.btn.default{"data-toggle" => "modal", href: "#responsive"}
+          %i.fa.fa-edit>
+          New SMS
+      %li.inbox.active
+        = link_to "Conversations", manage_messages_path , :class => "btn"
+        %b
+      %li.sent
+        = link_to "Incoming", manage_incoming_messages_path , :class => "btn",  :remote => true
+        %b
+      %li.draft
+        = link_to "Outgoing", manage_outgoing_messages_path, :class => "btn", :remote => true
+        %b
+      %li.trash
+        = link_to "Failed", manage_incoming_messages_path, :class => "btn", :remote => true
+        %b
+  .col-md-10
+    .inbox-header
+      %h1.pull-left Conversations
+      %form.form-inline.pull-right{:action => "index.html"}
+        .input-group.input-medium
+          %input.form-control{:placeholder => "Search SMS", :type => "text"}
+            %span.input-group-btn
+              %button.btn.green{:type => "submit"}
+                %i.fa.fa-search
+    .inbox-loading{:style => "display: none;"}
+      Loading...
+    .inbox-content
+      %table.table.table-striped.table-advance.table-hover
+        %thead
+          %tr
+            %th{:colspan => "3"}
+              .checker
+                %span
+                  %input.mail-checkbox.mail-group-checkbox{:type => "checkbox"}/
+              .btn-group
+                %a.btn.btn-sm.blue{"data-toggle" => "dropdown", :href => "#"}
+                  More
+                  %i.fa.fa-angle-down
+                %ul.dropdown-menu
+                  %li
+                    %a{:href => "#"}
+                      %i.fa.fa-pencil
+                      Mark as Read
+                  %li
+                    %a{:href => "#"}
+                      %i.fa.fa-ban
+                      Spam
+                  %li.divider
+                  %li
+                    %a{:href => "#"}
+                      %i.fa.fa-trash-o
+                      Delete
+            %th.pagination-control{:colspan => "3"}
+              %span.pagination-info
+                / 1-30 of 789
+              %a.btn.btn-sm.blue
+                %i.fa.fa-angle-left
+              %a.btn.btn-sm.blue
+                %i.fa.fa-angle-right
+        %tbody
+          - @messages["data"].each do |message|
+            %tr.unread{"data-messageid" => "1"}
+              %td.inbox-small-cells
+                .checker
+                  %span
+                    %input.mail-checkbox{:type => "checkbox"}/
+              %td.inbox-small-cells
+                %i.fa.fa-star
+              %td.view-message.hidden-xs
+                = link_to message["to_number"], manage_conversastions_messages_path(message["to_number"])
+              %td.view-message
+                = message["content"].truncate(180)
+              %td.view-message.inbox-small-cells
+                %button.btn.red.btn-xs{:type => "button"} 3
+              %td.view-message.text-right
+                16:30 PM
+      = link_to "Load More", manage_load_more_messages_path, :class => "btn blue load_more", :remote => true, :style => "left: 50%; top: 10%; position: relative; "
+= render :partial => "manage/messages/new_message"

@@ -1,0 +1,175 @@
+<!-- <p id="students-<%= @s %>" style="position: relative; ">
+  <%#= f.text_field :name, :class => "form-custome input-small", :placeholder => "Enter Name", :required => true, :style => "height: 27px; padding: 5px 12px;" %>
+  <%#= f.select :age, 1..60, :class => "age_year", :include_blank => "Year" %>
+  <%#= f.select :age_month, 1..12, :class => "age_month", :include_blank => "Month" %>
+  <%#= f.select(:sex, Student::GENDER, :include_blank => "Gender") %>
+  <%#= f.link_to_remove do %>
+    <i class="fa fa-minus"></i>
+  <%# end %>
+</p> -->
+<% if params[:controller] == "manage/registration" &&  (params[:action] == "edit" || params[:action] == "new" ) %>
+  <div class="row">
+    <div class="form-group">
+      <label class="col-sm-4 control-label warning ">
+        <%= f.label :name, "Name" %>
+        <span class="help-block">
+          <%= f.link_to_remove :class=>"btn btn-xs blue-madison" do %>
+            Remove
+          <% end %>
+        </span>
+      </label>
+      <div class="col-sm-8 student_detail">
+        <div class="row">
+          <div class="col-sm-12">
+            <%= f.text_field :name, :class => "form-control student_name warning", :placeholder => "Enter Name",  :required => true  %>
+            <span class="help-block">Full name</span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <%= f.select :sex, Student::GENDER,{:include_blank => "Gender"}, :class=>"form-control gender" %>
+            <span class="help-block">Gender</span>
+          </div>
+          <div class="col-sm-4">
+            <%= f.select :age, 1..99, {:include_blank => "Year"}, :class => "form-control ages" %>
+            <span class="help-block">yrs old</span>
+          </div>
+          <div class="col-sm-4 age_month" style="display:none;" id="a_month">
+            <%= f.select :age_month, 0..11, {:include_blank => false}, :id => "age_month_p", :class => "form-control age_month_p" %>
+            <span class="help-block">mths old</span>
+          </div>
+        </div>
+        <div id="gender_year_validate" style="color: red; font-size: 14px;"></div>
+      </div>
+    </div>
+  </div>
+<% else %>
+  <div class="row">
+    <div class="form-group student_d">
+      <label class="col-sm-4 control-label">
+        Name<span class="required" aria-required="true">*</span>
+        <span class="help-block">
+          <%= f.link_to_remove :class=>"btn btn-xs blue-madison" do %>
+            Remove
+          <% end %>
+        </span>
+      </label>
+      <div class="col-sm-8 student_detail">
+        <div class="row">
+          <div class="col-sm-12">
+            <%= f.text_field :name, :class => "form-control student_name error-rm" , :placeholder => "e.g.Jane Toh" %>
+            <span class="help-block" style="font-size: 13px;">Full name</span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-4">
+            <%= f.select :sex, Student::GENDER,{:include_blank => "Gender"}, :class=>"form-control gender error-rm"%>
+            <span class="help-block " style="font-size: 13px;">Gender</span>
+          </div>
+          <div class="col-xs-4">
+            <%= f.select :age, 1..99, {:include_blank => "Year"}, :class => "form-control ages error-rm" %>
+            <span class="help-block" style="font-size: 13px;">years old</span>
+          </div>
+          <div class="col-xs-4 age_month" style="display:none;">
+            <%= f.select :age_month, 0..11, {:include_blank => "Month"}, :id => "age_month_p", :class => "form-control age_month_p error-rm" %>
+            <span class="help-block" style="font-size: 13px;">months old</span>
+          </div>
+        </div>
+        <div id="gender_year_validate" style="color: red; font-size: 14px;"></div>
+      </div>
+    </div>
+  </div>
+<% end %>
+<script type="text/javascript">
+  var idAuto = 'age-'
+  var idMonth = 'month-'
+  var idAgeMonth = 'age_month-'
+  var idName = 'fields-';
+  var idSname = 'sname-';
+  var idGender = "gender-"
+
+  $(function() {
+    $('div.fields').each(function(i) {
+      $(this).attr({ id: idName + i });
+    });
+    $('.age_month').each(function(i) {
+      $(this).attr({id: idMonth + i});
+    });
+    $('.student_name').each(function(i) {
+      $(this).attr({id: idSname + i});
+      $("#" + idSname + i).blur(function()  {
+        var lead_name = $("#"+ idSname + i).val();
+        lead_name = lead_name.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+        $("#" + idSname + i).val(lead_name);
+        if (lead_name != "") {
+         console.log(lead_name);
+          // Get current url
+          generate_url_for_sub(idSname + i,lead_name);
+        }
+        else {
+          return false;
+        }
+      });
+    });
+    $('.age_month_p').each(function(i) {
+      $(this).attr({id: idAgeMonth + i});
+      $("#" + idAgeMonth + i).change(function(){
+        var lead_age_mnt = $("#" + idAgeMonth + i).val();
+        if (lead_age_mnt != "") {
+          // Get current url
+          generate_url_for_sub( idAgeMonth + i ,lead_age_mnt);
+        }
+        else {
+          return false;
+        }
+      }); 
+    }); 
+    $('.gender').each(function(i) {
+      $(this).attr({id: idGender + i});
+      $("#" + idGender + i).change(function()  {
+        var lead_gender = $("#" + idGender + i).val();
+        if (lead_gender != "") {
+          // Get current url
+          generate_url_for_sub( idGender + i ,lead_gender);
+        }
+        else {
+          return false;
+        }
+      });
+    });  
+    $('.ages').each(function(i) {
+      $(this).attr({ id: idAuto + i });
+      $("#" + idAuto + i).change(function(){
+        var m = $(this).find('option:selected').text();
+        if(m < 6) {
+          $("#" + idMonth + i).show();
+        }
+        else
+        {
+          $("#" + idAgeMonth + i).val(0);
+          $("#" + idMonth + i).hide();
+        }
+        var lead_age = $("#" + idAuto + i).val();
+        if (lead_age != "") {
+          // Get current url
+          generate_url_for_sub( idAuto + i ,lead_age);
+        }
+        else {
+          return false;
+        }
+      });         
+    });
+  });
+  // var idName = 'student-';
+  // $('p.fields').each(function(i) {
+  //   $(this).attr({ id: idName + i });
+  // });
+  $(document).ready(function(){
+    $('.ages').each(function(i){
+      var age_val = $(this).find('option:selected').text();
+      if(age_val < 6){
+        $("#" + idMonth + i).show();
+      }
+    });
+  });
+</script>

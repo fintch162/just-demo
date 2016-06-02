@@ -1,0 +1,2 @@
+module JobFeedbacksHelper
+end

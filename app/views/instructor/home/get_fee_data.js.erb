@@ -1,0 +1,60 @@
+$modal = $('.inst_student');
+$modal.html('<%= escape_javascript(render "/instructor/home/add_fee", student: @student, group_class: @group_class, month: @month, fee: @fee) %>');
+// $modal.modal();
+
+// Extra JS
+// Enable datepicker
+$('.date-picker').datepicker({
+  format: 'd MM yyyy',
+  autoclose: true
+});
+
+// Set Due or Paid
+$(document).on('click','.payment_status',function(){
+  if($(this).val() == 'Paid'){
+    $(".payment-date *").attr("disabled", false);
+    $(".due-date *").attr("disabled", true);
+    $(".amount_paid *").attr("disabled", false);
+    $(".amount_due").attr("disabled", true);
+    $("#fee_payment_status").val('Paid');
+    $modal.find("#fee_payment_mode").val('Cash');
+  }
+  else if($(this).val() == 'Due'){
+    $(".amount_due").attr("disabled", false);
+    $(".payment-date *").attr("disabled", true);
+    $(".due-date *").attr("disabled", false);
+    $(".amount_paid *").attr("disabled", true);
+    $("#fee_payment_status").val('Due');
+    $modal.find("#fee_payment_mode").val('');
+  }
+});
+
+// Print month on due modal below student name
+// var fees_for = "<%= @month %>";
+// var month;
+// var year;
+// var month_data = fees_for.split(' ');
+//if(month_data.length == 1)
+//{
+  //month = month_data[0].split("-")[0]
+  //year = month_data[0].split("-")[1]
+//}
+//else {
+  //month = month_data[0].substring(0,3);
+  //year = month_data[1].substring(2,4);
+//}
+//$('.fee_month').html("Month: " + month +"'"+ year);
+
+// Set value in due date textbox
+<% unless @fee.new_record? %>
+  // $modal.find(".amount_due").val("<%#= @fee.amount %>");
+<% end %>
+<% if @fee.new_record? || @fee.payment_status == "New" || (@fee.payment_status == nil && @fee.payment_mode == nil) %>
+  $modal.find(".chk_paid_payment").attr('checked', true).trigger('click');
+  // $modal.find(".delete-due").show();
+  // $modal.find(".delete-due").attr('href', "/instructor/instructor_students/<%#= @student.id %>/fees/<%#= @fee.id %>?isRemove=true&group_class=<%#= @group_class.id %>");
+<% else %>
+  $modal.find(".chk_due_payment").attr('checked', true).trigger('click');
+  // $modal.find(".delete-due").hide();
+  // $modal.find(".amount_due").attr("disabled", true);
+<% end %>

@@ -1,0 +1,99 @@
+.row
+  .col-md-12
+    /
+      BEGIN SAMPLE FORM PORTLET
+
+    = form_for @group_class , :url => account_home_index_path, :html => {:class=> "form-horizontal", :id=> "group_class_form"} do |f|
+      .form-body
+        - if current_admin_user.coordinator?
+          .form-group
+            %label.col-md-3.control-label Instructor
+            .col-md-4
+              = f.collection_select  :instructor_id,  Instructor.all, :id, :name ,{:prompt => 'Please Select' },{ :class=>"form-control" ,:required => true }
+
+        .form-group
+          %label.col-md-3.control-label Veune
+          .col-md-4
+            = f.collection_select :venue_id , Venue.all, :id, :name ,{ :prompt => 'Please Select'},{:class=>"form-control" ,:required => true }
+        .form-group
+          %label.col-md-3.control-label Day
+          .col-md-9
+            .clearfix
+              .btn-group{"data-toggle" => "buttons"}
+                - ([["Monday", 1], ["Tuesday",2], ["Wednesday", 3], ["Thursday", 4], ["Friday", 5], ["Saturday" , 6], ["Sunday" , 0]]).each do |i,k|
+                  %label.btn.blue
+                    = f.radio_button :day , k, :class => "toggle",:required => true
+                    - @day = i
+                    = @day[0..2]
+        .form-group
+          %label.col-md-3.control-label Time
+          .col-md-3
+            .input-group
+              = f.text_field :time,:class=>"form-control timepicker timepicker-no-seconds",:required => true do
+                %span.input-group-btn
+                  %button.btn.default{type: "button"}
+                    %i.fa.fa-clock-o
+        .form-group
+          %label.col-md-3.control-label Age Group
+          .col-md-9
+            .clearfix
+              .btn-group{"data-toggle" => "buttons"}
+                - AgeGroup.all.each do |rt|
+                  - if @group_class.age_group_id == rt.id
+                    %label.btn.blue.active
+                      = f.radio_button :age_group_id, rt.id ,:class=>"toggle",:required => true
+                      = rt.title
+                  - else
+                    %label.btn.blue
+                      = f.radio_button :age_group_id, rt.id ,:class=>"toggle",:required => true
+                      = rt.title
+        .form-group
+          %label.col-md-3.control-label Level
+          .col-md-9
+            .clearfix
+              .btn-group{"data-toggle" => "buttons"}
+                - Level.all.each do |rt|
+                  - if @group_class.level_id == rt.id
+                    %label.btn.blue.active
+                      = f.radio_button :level_id, rt.id ,:class=>"toggle",:required => true
+                      = rt.title
+                  - else
+                    %label.btn.blue
+                      = f.radio_button :level_id, rt.id ,:class=>"toggle",:required => true
+                      = rt.title
+
+        .form-group
+          %label.col-md-3.control-label Duration
+          .col-md-3
+            = f.text_field :duration, :placeholder=>"e.g. 60(60 minutes)", :class=>"form-control", :required => true
+
+        .form-group
+          %label.col-md-3.control-label Fee
+          .col-md-3
+            = f.text_field :fee, :placeholder=>"e.g. 60(60$)", :class=>"form-control", :required => true
+
+        .form-group
+          %label.col-md-3.control-label Fee Type
+          .col-md-3
+            = f.collection_select :fee_type_id , FeeType.all, :id, :name ,{ :prompt => 'Please Select',:required => true},{:class=>"form-control"}
+
+      .form-actions.fluid
+        .col-md-offset-3.col-md-9
+          = f.submit "Save", :class=>"btn green"
+          = link_to "Cancel",  account_home_index_path, :class=> "btn default"
+
+
+:javascript
+  $('#group_class_fee_type_id').change(function() {
+    if ($("#group_class_fee_type_id").val()=="1"){
+      $(".course_length_for_group_class").show()
+    }else{
+      $(".course_length_for_group_class").hide()
+    }
+  });
+:css
+  .error {
+    color: red;
+  }
+
+

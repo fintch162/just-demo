@@ -1,0 +1,16 @@
+var inactive = $.trim($("#Inactive").closest('.active').text());
+var active = $.trim($("#Active").closest('.active').text());
+if(active.indexOf("New") != -1){
+  $('#opportunity').append('<%= escape_javascript(render partial: "opportunities", :locals => { :jobs => @new_jobs }) %>');
+  $('a.load-more-jobs').attr('href', '<%= instructor_opportunity_path page: @new_jobs.next_page %>');
+  <% unless @new_jobs.next_page %>
+    $('a.load-more-jobs').remove();
+  <% end %>
+}
+else if(inactive.indexOf("Pending") != -1) {
+  $('#opportunity1').append('<%= escape_javascript(render partial: "pending_opportunities", :locals => { :pending_jobs => @jobs_pending}) %>');
+  $('a.load-more-pending-jobs').attr('href', '<%= instructor_opportunity_path page: @jobs_pending.next_page %>');
+  <% unless @jobs_pending.next_page %>
+    $('a.load-more-pending-jobs').remove();
+  <% end %>
+}

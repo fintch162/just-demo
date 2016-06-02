@@ -1,0 +1,55 @@
+<% if session[:job_id].nil? %>
+console.log("1 Console")
+	$modal = $('.modal'),
+	$modalBody = $('.modal .modal-body'),
+	$modalHeading = $('.modal .modal-heading');
+	<% if @m == false %>
+		console.log("1.1 Console")
+		$modalBody.html('<h4 style="text-align: center;"><%= @error %></h4>');
+		$modal.modal();
+		$(".modal-header").css({"display":"none"});
+		$(".modal-footer").css({"display":"none"});
+		$('#manual_payment_add_'+<%= @manual_payment.id.to_s %>).text("Uncommit");
+	<% else %>
+		console.log("1.2 Console")
+		$("#editDescription_"+changeRow).show();
+		$("#editReferral_"+changeRow).show();
+		$("#editBalance_"+changeRow).show();
+		$("#editPaymentMethod_"+changeRow).show();
+		// $("#editGogglesStatus_"+changeRow).show();
+		$("#editInvoice_"+changeRow).show();
+		$("#editCommitted_"+changeRow).show();
+		$(".editPayment_"+changeRow).show();
+		$(".lineDraw_"+changeRow).show();
+
+		$('.change_status_'+<%= @manual_payment.id.to_s  %>).html('<a href="javascript:;" id="editCommitted_<%= @manual_payment.id %>"><i class="fa fa-pencil"></i></a><%= best_in_place @manual_payment, :committed, :type => :select, :collection => [['false','No'] ,['true', 'Yes'] ], :path => [:manage, @manual_payment], :activator => "#editCommitted_#{@manual_payment.id}" %>')
+		$('#manual_payment_add_'+<%= @manual_payment.id.to_s %>).text("Commit").attr('href', '<%= add_payment_manage_manual_payment_path(@manual_payment) %>');
+	<% end %>
+<%else%>
+	console.log("2 Console")
+	$modal = $('#my_error'),
+	$modalBody = $('#my_error .modal-body'),
+	$modalHeading = $('#my_error .modal-heading');
+	<% if @m == false %>
+		console.log("2.1 Console")
+		$modalBody.html('<h4 style="text-align: center;"><%= @error %></h4>');
+		$modal.modal();
+		$(".modal-header").css({"display":"none"});
+		$(".modal-footer").css({"display":"none"});
+		$('#manual_payment_add_'+<%= @manual_payment.id.to_s %>).text("Uncommit");
+	<% else %>
+	console.log("2.2 Console")
+		$("#editDescription_"+<%= @manual_payment.id.to_s %>).show();
+		$("#editReferral_"+<%= @manual_payment.id.to_s %>).show();
+		$("#editBalance_"+<%= @manual_payment.id.to_s %>).show();
+		$("#editPaymentMethod_"+<%= @manual_payment.id.to_s %>).show();
+		// $("#editGogglesStatus_"+<%= @manual_payment.id.to_s %>).show();
+		$("#editInvoice_"+<%= @manual_payment.id.to_s %>).show();
+		$("#editCommitted_"+<%= @manual_payment.id.to_s %>).show();
+		$(".editPayment_"+<%= @manual_payment.id.to_s %>).show();
+		$(".lineDraw_"+<%= @manual_payment.id.to_s %>).show();
+		$('#manual_payment_add_'+<%= @manual_payment.id.to_s %>).text("Commit").attr('href', '<%= add_payment_manage_manual_payment_path(@manual_payment) %>');
+		$('.change_status_'+<%= @manual_payment.id.to_s  %>).html('<a href="javascript:;" id="editCommitted_<%= @manual_payment.id %>"><i class="fa fa-pencil"></i></a><%= best_in_place @manual_payment, :committed, :as => :select, :collection => [['false','No'] ,['true', 'Yes'] ], :url => [:manage, @manual_payment], :activator => "#editCommitted_#{@manual_payment.id}" %>')
+	<% end %>
+<%end%>
+console.log("3 Console")

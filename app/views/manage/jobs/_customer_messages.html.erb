@@ -1,0 +1,45 @@
+<% if @customer_messages.count > 0 %>
+  <% @customer_messages.each do |message| %>
+    <% if message.direction.downcase == "incoming"%>
+      <li class="in">
+        <img class="avatar img-responsive" src="/assets/avatar.png" />
+        <div class="message">
+          <span class="arrow"></span>
+          <a class="name" href="#"><%= message.from_number %></a> 
+          <span class="body replace_str"><%= message.message_description %></span>
+        </div>
+        <center><small>
+          <%# if message.time_created.include?("M") %>
+            <%# Time.zone = "Singapore" %>
+            <%#= Time.zone.at(message.time_created.to_time).strftime('%d %b %Y %I:%M %p') %>
+          <%# else %>
+              <%# Time.zone = "Singapore" %>
+              <%#= Time.zone.at(message.time_created).strftime('%d %b %Y %I:%M %p') %>
+          <%# end %>
+          <%= message.time_created.strftime('%d %b %Y %I:%M %p') %>
+        </small></center>
+      </li>
+    <% else %>
+      <li class="out">
+        <img class="avatar img-responsive" src="/assets/avatar.png" />
+        <div class="message">
+          <span class="arrow"></span>
+          <a class="name" href="#"><%= message.from_number %></a> 
+          <span class="body replace_str"><%= message.message_description %></span>
+        </div>
+        <center><small>
+         <%# if message.time_created.include?("M") %>
+            <%# Time.zone = "Singapore" %>
+            <%#= Time.zone.at(message.time_created.to_time).strftime('%d %b %Y %I:%M %p') %>
+          <%# else %>
+              <%# Time.zone = "Singapore" %>
+              <%#= Time.zone.at(message.time_created).strftime('%d %b %Y %I:%M %p') %>
+          <%# end %>
+          <%= message.time_created.strftime('%d %b %Y %I:%M %p') %>
+        </small></center>
+      </li>
+    <% end %>
+  <% end %>
+<% else %>
+  <li><div class="panel panel-danger"><div class="panel-heading"><h4 class="panel-title"> No conversation found!!!</h4></div></div></li>
+<% end %>

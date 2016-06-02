@@ -1,0 +1,16 @@
+$modal = $('.modal'),
+$modalBody = $('.modal .modal-body'),
+$modalHeading = $('.modal .modal-heading');
+$modalHeading.html("<%= @group_class.id %>");
+$modalBody.html('<%= escape_javascript(render template: "/manage/group_classes/new.html.haml") %>');
+$modal.modal();
+$(".modal-footer").css({"display":"none"});
+$(".modal-title").html("Add group class");
+
+var heightStyle = "padding: 0px !important";
+var portlet_box_green = "border: 0px !important;";
+var portlet = "margin-bottom: 0px !important;";
+
+$(".modal-body").attr('style', heightStyle);
+$(".portlet.box.green").attr('style', portlet_box_green);
+$(".portlet").attr('style', portlet);

@@ -1,0 +1,64 @@
+<% if @fee_attendance == "latestLesson" %>
+  <% m = @result.last %>
+    <% cssClass = m.strftime("%d-%b").to_s %>
+    <% @studentAttendance_p = StudentAttendance.where(group_class_id: @group_class, instructor_student_id: student, attendance_date: cssClass).first %>
+    <td>
+      <% if !@studentAttendance_p.blank? %>
+        <%#if @studentAttendance_p.attendance_status == "present" %>
+          <a href="<%= instructor_remove_attendance_path(@group_class, student, cssClass,date:m) %>" class="btn green icn-only change_absent" data-remote="true" id="atteS-<%= cssClass %>-<%= student.id %>">
+            <i class="fa fa-check icon-white"></i>
+          </a>
+        <%#else %>
+          <!-- <a href="<%#= instructor_mark_present_path(@group_class, student, cssClass) %>" class="btn grey icn-only change_color" data-remote="true" id="atteS-<%#= cssClass %>-<%#= student.id %>">
+            <i class="fa fa-times icon-white"></i>
+          </a> -->
+        <%#end %>
+      <% else %>  
+        <a href="<%= instructor_mark_present_path(@group_class, student, cssClass,date:m) %>" class="btn grey icn-only change_color" data-remote="true" id="atteS-<%= cssClass %>-<%= student.id %>">
+          <i class="fa fa-minus icon-white"></i>
+        </a>
+      <% end %>
+    </td>
+<% else %>
+  <% @result.to_a.each do |m|%>
+    <% cssClass = m.strftime("%d-%b").to_s %>
+    <% @studentAttendance_p = StudentAttendance.where(group_class_id: @group_class, instructor_student_id: student, attendance_date: cssClass).first %>
+    <td>
+      <% if !@studentAttendance_p.blank? %>
+        <%#if @studentAttendance_p.attendance_status == "absent" %>
+         <!--  <a href="<%#= instructor_remove_attendance_path(@group_class, student, cssClass) %>" class="btn red icn-only change_remove" data-remote="true" id="atteS-<%#= cssClass %>-<%#= student.id %>">
+            <i class="fa fa-times icon-white"></i>
+          </a> -->
+        <%#else @studentAttendance_p.attendance_status == "present" %>
+          <a href="<%= instructor_remove_attendance_path(@group_class, student, cssClass,date:m) %>" class="btn green icn-only change_absent" data-remote="true" id="atteS-<%= cssClass %>-<%= student.id %>">
+            <i class="fa fa-check icon-white"></i>
+          </a>
+        <%#end %>
+      <% else %>  
+        <a href="<%= instructor_mark_present_path(@group_class, student, cssClass,date:m) %>" class="btn grey icn-only change_color" data-remote="true" id="atteS-<%= cssClass %>-<%= student.id %>">
+          <i class="fa fa-minus icon-white"></i>
+        </a>
+      <% end %>
+    </td>
+  <% end %>
+<% end %>
+ 
+<script type="text/javascript">
+  // $('.change_color').click(function(event) {
+  //   console.log($(this));
+  //   jQuery(document).on("ajax:beforeSend", function() {
+  //     console.log("click");
+        
+  //       // $(this).removeClass('grey').addClass('orange');
+  //       // $(this).find('i').removeClass('fa-times fa-minus').addClass('fa-check');
+  //   });
+  // });
+</script>
+
+
+<style>
+  .orange{
+   background-color: orange;
+   color:white;
+  }
+</style>

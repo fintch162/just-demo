@@ -1,0 +1,18 @@
+# Old AWS
+development:
+  access_key_id: "AKIAIJKEHEKSMD5UNCPQ"
+  secret_access_key: "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"
+  bucket: "profileImage"
+production:
+  access_key_id: "AKIAIJKEHEKSMD5UNCPQ"
+  secret_access_key: "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"
+  bucket: "profileImage"
+
+# development:
+#   access_key_id: "AKIAJRV7IRQOO4PLRSHQ"
+#   secret_access_key: "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"
+#   bucket: "imageprofile"
+# production:
+#   access_key_id: "AKIAJRV7IRQOO4PLRSHQ"
+#   secret_access_key: "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"
+#   bucket: "imageprofile"

@@ -1,0 +1,7 @@
+console.log('in cust js.')
+$('#customer_conversation').html('');
+<% if @messages.count > 0  %>
+	$('#customer_conversation').append("<%= escape_javascript(render partial: 'manage/messages/message_listing') %>");
+<% else %>
+	$('#customer_conversation').append('<li><div class="panel panel-danger"><div class="panel-heading"><h4 class="panel-title"> No conversation found!!!</h4></div></div></li>');
+<% end %>

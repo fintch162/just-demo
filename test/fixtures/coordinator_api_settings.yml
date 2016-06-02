@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  coordinator_id: 1
+  telerivet_api_key: MyString
+  telerivet_project_id: MyString
+  telerivet_phone_id: MyString
+
+two:
+  coordinator_id: 1
+  telerivet_api_key: MyString
+  telerivet_project_id: MyString
+  telerivet_phone_id: MyString

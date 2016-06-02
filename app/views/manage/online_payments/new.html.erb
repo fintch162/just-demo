@@ -1,0 +1,72 @@
+<div class="portlet">
+  <div class="portlet-title">
+    <h3>
+      Add Payment
+    </h5>
+  </div>
+  <div class="portlet-body form">
+    <div class="form-horizontal">
+    
+    <%= form_for(@payment_notification, :url => manage_create_notification_path) do |f| %>
+      <div class="form-body">
+        <div class="form-group">
+          <label class="control-label col-xs-3">REF Job </label>
+          <div class="col-xs-3">
+            <%= f.collection_select :job_ref, Job.all.order('id DESC'), :id, :id, {:include_blank => "Please select"}, :class => "form-control", :required => true %>
+          </div>
+        </div>
+        <div class="form-group">          
+          <label class="control-label col-xs-3">Source</label>
+          <div class="col-xs-3">
+            <%= f.text_field :paid_by, :class => "form-control" %>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-xs-3">Total Amount</label>
+          <div class="col-xs-3">
+            <%= f.text_field :amount, :class => "form-control" %>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-xs-3">Date</label>
+          <div class="col-xs-3">
+            <%= f.text_field :payment_date, :class => "form-control date-picker" %>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-xs-3">Time</label>
+          <div class="col-xs-3">
+            <%= f.text_field :pay_time, :"data-date-format" => "hh:mm A/PM", :class => "timepickers form-control" %>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-xs-3">Status</label>
+          <div class="col-xs-3">
+            <%= f.text_field :status, :class => "form-control" %>
+          </div>
+        </div>
+        <div class="form-group">
+        <label class="conrol-label col-xs-3"></label>
+          <div class="col-xs-3">
+            <%= f.submit "Save", :class =>"btn green" %>
+            <%= link_to "Cancel", manage_online_payments_path,:class => "btn red" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('.date-picker').datepicker({
+      format: 'd MM yyyy',
+      endDate: '+0d',
+      autoclose: true
+    });
+    $("#new_payment_notification").validate({});
+    $('.timepickers').timepicker({
+      minuteStep: 5
+    });
+  });
+</script>

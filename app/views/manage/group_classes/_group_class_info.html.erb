@@ -1,0 +1,57 @@
+<% if @group_class %>
+	<div style = "font-size:300%;">
+		<% if @group_class.instructor %>
+			<%#= @group_class.instructor.name ? @group_class.instructor.name : '' %>
+			<!-- <button class="inst_name btn-link" value="<%#= @group_class.instructor_id %>"><%#= @group_class.instructor.name %></button> -->
+			<%= link_to @group_class.instructor.name, 'javascript:;', data: {value: @group_class.instructor_id }, class: 'inst_name' %>
+		<% end %>
+	</div>
+	<div style="font-size:170%">
+		
+		<% if @group_class.venue %>
+			<%= @group_class.venue.name && @group_class.venue.name != '' ? @group_class.venue.name : '' %>
+		<% end %>
+		<img src="/assets/input-spinner.gif" alt="loading" class="spin" style="display: none;"><br>
+
+		<% if @group_class.time && @group_class.duration %>
+			<%= @group_class.time.strftime("%-I.%M%P").to_s + " - " + (@group_class.time +  @group_class.duration*60).strftime("%-I.%M%P").to_s %>
+			<br>
+		<% end %>
+
+
+		<% if @group_class.age_group %>
+			<%= @group_class.age_group.title? ? @group_class.age_group.title : '' %> class <br>
+		<% end %>
+		
+		<% if @group_class.level %>
+			<%= @group_class.level.title && @group_class.level.title != '' ? @group_class.level.title : '' %>
+			<br>
+		<% end %>
+
+		Fee: $<%= @group_class.fee ? @group_class.fee : '' %>/<%= @group_class.fee_type_id ? FeeType.find(@group_class.fee_type_id).name == "per month" ? "Month" : "Course" : '' %><br>
+	</div>
+		<% if @group_class.booking_status_time %>
+			Updated <%= time_ago_in_words(@group_class.booking_status_time) %> ago<br>
+		<% end %>
+		<div class="text-right"> 
+			<% if params[:job_id].present? %>
+				<%= link_to 'Edit class', edit_manage_group_class_path(@group_class,job_id:params[:job_id]),target: '_blank' %>
+				|
+				<%= link_to 'Apply', manage_apply_group_class_path(@group_class,params[:job_id]), remote: true %>
+				<br>
+			<% else %>
+				<%= link_to 'Edit class', edit_manage_group_class_path(@group_class) %><br>
+			<% end %>
+		</div>
+		<% if params[:job_id].present? %>
+			<%= link_to 'Available', manage_change_booking_status_path(@group_class,booking_status:true,job_id:params[:job_id]),data: {disable_with: 'wait..'},remote: true, class: 'btn green btn-avail',id: @group_class.id %>
+			<%= link_to 'Full', manage_change_booking_status_path(@group_class,booking_status:false,job_id:params[:job_id]),data: {disable_with: 'wait..'},remote: true, class: 'btn red btn-avail',id: @group_class.id %>
+			<%= link_to 'Clear', manage_change_booking_status_path(@group_class,booking_status:nil,job_id:params[:job_id]),data: {disable_with: 'wait..'},remote: true, class: 'btn blue btn-avail',id: @group_class.id %><br>
+		<% else %>
+			<%= link_to 'Available', manage_change_booking_status_path(@group_class,booking_status:true),data: {disable_with: 'wait..'},remote: true, class: 'btn green btn-avail',id: @group_class.id %>
+			<%= link_to 'Full', manage_change_booking_status_path(@group_class,booking_status:false),data: {disable_with: 'wait..'},remote: true, class: 'btn red btn-avail',id: @group_class.id %>
+			<%= link_to 'Clear', manage_change_booking_status_path(@group_class,booking_status:nil),data: {disable_with: 'wait..'},remote: true, class: 'btn blue btn-avail',id: @group_class.id %><br>
+		<% end %>
+<% else %>
+<% end %>
+<%= params[:job_id].present? ? '<hr>'.html_safe : '' %>

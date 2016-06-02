@@ -1,0 +1,238 @@
+<% content_for :title, "Photos" %>
+<div class="container">
+  <div class="row">
+    <div class="col-xs-4"><h1>Photo</h1></div>
+    <div class="col-xs-8 text-right"><%= link_to 'Upload','javascript:;',class: 'btn green', id: 'upload_file' %></div>
+  </div>
+  <%= form_for [:instructor, @instructor, InstructorStudentPhoto.new], html: { multipart: true, :remote => true, :class => "dropzone", :id => "media-dropzone", style:'display:none;'}  do |f| %>
+    <div class="fallback">
+      <%= f.file_field :student_photo ,as: :file ,:id => "img"%>
+      <%= f.submit "Submit" ,:id =>"file_submit" %>
+    </div>
+  <% end %>
+  <div class="row">
+    <div id='thumbs'>
+      <%= render partial: 'list_photos' %>
+    </div>
+  </div>
+</div>
+<div class="modal fade tagging_form" id="inst_student" role="basic" aria-hidden="true"></div>
+<style type="text/css">
+  .thumbnail{
+    border: none !important;
+  }
+  a.editable-click, a.editable-click:hover{
+    border: none;
+    color: #3e4d5c;
+  }
+  .tag-list-overflow{
+    position: relative; 
+    width: 100%; 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
+    overflow: hidden;
+  }
+  .select2-search-choice div{
+    float: left;
+    margin-top: 3px;
+  }
+  .select2-search-choice a{
+    float: left;
+    margin-bottom: 6px;
+    margin-right: 10px;
+    left: 7px !important;
+  }
+</style>
+<script type="text/javascript">
+// $.fn.editable.defaults.mode = 'inline';
+// $.fn.editable.defaults.showbuttons = false;
+$.fn.modal.Constructor.prototype.enforceFocus = function () {
+      var that = this;
+      $(document).on('focusin.modal', function (e) {
+         if ($(e.target).hasClass('select2-input')) {
+            return true;
+         }
+
+         if (that.$element[0] !== e.target && !that.$element.has(e.target).length) {
+            that.$element.focus();
+         }
+      });
+   };
+var students;
+students = '<%#= st_names %>'
+// var st= students
+
+  // $('.tags').editable({
+  //   inputclass: 'form-control input-medium',
+  //   emptytext: 'Tag Someone',
+  //   // tpl: "<input type='text' style='max-width: 195px;'>",
+  //   url:'/instructor/instructor_student_photos/add_tags',
+  //   placement: 'auto',
+  //   source:''
+  // });
+
+  $(document).ready(function() {
+    Layout.init();
+    var i = 0
+    $('#upload_file').click(function(event) {
+      i = 0;
+      $(".dropzone").show();
+      $(".dropzone").trigger( "click" );
+    });
+    
+    $('.dropzone').click(function(event) {
+      if(i != 0)
+      {
+        event.preventDefault(); 
+      }
+      i = i + 1;
+    });
+    $('.fancybox-button').fancybox();
+    // $('.fancybox-button').fancybox({
+    //     beforeLoad: function () {
+    //         var el, id = $(this.element).data('title-id');
+
+    //         if (id) {
+    //             el = $('#' + id);
+
+    //             if (el.length) {
+    //                 this.title = el.html();
+    //             }
+    //         }
+    //     },
+    //     helpers: {
+    //         title: {
+    //             type: "inside"
+    //         }
+    //     },
+    //     tpl: {
+    //       wrap: '<div class="fancybox-wrap row" tabIndex="-1"><div class="fancybox-skin"><div class="fancybox-outer col-xs-6"><div class="fancybox-inner col-xs-6"></div></div></div></div>',
+    //       image    : '<img class="fancybox-image" src="{href}" alt="" style="width:50%;" />'
+    //     },
+    //     afterShow: function(){
+          
+    //         $('.tags').editable({
+    //           inputclass: 'form-control input-medium',
+    //           emptytext: 'Tag Someone',
+    //           tpl: "<input type='text' style='max-width: 195px;'>",
+    //           url:'/instructor/instructor_student_photos/add_tags',
+    //           select2: {
+    //               tags: students.split(','),
+    //               tokenSeparators: [",", " "]
+    //           }
+    //         });
+         
+    //     }
+    // });
+    $('.select2_sample2').select2({
+      placeholder: "Tag Someone",
+      allowClear: true,
+      formatResult: function(state) {
+        var time = /-(\w{3}\s\d{1,2}.\d{1,2}(am|pm))$/.exec(state.text);
+        var returnString = state.text.replace(/-\w{3}\s\d{1,2}.\d{1,2}(am|pm)$/,'');
+        if( time && time.length ) {
+          returnString += '<small style="font-size:11px;color:#999;margin-left:10px;">'+time[1]+"</small>" ;
+        }
+        return returnString;
+      },
+      formatSelection: function (state, container, escapeMarkup) {
+        if( state ) {
+          var time = /-(\w{3}\s\d{1,2}.\d{1,2}(am|pm))$/.exec(state.text);
+          var returnString = state.text.replace(/-\w{3}\s\d{1,2}.\d{1,2}(am|pm)$/,'');
+          if( time && time.length ) {
+            returnString += '<small style="font-size:11px;color:#999;margin-left:10px;">'+time[1]+"</small>" ;
+        }
+        return returnString;
+        }
+        return undefined;
+      }
+    });
+    $(document).on('click', '.tag-list', function(event) {
+      var id = $(this).attr('id');
+      $modal = $('.'+id);
+      $modal.on("shown.bs.modal", function(){
+        $('.'+id+' .select2').select2('focus');
+        // setTimeout(function(){
+        //   $('.select2-search-field .select2-input').focus().blur().focus();
+        // },25)
+        
+      });
+      $modal.modal();
+      // setTimeout(function() {
+      //   $('.select2').select2('open');
+      // }, 400);
+      $(document).click(function(event) {
+        if (!$(event.target).is(".close")){
+          $modal.on("hidden.bs.modal", function(e){
+            $(this).find('form').submit();
+          })
+        }
+      });
+    });
+    $(document).on('click', '.tag-list-stdnt', function(event) {
+      var id = $(this).attr('id');
+      $modal = $('.'+id);
+      $modal.modal();
+      $modal.on("shown.bs.modal", function(){
+        $('.'+id+' .select2').select2('open');
+      });
+      // setTimeout(function() {
+        // $('.select2').select2('open');
+      // }, 400);
+      $(document).click(function(event) {
+        if (!$(event.target).is(".close")){
+          $modal.on("hidden.bs.modal", function(e){
+            $(this).find('form').submit();
+          })
+        }
+      });
+      // $(this).hide();
+      // $('.'+id).show();
+    });
+     // var selectedValues = <%#=p.photo_tags.pluck('instructor_student_id')%>
+    <% @instructor_student_photos.order('created_at desc').each do |p| %>
+      var selectedValues = <%=p.photo_tags.pluck('instructor_student_id')%>
+      $('#s2id_select2_sample2_inst<%= p.id %>').select2('val', selectedValues)
+    <% end %>
+    <% @students.each do |student| %>
+      <% if !student.gallery.nil? %>
+        <% if !student.gallery.photos.empty? %>
+          <% student.gallery.photos.order('created_at desc').each do |p| %>
+          var selectedValues = <%=p.photo_tags.pluck('instructor_student_id')%>
+          $('#s2id_select2_sample2_photo<%= p.id %>').select2('val', selectedValues)
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+    // $('#s2id_select2_sample2_inst86').select2('val', [57])
+    // var selectedValues = <%#=@instructor_student.group_classes.pluck('id')%>
+    // $('#s2id_select2_sample2').select2('val', selectedValues)
+  });
+  var baseUrl1;
+  if ($('#media-dropzone').length) {
+    Dropzone.options.mediaDropzone = false;
+    // Dropzone.options.acceptedFiles: ".jpeg,.jpg,.png,.gif";
+    baseUrl1 = $('#media-dropzone').attr('action');
+    window.mediaDropzone = new Dropzone('#media-dropzone', {
+      addRemoveLinks: true,
+      acceptedFiles: ".jpeg,.jpg,.png,.gif",
+      success: function(file, responseText) {
+        var _this = this;
+      },
+      init: function () {
+        this.on("complete", function (file) {
+          if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+            var _this = this;
+            setTimeout(function(){
+              _this.removeAllFiles();
+              window.location.reload();
+            },2000);
+          }
+        });
+      }
+    });
+  };
+  var appendContent = function(image_url,original, mediaId) {
+    $("#thumbs").prepend('<div class="col-xs-4 col-sm-2 gallery-item" style="padding-left: 0px ! important; padding-right: 0px ! important;"> <div class="text-right"><a data-confirm="Confirm Delete?" data-method="delete" data-remote="true" href="/instructor/instructor_student_photos/'+ mediaId+'" rel="nofollow"><i class="glyphicon glyphicon-remove"></i></a></div><a data-rel="fancybox-button" rel="group" class="fancybox-button" href="' + original + '"><img src="' + image_url + '" id="img" class="img img-responsive" style="max-width:100%;" /></a></div>');
+  };
+</script>

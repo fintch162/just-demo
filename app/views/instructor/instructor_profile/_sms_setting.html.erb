@@ -1,0 +1,84 @@
+<% if current_admin_user.is_account_activated? %>
+  <div class="alert alert-block alert-success fade in">
+    <p>Connected</p>
+    Telerivet connected successfully and is running on mobile number <strong><%= current_admin_user.telerivet_phone_number %></strong>
+    <p>
+      <%= link_to "Disconnect", instructor_disconnect_telerivet_account_path, data: { confirm: 'Are you sure?' }, :class => "btn red" %>
+    </p>
+
+  </div>
+<% end %>
+
+<%= form_for @instructor, :url => instructor_update_profile_path ,:html => { :multipart => true, :class=> "form-horizontal", :id => "instructor_profile" } do |f| %>
+
+  <input type="hidden" value="smsSetting" name="smsSetting" />
+  <div class="form-body">
+    <% if current_admin_user.is_account_activated? %>
+      <div class="password input optional stringish form-group" id="instructor_password_confirmation_input">
+        <label class="  col-md-3 control-label" for="instructor_telerivet_api_key">Telerivet Key</label>
+        <div class="col-md-4">
+          <%= f.text_field :telerivet_api_key, :class => "form-control", :disabled => true %>
+        </div>
+      </div>
+
+      <div class="password input optional stringish form-group" id="instructor_password_confirmation_input">
+        <label class="  col-md-3 control-label" for="instructor_instructor_telerivet_project_id">Telerivet Project ID</label>
+        <div class="col-md-4">
+          <%= f.text_field :instructor_telerivet_project_id, :class => "form-control", :disabled => true %>
+        </div>
+      </div>
+
+      <div class="password input optional stringish form-group" id="instructor_password_confirmation_input">
+        <label class="  col-md-3 control-label" for="instructor_instructor_telerivet_project_id">Telerivet Phone ID</label>
+        <div class="col-md-4">
+          <%= f.text_field :instructor_telerivet_phone_id, :class => "form-control", :disabled => true %>
+        </div>
+      </div>
+
+       <div class="password input optional stringish form-group" id="instructor_password_confirmation_input">
+        <label class="  col-md-3 control-label" for="instructor_instructor_telerivet_project_id">Webhook Api</label>
+        <div class="col-md-4">
+          <%= f.text_field :instructor_webhook_api_secret, :class => "form-control", :disabled => true %>
+        </div>
+      </div>
+    <% else %>
+      <div class="password input optional stringish form-group" id="instructor_password_confirmation_input">
+        <label class="  col-md-3 control-label" for="instructor_telerivet_api_key">Telerivet Key</label>
+        <div class="col-md-4">
+          <%= f.text_field :telerivet_api_key, :class => "form-control", required: true %>
+        </div>
+      </div>
+
+      <div class="password input optional stringish form-group" id="instructor_password_confirmation_input">
+        <label class="  col-md-3 control-label" for="instructor_instructor_telerivet_project_id">Telerivet Project ID</label>
+        <div class="col-md-4">
+          <%= f.text_field :instructor_telerivet_project_id, :class => "form-control", required: true %>
+        </div>
+      </div>
+
+      <div class="password input optional stringish form-group" id="instructor_password_confirmation_input">
+        <label class="  col-md-3 control-label" for="instructor_instructor_telerivet_project_id">Telerivet Phone ID</label>
+        <div class="col-md-4">
+          <%= f.text_field :instructor_telerivet_phone_id, :class => "form-control", required: true %>
+        </div>
+      </div>
+
+      <div class="password input optional stringish form-group" id="instructor_password_confirmation_input">
+        <label class="  col-md-3 control-label" for="instructor_instructor_telerivet_project_id">Webhook Api</label>
+        <div class="col-md-4">
+          <%= f.text_field :instructor_webhook_api_secret, :class => "form-control", required: true %>
+        </div>
+      </div>
+    <% end %>
+    <div class="form-group fluid">
+      <div class="col-md-offset-3 col-md-9">
+        <% if current_admin_user.is_account_activated? %>
+          <a href="javascript:;" class="btn btn-primary">Connected</a>
+        <% else %>
+          <input class="btn btn-primary" name="commit" type="submit" value="Update SMS Seting" id="instrutor_submit">
+        <% end %>
+        <%= link_to "Cancel",  instructor_profile_path, :class=> "btn default" %>
+      </div>
+    </div>
+  </div>
+<% end %>

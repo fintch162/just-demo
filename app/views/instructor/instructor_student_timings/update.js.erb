@@ -1,0 +1,6 @@
+$('#inst_time_<%=@instructor_student_timing.id %>').html('<%= link_to instructor_student_timing_path(@instructor_student_timing.id), remote: :true,class: 'load-modal' do%>  <%=@instructor_student_timing.time.strftime('%M')== "00" ? @instructor_student_timing.time.strftime('%S') : @instructor_student_timing.time.strftime('%-M:%S') %>s<br><small class="grp_small_size <%= !day_in_words(@instructor_student_timing.date).match(/months|year|long/).nil? ? 'ins_std_tm_style' : '' %>"> <%= day_in_words(@instructor_student_timing.date) %> <%#=@instructor_student_timing.date.strftime('%d-%m-%y')%> </small><%end %>')
+
+
+$('#inst_stud_<%=@instructor_student_timing.id %>').html('<%= link_to instructor_student_timing_path(@instructor_student_timing.id), remote: :true,class: 'load-modal' do%><small><%= @instructor_student_timing.date.strftime('%d-%m-%y') %> <%=@instructor_student_timing.time.strftime('%M')== "00" ? @instructor_student_timing.time.strftime('%S') : @instructor_student_timing.time.strftime('%-M:%S') %>s</small><br><%end %>');
+$('#inst_time_<%=@instructor_student_timing.id %>').parents('td').css({'background-color':'green'}).animate({'background-color':'#ffffff'},1000);
+$('.inst_student').modal('hide');

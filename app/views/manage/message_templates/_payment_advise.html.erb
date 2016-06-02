@@ -1,0 +1,22 @@
+<div class="portlet box">
+  <div class="portlet-body form">
+    <%= form_for [:manage, @message_template_payment_advise] do |f| %>
+      <%= hidden_field_tag :job_status, 'payment_advise' %>
+      <div class="form-body">
+        <div class="form-group" id="payment_advise">
+          <label>Invoice Note</label>
+          <%= f.text_area :payment_advise_body, :class => "form-control", :rows => 5 %>
+        </div>
+        <div class="left">
+          <button class="btn green" type="submit">Save</button>
+          <button class="btn default" type="button">Cancel</button>
+        </div>
+        <br>
+        <div class="form-group" id="receipt_note">
+          <label>Recipt Note</label>
+          <%= f.text_area :receipt_note, :class => "form-control", :rows => 5 %>
+        </div>        
+      </div>
+    <% end %>
+  </div>
+</div>

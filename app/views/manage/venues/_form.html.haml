@@ -1,0 +1,26 @@
+.row
+  .col-md-12
+    .portlet.box.green
+      .portlet-title
+        .caption
+          %i.fa.fa-gift
+          - if params[:controller] == "manage/group_classes" && params[:action] == "new"
+            Add New Class
+          - elsif params[:controller] == "manage/group_classes" && params[:action] == "edit"
+            Editing Class
+        .tools
+          %a.collapse
+          %a.config{"data-toggle" => "modal", href: "#portlet-config"}
+          %a.reload
+          %a.remove
+      .portlet-body.form
+        = form_for [:manage, @venue] , :html => {:class=> "form-horizontal", :id=> "group_class_form"} do |f|
+          .form-body
+            .form-group
+              %label.col-md-3.control-label Venue Name
+              .col-md-9
+                = f.text_field :name , :class=>"form-control", :placeholder=>"Enter Venue Name",:required => true
+          .form-actions.fluid
+            .col-md-offset-3.col-md-9
+              = f.submit "Save", :class=>"btn green"
+              = link_to "Cancel",  manage_venues_path, :class=> "btn default"

@@ -1,0 +1,30 @@
+ invoice = <%= @invoice_time %>
+  minute = invoice/60
+   hours = minute/60
+   hh = Math.floor(hours);
+   mm = Math.floor(minute - hh*60)
+  alert("Hello")
+$('#invoice-timer-tr').html(' <td id="invoice-timer" class="invoice-timer"><input type="hidden" name="invoice-time" value="' +hh+':'+mm+ 'left'+ '" id="invoice-time" class="invoice-time"></td><td><%= link_to "Edit" , manage_reset_invoice_time_popup_path(@invoice.id) , class:" btn btn-primary" , remote: true %></td>')
+
+$("#reset-time-window").modal('hide');
+$('.invoice-timer').html(hh+':'+mm+ 'left');
+<!--  invoice = $('#invoice_time').val();
+$('#invoice-timer').countdown(invoice, function(event) {
+  $(this).html(event.strftime('%H hours %M minutes left'));
+}); -->
+
+intl = setInterval(function(){
+	 isOver = false;
+	mm --;
+	if(mm < 0 ){
+	  hh--;
+	  if (hh < 0){
+	    clearInterval(intl);
+	    $(this).html('');
+	    isOver = true;
+	  }
+	}
+	if (isOver== false){ 
+	  $(this).html( hh+':'+mm+ ' left');
+	}
+	},60000);

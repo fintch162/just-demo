@@ -1,0 +1,32 @@
+<% student = @instructor_student_award.instructor_student %>
+<% pass_status = ["pass", "Pass", 'Pending', 'pending', 'Confirmed', 'confirmed' ]%>
+<% training_status = ["training_for", "Training"] %>
+<% @training_for_award = student.instructor_student_awards.where("award_progress IN (?) AND status NOT IN (?)", training_status, pass_status) %>
+<% @training_for_award += student.instructor_student_awards.where("award_progress IN (?) AND status IS ?", training_status, nil) %>
+<% if @training_for_award.count > 0 %>
+  <% @training_for_award.each do |training_award| %>
+    <span class="award_training" id="award_<%= training_award.id %>">
+      <span class="remove_award_training" id="<%= training_award.id %>" style="display: none;"><i class="fa fa-times"></i>
+      </span>
+      <% if !training_award.award.short_name.nil? && !training_award.award.short_name != "" %>
+        <%= @training_for_award.last != training_award ? training_award.award.short_name + "," : training_award.award.short_name %>
+      <% else %>
+        <%= @training_for_award.last != training_award ? training_award.award.name + "," : training_award.award.name %>
+      <% end %>
+    </span>
+  <% end %>
+<% else %>
+  -
+<% end %>
+
+<div id="add_award_training_form_<%= student.id %>" style="display: none;" class="add_award_form">
+<%= form_for InstructorStudentAward.new, url: instructor_update_student_award_status_path, remote: true do |f| %>
+    <% training_status = ["training_for", "Training", 'achieved', 'Achieved'] %>
+    <% @all_award_training = Award.all.order("position") %>
+    <% awards = student.instructor_student_awards.where('award_progress NOT IN (?) AND is_registered = (?) AND status NOT IN (?)',training_status,false,pass_status).pluck("award_id") %>
+    <% awards += student.instructor_student_awards.where('award_progress NOT IN (?) AND is_registered = (?) AND status IS ?',training_status,false,nil).pluck("award_id") %>
+    <% awards += student.instructor_student_awards.where(award_progress: nil).pluck("award_id") %>
+    <% @all_award_training  = @all_award_training.where("id IN (?)",awards) %>
+    <%= f.select :id, @all_award_training.collect{|sts_awrd| [!sts_awrd.short_name.nil? ? sts_awrd.short_name : sts_awrd.name, sts_awrd.id]},{prompt: 'Select'}, id: "cmb_training_for_award" %>
+  <% end %>
+</div>

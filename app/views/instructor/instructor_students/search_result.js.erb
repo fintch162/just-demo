@@ -1,0 +1,2 @@
+$('#search').attr('value', '<%= params[:search] %>');
+$('.students').html("<%= escape_javascript( render 'search_result_students_list' ) %>");

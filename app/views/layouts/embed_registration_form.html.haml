@@ -1,0 +1,24 @@
+!!!
+%html.no-js{lang: "en"}
+  %head
+    %meta{charset: "utf-8"}/
+    %title swimming-lesson-registration
+    %meta{content: "IE=edge", "http-equiv" => "X-UA-Compatible"}/
+    %meta{content: "width=device-width, initial-scale=1.0", name: "viewport"}/
+    %link{href: "http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all", rel: "stylesheet", type: "text/css"}/
+    = stylesheet_link_tag "manage"
+    = javascript_include_tag "manage"
+    = csrf_meta_tags
+    - if request.domain == "singaporeswimming.com"
+      = render "layouts/header_script"
+  %body{style: "background-color: #fff;"}
+  .clearfix
+  .page-container
+    .page-content{style: "min-height:783px"}
+      .row.custome-row
+        .col-md-12
+          %h3.page-title
+            = page_title
+            %small= page_description
+          .message-notice          
+      = yield

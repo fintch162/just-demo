@@ -1,0 +1,25 @@
+= form_for @api_setting do |f|
+  - if @api_setting.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@api_setting.errors.count, "error")} prohibited this api_setting from being saved:"
+      %ul
+        - @api_setting.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :telerivet_project_id
+    = f.text_field :telerivet_project_id
+  .field
+    = f.label :telerivet_phone_id
+    = f.text_field :telerivet_phone_id
+  .field
+    = f.label :telerivet_api_key
+    = f.text_field :telerivet_api_key
+  .field
+    = f.label :fb_api_url
+    = f.text_field :fb_api_url
+  .field
+    = f.label :fb_authentication_token
+    = f.text_field :fb_authentication_token
+  .actions
+    = f.submit 'Save'

@@ -1,0 +1,41 @@
+wb = xlsx_package.workbook
+
+wb.add_worksheet(name: "Dev") do |sheet|
+	header_of_excel = ['', 'Name', 'id', 'Mobile', 'Mobile2', 'Mobile3', 'Fee', 'Ic No', 'DOB', 'Start']
+	month_array.each do |month|
+		header_of_excel << month.strftime("%b-%y") 
+	end
+	sheet.add_row header_of_excel
+	group_classes.each do |group_class|
+		if group_class.instructor_students.count > 0
+	    sheet.add_row ["Class ID", group_class.id.to_s]
+	    sheet.add_row ["Day/time", Date::DAYNAMES[group_class.day]+ group_class.time.strftime("%l:%M%P")]
+	    
+	    group_class.instructor_students.each_with_index do |instructor_student, index|
+	    	mobile = ''
+	    	mobiles = []
+	    	if instructor_student.student_contacts.count > 0
+	    	 	mobile = instructor_student.student_contacts.find_by(primary_contact: true).contact
+	    		if instructor_student.student_contacts.where(primary_contact: false).count > 0
+	    			mobiles = instructor_student.student_contacts.where(primary_contact: false).pluck('contact')
+	    		end
+	    	end
+	    	
+	    	student_data = [index + 1, instructor_student.student_name,instructor_student.id.to_s, mobile, mobiles[0], mobiles[1], instructor_student.fee.present? ? instructor_student.fee : group_class.fee, instructor_student.ic_number, instructor_student.date_of_birth? ?instructor_student.date_of_birth.strftime("%e-%b-%y") : '', instructor_student.join_date? ? instructor_student.join_date.strftime("%e-%b-%y") : '']
+	    	
+	    	student_fees = instructor_student.fees
+	    	month_array.each do |month|
+	    		month_fee_present = student_fees.find_by(monthly_detail: month)
+	    		if month_fee_present.nil?
+	    			student_data << ""
+	    		else
+	    			fees_date = month_fee_present.get_payment_date_paid_any_payment_mode.nil? ? '': month_fee_present.get_payment_date_paid_any_payment_mode.strftime("%e-%b-%y")
+	    			student_data << fees_date
+	    		end
+	    	end
+	    	
+	    	sheet.add_row student_data
+	   	end 
+	  end   
+  end
+end

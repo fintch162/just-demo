@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  instructor_id: 
+  feature_id: 
+  is_enabled: false
+
+two:
+  instructor_id: 
+  feature_id: 
+  is_enabled: false

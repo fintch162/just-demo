@@ -1,0 +1,21 @@
+<div class="modal fade" id="student_status_<%= student.id %>" tabindex="-1" role="basic" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+          <h4 class="modal-title" id="del_modal_title">Update Achievements</h4>
+        </div>
+        <div class="modal-body row">
+          <div class="col-xs-12">The achievement for <%= student_name %> will be updates.</div>
+          <div class="col-xs-4 text-right text-muted">Award</div>
+          <div class="col-xs-8"><%= @award_test.award.name %></div>
+          <div class="col-xs-4 text-right text-muted">Date</div>
+          <div class="col-xs-8"><%= award_test.test_date.strftime("%d %b %Y")%></div>
+        </div>
+        <div class="modal-footer" >
+          <%= link_to "Update",  manage_confirm_student_path(student, "Pass"), :class=> "btn green"%>
+          <button type="button" class="btn default" data-dismiss="modal">Cancel</button>
+        </div>
+    </div>
+  </div>
+</div>

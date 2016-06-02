@@ -1,0 +1,91 @@
+# Files in the config/locales directory are used for internationalization
+# and are automatically loaded by Rails. If you want to use locales other
+# than English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t 'hello'
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t('hello') %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# To learn more, please read the Rails Internationalization guide
+# available at http://guides.rubyonrails.org/i18n.html.
+
+en:
+  hello: "Hello world"
+  week_days:
+    - "Sunday"
+    - "Monday"
+    - "Tuesday"
+    - "Wednesday"
+    - "Thursday"
+    - "Friday"
+    - "Saturday"
+  pages:
+    home:
+      index:
+        title: Home page
+        description: Some test description
+      api_list:
+        title: Settings
+        description: ''  
+    venues:
+      index:
+        title: List of Venues
+    messages:
+      index:
+        title: ''
+      conversastions_messages:
+        title: ''
+    group_classes:
+      index:
+        title: Group Class Listing
+      new:
+        title: 'Add New Class' 
+      edit:
+        title: 'Editing Class'  
+    levels:
+      index:
+        title: ''     
+    message_templates:
+      index:
+        title: 'Message Builder'     
+      edit:
+        title: 'Message Builder'     
+    jobs:
+      index:
+        title: 'Jobs Listings'
+      show:
+        title: ''
+      confirm_job:
+        title: "Confirmed Jobs" 
+      instructor_take_job:
+        title: "Instructor take job"   
+    registration:
+      new:
+        title: 'New Lead'
+      edit:
+        title: ''
+    online_payments:
+      index:
+        title: ''
+    instructors:
+      index:
+        title: 'Instructors'
+    reports:
+      detailed_view:
+        title: 'Sorted by start date'
+    award_tests:
+      index:
+        title: 'Awards'
+    manual_payments:
+      new:
+        title: "Add payment"

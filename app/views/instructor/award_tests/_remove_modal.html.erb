@@ -1,0 +1,22 @@
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+      <h4 class="modal-title"><%= AwardTestPaymentNotification.check_paid_or_not(@award_test.id,@student_award.instructor_student_id) ? 'Cannot remove' : 'Confirm Remove ?' %></h4>
+    </div>
+    <div class="modal-body">
+      <% if AwardTestPaymentNotification.check_paid_or_not(@award_test.id,@student_award.instructor_student_id) %>
+        Student cannot be removed because <%= @student_award.instructor_student.get_pronouns %> have paid for test.<br>
+        Please contact administrator.
+        </div>
+        <div class="modal-footer">
+      <% else %>
+        Do you confirm to remove student from this test?
+      </div>
+      <div class="modal-footer">
+        <%= link_to "Confirm" , remove_student_from_award_test_instructor_award_test_path(@award_test.id, @student_award.id), :method => :delete ,:class =>"btn blue",:type =>"button" %>
+      <% end %>
+      <button type="button" class="btn default" data-dismiss="modal">Close</button>
+    </div>
+  </div>
+</div>

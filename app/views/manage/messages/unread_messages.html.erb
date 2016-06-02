@@ -1,0 +1,210 @@
+<% title "SMS" %> 
+
+<% init_class = Test.new %>
+<h3 class="page-title">
+  SMS
+  <small>
+    from telerivet
+  </small>
+</h3>
+<div class="row inbox">
+  <div class="col-md-2">
+    <ul class="inbox-nav margin-bottom-10">
+      <li class="compose-btn">
+        <a class="btn default" data-toggle="modal" href="#responsive">
+          <i class="fa fa-edit"></i>
+          New SMS
+        </a>
+      </li>
+      <li class="inbox active">
+        <%= link_to "Conversations", manage_messages_path , :class => "btn" %>
+        <b></b>
+      </li>
+      <li class="sent">
+        <%= link_to "Incoming", manage_db_incoming_message_path , :class => "btn"%>
+        <b></b>
+      </li>
+      <li class="draft">
+        <%= link_to "Outgoing", manage_db_outgoing_message_path, :class => "btn"%>
+        <b></b>
+      </li>
+      <li class="trash">
+        <%= link_to "Failed", manage_incoming_messages_path, :class => "btn", :remote => true %>
+        <b></b>
+      </li>
+    </ul>
+  </div>
+  <div class="col-md-10 parent_incomming">
+    <div class="inbox-header">
+      <h1 class="pull-left">Conversations</h1>
+      <span class="pull-right">
+        <%= form_tag url_for(:controller => 'coordinator_messages', :action => 'search'), :method => 'get' do %>
+          <%= text_field_tag :search, nil, :class => "form-control" %>
+        <% end %>
+      </span>
+    </div>
+    <div class="inbox-loading" style="display: none;">
+      Loading...
+    </div>
+    <div class="inbox-content">
+      <table class="table table-striped table-advance table-hover">
+        <thead>
+          <tr>
+            <th colspan="7">
+              <div class="btn-group">
+                <a class="btn btn-sm blue" data-toggle="dropdown" href="#">
+                  More
+                  <i class="fa fa-angle-down"></i>
+                </a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a href="#">
+                      <i class="fa fa-pencil"></i>
+                      Mark as Read
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#">
+                      <i class="fa fa-ban"></i>
+                      Spam
+                    </a>
+                  </li>
+                  <li class="divider"></li>
+                  <li>
+                    <a href="#">
+                      <i class="fa fa-trash-o"></i>
+                      Delete
+                    </a>
+                  </li>
+                </ul>
+
+              </div>
+              <span class="pull-right">
+              <% if @conversations_unread != "Disconnected" %>
+                <%= will_paginate @conversations_unread, :previous_label => '<i class="fa fa-angle-left"></i>', :next_label => '<i class="fa fa-angle-right"></i>', :page_links => false%>
+              <% end %>
+              </span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @conversations_unread == "Disconnected" %>
+            <tr class="unread" data-messageid="1">
+              <td colspan="3" class="alert alert-danger" style="background: #fff;">
+                <div class="Metronic-alerts alert alert-danger fade in">You will need to setup your telerivet API in order to send or receive SMS</div>
+              </td>
+            </tr> 
+          <% else %>  
+            <% if @conversations_unread.count == 0 %>
+              <tr class="unread" data-messageid="1">
+                <td colspan="3" style="background: #fff;">
+                  <h3>No messages found!</h3>
+                </td>
+              </tr>        
+            <% else %>
+              <% @final_num = [] %>
+              <% @conversations_unread.each do |message| %>
+                <%  if message.unread_count > 0 %>
+                  <% @n = '' %>
+                  <% if message.phone_number.include?('+') %>
+                    <% if message.phone_number.include?("^") %>
+                      <% @n = message.phone_number[4..-1] %>
+                    <% else %>
+                      <% @n =  message.phone_number[3..-1] %>
+                    <% end %>
+                  <% else %>
+                    <% if message.phone_number.include?("^") %>
+                      <% @n = message.phone_number.gsub('^', '') %>
+                    <% else %>
+                      <% @n = message.phone_number %>
+                    <% end %>
+                  <% end %>
+
+                <% if !@final_num.include?(@n)  %>
+                  <% @final_num << @n %>
+                  <tr class="unread" data-messageid="1">
+                    <td class="view-message" style="width: 20px;">
+                      <% if message.phone_number.include?('+') %>
+                        <% if message.phone_number.include?("^") %>
+                          <% i = Instructor.find_by_mobile(message.phone_number[4..-1]) %>
+                          <%= i.name.capitalize unless i.nil? %>
+                          <%= message.phone_number[4..-1] unless !i.nil? %>
+                        <% else %>
+                          <% i = Instructor.find_by_mobile(message.phone_number[3..-1]) %>
+                          <%= i.name.capitalize unless i.nil? %>
+                          <%= message.phone_number[3..-1] unless !i.nil? %>
+                        <% end %>
+                      <% else %>
+                        <% if message.phone_number.include?("^") %>
+                          <% i = Instructor.find_by_mobile(message.phone_number.gsub('^', '')) %>
+                          <%= i.name.capitalize unless i.nil? %>
+                          <%= message.phone_number.gsub('^', '') unless !i.nil? %>
+                        <% else %>
+                          <% i = Instructor.find_by_mobile(message.phone_number) %>
+                          <%= i.name.capitalize unless i.nil? %>
+                          <%= message.phone_number unless !i.nil? %>
+                        <% end %>
+                      <% end %>
+                    </td>
+                    <td class="view-message">
+                      <% if !message.msg_des.nil? %>
+                        <%= link_to message.msg_des.truncate(100), manage_conversation_message_path(message.phone_number)%>
+                      <% end %>
+                    </td>
+                    <td class="view-message inbox-small-cells">
+                     <%  if message.unread_count == 1 %>
+                      <button class="btn red btn-xs" type="button"><%= message.unread_count%></button>
+                    <% end %>
+                    </td>
+                    <td class="hidden-xs" style="width: 20px;"><%= message.msg_time.strftime('%d/%m/%Y')%></td>
+                    <td class="view-message text-right">                  
+                      <%= message.msg_time.strftime('%I:%M %p') %>
+                    </td>
+                  </tr>
+                <% end %>
+               <% end %> 
+              <% end %>
+            <% end %>
+          <% end %>
+        </tbody>
+      </table>
+      <%#= link_to "Load More", manage_load_more_messages_path, :class => "btn blue load_more", :remote => true, :style => "left: 50%; top: 10%; position: relative; " %>
+      <% if @conversations_unread != "Disconnected" %>
+        <%#= will_paginate @converstaions, :previous_label => "<", :next_label => ">"%>
+      <% end %>
+    </div>
+  </div>
+</div>
+<%= render :partial => "manage/messages/new_message" %>
+<script>
+  Metronic.init();
+  $( document ).ajaxStart(function() {
+    $( "#prev" ).before('<img src="/assets/loading-spinner-default.gif" class="img_loader" style="margin-right: 15px;">');
+  });
+  $( document ).ajaxStop(function() {
+    $(".img_loader").remove();
+  });
+  $( document ).ajaxError(function() {
+    $(".img_loader").remove();
+  });
+</script>
+<style type="text/css">
+    .inbox .table-striped tbody > tr:nth-child(odd) > td {
+
+    }
+    .previous_page, .next_page{
+      padding: 5px 10px;
+font-size: 12px;
+line-height: 1.2;
+margin-top: 0px;
+margin-left: 0px;
+margin-right: 5px;
+color: white;
+text-shadow: none;
+background-color: #4d90fe;
+    }
+    .pagination{
+      margin-top: 0px;
+    }
+
+</style>

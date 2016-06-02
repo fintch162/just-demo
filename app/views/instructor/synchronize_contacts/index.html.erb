@@ -1,0 +1,99 @@
+<% if !admin_user_signed_in? %>
+  <%= render "instructor/shared/login" %>
+<% else %>
+  <div class="main">
+    <div class="container">
+      <ul class="breadcrumb">
+        <li><a href="/instructor">Home</a></li>
+        <li class="active">Synchronize contacts</li>
+      </ul>
+      <div class="row margin-bottom-40">
+        <div class="col-sm-12">
+          <h5><% if current_admin_user.google_synch_email %>Your contacts synchronized with <%= current_admin_user.google_synch_email %><% end %></h5>
+        </div>
+        <div class="col-sm-12">
+          <h1>Student Contacts</h1>
+        </div>
+        <div class="col-sm-12">
+          <div class="col-sm-6"></div>
+          <!-- </div>-->
+          <div class="col-sm-6">  
+            <% if session[:access_token] != nil %>
+              <%= form_tag(instructor_synchronize_contacts_path, :id => "synch-multiple") do %>
+                <input type="hidden" id="student-ids" name="student_ids" value="">
+                <%= submit_tag "Synch Multiple", :class => "btn green pull-right", id: 'btn-synch-multiple', disabled: true, data: { disable_with: "Synchronizing..." } %>
+              <% end %>
+              <%= button_to 'Remove All', instructor_remove_synchronized_contacts_path, class: "btn green pull-right remove-all remove", method: :get, data: {confirm: 'Are you sure?', disable_with: 'Removing..'} %>
+            <% else %>
+              <%= link_to 'Synch Multiple', '/auth/google_oauth2', class: "btn green pull-right" %>
+              <%= link_to 'Remove All', '/auth/google_oauth2', class: "btn green pull-right remove-all" %>
+            <% end %>
+          </div>
+        </div>
+        <div class="col-sm-12 students">
+        	<%= render 'student_contact_list' %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<script type="text/javascript">
+  $('#selectall').change(function(event) {
+    if(this.checked) {
+      student_ids = ''
+      $(this).parents('table').find('.student-contact').each(function() {
+        this.checked = true;
+        student_ids += $(this).val() + ',';
+      });
+      $('#student-ids').val(student_ids);
+      $('#btn-synch-multiple').removeAttr('disabled');
+      $('.remove').attr('disabled',true);
+    } else {
+      $(this).parents('table').find('.student-contact').each(function() {
+        this.checked = false;
+      });         
+      $('#student-ids').val('');
+      $('#btn-synch-multiple').attr('disabled',true);
+      $('.remove').removeAttr('disabled');
+    }
+  });
+  $('.student-contact').change(function(event) {
+    if($(this).is(":checked")){
+      var flag = 0;
+      $(this).parents('table').find('.student-contact').each(function() {
+        if(!this.checked)
+        flag = 1;
+      })              
+      if(flag == 0) { $(this).parents('table').find('#selectall').prop("checked", true); }
+    }
+    else {
+      $(this).parents('table').find('#selectall').prop("checked", false);
+    }
+    var student_ids = $('.student-contact:checked').map(function() {
+      return this.value;
+    }).get();
+    student_ids = student_ids.join(',');
+    $('#student-ids').val(student_ids);
+    if($('.student-contact:checked').length > 0)
+    {
+      $('#btn-synch-multiple').removeAttr('disabled');
+      $('.remove').attr('disabled',true);
+    }
+    else{ 
+      $('#btn-synch-multiple').attr('disabled',true);
+      $('.remove').removeAttr('disabled');
+    }
+  });
+</script>
+<style>
+  .remove-all{
+    margin-right: 5px;
+  }
+  .btn-link{
+    color: #E02222;
+  }
+  .btn-link:hover {
+    color: #E02222;
+  }
+</style>

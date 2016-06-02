@@ -1,0 +1,2 @@
+$("#groupClass-<%= @group.id %>").fadeOut('400');
+$('.group_list').html('<%= escape_javascript(render partial: "instructor/home/group", :locals => { :group_list => @groups, :group_class => @group_class }) %>');

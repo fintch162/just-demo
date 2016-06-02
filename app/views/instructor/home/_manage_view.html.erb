@@ -1,0 +1,169 @@
+<div class="col-sm-12 column-selector">
+  <% @data_column = ["profile-picture","student_id","Name", "Contact",'ic-number','date-of-birth','joined-date','description','training-for','ready-for','registered-for',(1.month.ago).strftime("%b-%Y"), Date.today.strftime("%b-%Y"), (Date.today + 1.months).strftime("%b-%Y") ,'Fee'] %>
+  <div class="form-group viewManage manage_view">  
+    <div class="col-xs-6 col-sm-3">
+      Student Information<br/>
+      <label><input type="checkbox" name="profile-picture" value="profile-picture" class="student_field_checkbox" <%= @hide_show_columns.profile_pic? ? "checked" : "" %> > Profile pic</label><br>
+      <label><input type="checkbox" name="student_id" value="student_id" class="student_field_checkbox" <%= @hide_show_columns.student_id? ? "checked" : "" %> > Student id</label><br>
+      <label><input type="checkbox" name="Contact" value="Contact" class="student_field_checkbox" <%= @hide_show_columns.contact? ? "checked" : "" %> > Contact</label><br>
+      <label><input type="checkbox" name="ic-number" value="ic-number" class="student_field_checkbox" <%= @hide_show_columns.ic_number? ? "checked" : "" %> > IC Number</label><br>
+      <label><input type="checkbox" name="date-of-birth" value="date-of-birth" class="student_field_checkbox" <%= @hide_show_columns.date_of_birth? ? "checked" : "" %> > Date of birth</label><br>
+      <label><input type="checkbox" name="joined-date" value="joined-date" class="student_field_checkbox" <%= @hide_show_columns.join_date? ? "checked" : "" %> > Joined date</label><br>
+      <label><input type="checkbox" name="description" value="description" class="student_field_checkbox" <%= @hide_show_columns.description? ? "checked" : "" %> > Description</label><br>
+      <label><input type="checkbox" name="fee" value="fee" class="student_field_checkbox" <%= @hide_show_columns.fee? ? "checked" : "" %> > Fee</label><br>
+
+    </div>
+    <div class="col-xs-6 col-sm-3">
+      Student Progress<br/>
+      <label><input type="checkbox" name="ready-for" value="ready-for" class="student_field_checkbox" <%= @hide_show_columns.ready_for? ? "checked" : "" %> > Ready for</label><br>
+      <label><input type="checkbox" name="training-for" value="training-for" class="student_field_checkbox" <%= @hide_show_columns.training_for? ? "checked" : "" %> > Training for</label><br>
+      <label><input type="checkbox" name="registered-for" value="registered-for" class="student_field_checkbox" <%= @hide_show_columns.registered_for? ? "checked" : "" %>> Registered for</label><br>
+      <label><input type="checkbox" name="achieved" value="achieved" class="student_field_checkbox" <%= @hide_show_columns.achieved? ? "checked" : "" %> > Achieved</label><br>
+    </div>
+    <% if (FeeType.find(@group_class.fee_type_id).name.downcase == "per month") %>
+      <div class="col-xs-6 col-sm-2">
+        Timing<br>
+        <%Timing.all.each do |time| %>
+          <%if (@hide_show_columns.timing?) && (@hide_show_columns.timing.include? time.id.to_s)%>
+            <label><input type="checkbox" name="<%=time.title %>" class="student_timing" value="<%=time.id%>" checked="checked"><%=time.title %></label><br>
+          <%else %>
+            <label><input type="checkbox" name="<%=time.title %>" class="student_timing" value="<%=time.id%>"><%=time.title %></label><br>
+          <%end %>
+        <%end %>
+      </div>
+    <% end %>
+    <div class="col-xs-6 col-sm-4">
+      <% if params[:award_id].present? %>
+        <% path = instructor_unregistered_students_path(award_id: params[:award_id]) %>
+      <% else %>
+        <% path = params[:id].present? ? instructor_group_class_view_add_more_months_path : instructor_unpaid_fee_student_path(month: params[:month],time: params[:time] ,timing_id: params[:timing_id]) %>
+      <% end %>
+        <%= form_tag path, :method => 'post', :class=> "form-horizontal columnForm setDates" do %>
+        <%= hidden_field_tag :group_class, @hide_show_column %>
+        <%= hidden_field_tag :group_class, @group_class.id %>
+        <input name="is_submit" value='true' type="hidden"/>
+        <input id="tableName" name="tableName" value="group_class" type="hidden" />
+        <input id="columnName" name="columnName" value="" type="hidden" />
+        <input id="columnTiming" name="columnTiming" value="" type="hidden" />
+        <% if (FeeType.find(@group_class.fee_type_id).name.downcase == "per month") %>
+          <div class="row clearfix">
+            <div class="col-xs-12">
+              Fee<br>
+              <div class="col-xs-1" style="padding:0;">
+                <input type="checkbox" name="fee_check" id="fee_check" value="true" <%= @is_fees_check %> onchange="set_fees_dropdown()" >
+              </div>
+              <div class="col-xs-10" style="padding:0;">
+                <%= text_field_tag :start_month,@add_or_more_less_months_saved_settings.start_month.present? ? @add_or_more_less_months_saved_settings.start_month.strftime('%B %Y') : (Date.today-1.month).strftime('%B %Y'), :class => "form-control form-control-inline date-picker1", disabled: @is_fees_check == 'checked' ? false : true %>
+                <%= text_field_tag :end_month,@add_or_more_less_months_saved_settings.end_month.present? ? @add_or_more_less_months_saved_settings.end_month.strftime('%B %Y') : (Date.today+1.month).strftime('%B %Y'), :class => "form-control form-control-inline date-picker1", disabled: @is_fees_check == 'checked' ? false : true %>
+                <%#= select_tag(:start_month, options_for_select(@previousMonths.reverse, selected: @startMonth.blank? ? (1.month.ago).strftime("%b-%y") : @startMonth ), class: "form-control startMon drop-down", disabled: @is_fees_check == 'checked' ? false : true) %>
+                <%#= select_tag(:end_month, options_for_select(@nextMonths.reverse, selected: @endMonth.blank? ? (Date.today + 1.months).strftime("%b-%y") : @endMonth ), class: "form-control endMon drop-down", disabled: @is_fees_check == 'checked' ? false : true) %>
+              </div>
+            </div>
+          </div><br>
+          <!-- <div class="row clearfix">
+
+            <div class="col-xs-1">
+               <input type="checkbox" name="show_amount" id="show_amount" value="true" <%#= @show_amout %>> 
+            </div>
+            <div class="col-xs-10">
+              Show Amount
+            </div>
+          </div><br> -->
+          <div class="row clearfix">
+            <div class="col-xs-12">
+              Mark Attendance<br>
+              <div class="col-xs-1" style="padding:0;">
+                <input type="checkbox" name="isAttendance" value="true" id = "atte_check"<%= @is_attendace %> onchange="set_att_dropdown()" >
+              </div>
+              <div class="col-xs-10" style="padding:0;">
+                <%= text_field_tag :start_month_atte,@add_or_more_less_months_saved_settings.start_month_atte.present? ? @add_or_more_less_months_saved_settings.start_month_atte.strftime('%B %Y'): (Date.today-1.month).strftime('%B %Y'), :class => "form-control form-control-inline date-picker1", disabled: @is_attendace == 'checked' ? false : true %>
+                <%= text_field_tag :end_month_atte,@add_or_more_less_months_saved_settings.end_month_atte.present? ? @add_or_more_less_months_saved_settings.end_month_atte.strftime('%B %Y') : (Date.today+1.month).strftime('%B %Y'), :class => "form-control form-control-inline date-picker1", disabled: @is_attendace == 'checked' ? false : true %>
+
+                <%#= select_tag(:start_month_atte, options_for_select(@previousMonths.reverse, selected: @startMonthAtte.blank? ? (1.month.ago).strftime("%b-%y") : @startMonthAtte ), class: "form-control startMon drop-down", disabled: @is_attendace == 'checked' ? false : true) %>
+                <%#= select_tag(:end_month_atte, options_for_select(@nextMonths.reverse, selected: @endMonthAtte.blank? ? (Date.today + 1.months).strftime("%b-%y") : @endMonthAtte ), class: "form-control endMon drop-down", disabled: @is_attendace == 'checked' ? false : true) %>
+              </div>
+              <!-- <label class="btn btn-success btnGo">
+                <i class="fa fa-arrow-left fa-fw"></i> Attendance
+              </label> -->
+            </div>
+          </div><br>
+          <div class="row clearfix">
+            <div class="col-xs-12">
+              View Fee & Attendance<br>
+              <div class="col-xs-1" style="padding:0;">
+                <input type="checkbox" name="isFeeAttendance" value="true" id = "view_fee_attendance"<%= @is_view_fee_attendance %> onchange="set_view_fee_attendance_dropdown()" >
+              </div>
+              <div class="col-xs-10" style="padding:0;">
+                <%= text_field_tag :start_month_view_atte,@add_or_more_less_months_saved_settings.start_month_view_atte.present? ? @add_or_more_less_months_saved_settings.start_month_view_atte.strftime('%B %Y') : (Date.today-1.month).strftime('%B %Y'), :class => "form-control form-control-inline date-picker1",id: 'view_start_month', disabled: @is_view_fee_attendance == 'checked' ? false : true %>
+                <%= text_field_tag :end_month_view_atte,@add_or_more_less_months_saved_settings.end_month_view_atte.present? ? @add_or_more_less_months_saved_settings.end_month_view_atte.strftime('%B %Y') : (Date.today+1.month).strftime('%B %Y'), :class => "form-control form-control-inline date-picker1",id: 'view_end_month', disabled: @is_view_fee_attendance == 'checked' ? false : true%>
+              </div>
+            </div>
+          </div>
+          <div class="row clearfix">
+            <div class="col-xs-12">
+              <br>
+              <div class="col-xs-1" style="padding:0;">
+                <input type="checkbox" name="latestLesson" value="true" id="latestLesson" <%= @is_lesson_check %> onchange="set_att_fee_dropdown()">
+              </div>
+              <div class="col-xs-10" style="padding:0;">
+                Latest Lesson
+              </div>
+              <br>
+            </div>
+          </div>
+          <div class="row clearfix">
+            <div class="col-xs-12">
+              <br>
+              <div class="col-xs-1" style="padding:0;">
+                <input type="checkbox" name="highlight_ready" value="true" id="highlight_ready" <%= @is_highlight_ready %> class="highlight_ready_chk" onchange="height_light_cell()">
+              </div>
+              <div class="col-xs-6" style="padding:0;">
+                Highlight Ready Cell
+              </div>
+              <div class="col-xs-2" style="padding:0;">
+                <%= text_field_tag :ready_cell_month,@ready_cell_month ,style: "width: 30px;", :maxlength => 2, :class=> "ready_cell_month"%>
+              </div>
+              <div class="col-xs-2" style="padding:0;">
+                Month  
+              </div>
+              <br>
+            </div>
+          </div>
+          <div class="row clearfix">
+            <div class="col-xs-12">
+              <br>
+              <div class="col-xs-1" style="padding:0;">
+                <input type="checkbox" name="highlight_training" value="true" id="highlight_training" <%= @is_highlight_training %> class="highlight_ready_chk" onchange="height_light_training_cell()">
+              </div>
+              <div class="col-xs-6" style="padding:0;">
+                Highlight Training Cell
+              </div>
+              <!-- <div class="col-xs-2" style="padding:0;">
+                <%#= text_field_tag :training_cell_month,@training_cell_month ,style: "width: 30px;", :maxlength => 2, :class=> "training_cell_month"%>
+              </div> -->
+              <!-- <div class="col-xs-2" style="padding:0;">
+                Month  
+              </div> -->
+              <br>
+            </div>
+          </div>
+        <% end %>
+        <br>
+        <div class="row clearfix">
+          <div class="col-xs-12">
+            <button class="btn btn-success btnGo1" style="margin-left: 7px; float: right;" name="commit" type=" submit" value="GO">
+               Go
+            </button>
+          </div>
+        </div>
+      <% end %>
+
+      <%#= render "add_more_month_fee_and_attendance_form", startMonthAtte: @startMonthAtte, endMonthAtte: @endMonthAtte, startMonth: @startMonth, endMonth: @endMonth %>
+    </div>
+  </div>
+  <% if (FeeType.find(@group_class.fee_type_id).name.downcase == "per month") %>
+    <input type="hidden" name="<%=  (1.month.ago).strftime("%b-%Y") %>" class="a_1" />
+    <input type="hidden" name="<%=  Date.today.strftime("%b-%Y") %>" class="a_2" />
+    <input type="hidden" name="<%=  (Date.today + 1.months).strftime("%b-%Y") %>" class="a_3" />
+  <% end %>
+</div>

@@ -1,0 +1,150 @@
+  <% if params[:action] == "new" %>
+    <h1>Add New Award Test </h1>
+  <% else %>
+    <h1>Edit Award Test </h1>
+  <% end %>  
+  <div class="content-page">
+      <%= form_for [:instructor, @award_test], :html => {:class=> "form-horizontal", :id=> "new_award_test"} do |f| %>
+        <div class="form-body">
+          
+          <div class="form-group">
+            <label class="col-md-3 control-label">Date</label>
+            <div class="col-md-4">
+              <div class="input-group date date-picker" data-date-format="dd-mm-yyyy" data-date-start-date="+0d">
+                <% if @award_test.test_date? %>
+                  <input type="text" class="form-control" readonly="true" name="award_test[test_date]" style="background-color: #eee !important;" required="required" value="<%= @award_test.test_date.strftime('%e %B %Y')%>">
+                <% else %>
+                  <input type="text" class="form-control" readonly="true" name="award_test[test_date]" style="background-color: #eee !important;" required="required" >
+                <% end %>  
+                <span class="input-group-btn">
+                  <button class="btn default" type="button"><i class="fa fa-calendar"></i></button>
+                </span>
+              </div>
+              <div class="error1"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-3 control-label">Time</label>
+            <div class="col-md-4">
+              <div class="input-group">
+                <input type="text" class="form-control timepicker timepicker-no-seconds "  name="award_test[test_time]" required="required" readonly="true" style="background-color: #eeeeee !important;" data-date-format="hh:mm A/PM">
+                <span class="input-group-btn">
+                <button class="btn default" type="button"><i class="fa fa-clock-o"></i></button>
+                </span>
+              </div>
+              <div class="error2"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-3 control-label">Award</label>
+            <div class="col-md-4">
+              <%= f.collection_select :award_id , Award.all, :id, :name ,{ :prompt => 'Please Select'},{:class=>"form-control" ,:required => true } %>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-3 control-label">Veune</label>
+            <div class="col-md-4">
+              <%= f.collection_select :venue_id , Venue.all, :id, :name ,{ :prompt => 'Please Select'},{:class=>"form-control" ,:required => true } %>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-3 control-label">Assessor</label>
+            <div class="col-md-4">
+              <%= f.collection_select  :assessor,  Instructor.all, :id, :name ,{:prompt => 'Please Select' },{ :class=>"form-control" ,:required => true } %>
+            </div>
+          </div>
+        </div>
+        <div class="form-actions fluid">
+          <div class="col-md-offset-3 col-md-9">
+            <% if params[:action] == "new" %>
+              <%= f.submit "Save", :class=>"btn green" %>
+            <% else %>
+              <a data-toggle="modal" id="basicModalOpen" href="#basic" class="btn red">Delete Award Test</a>
+              <%= f.submit "Update", :class=>"btn green" %>
+            <% end %>    
+            <%= link_to "Cancel",  instructor_award_tests_path, :class=> "btn default" %>
+          </div>
+        </div>
+      <% end %>
+  </div>
+  <% if params[:action] == "edit" %>
+  <div class="modal fade" id="basic" tabindex="-1" role="basic" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <%# if @award_test.students.count != 0 %>
+          <!-- <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            <h4 class="modal-title" id="del_modal_title">Delete not allowed</h4>
+          </div>
+          <div class="modal-body">
+            You must first delete all fees from this student.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn default" data-dismiss="modal">Okay</button>
+          </div> -->
+        <%# else %>
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            <h4 class="modal-title" id="del_modal_title">Are you sure?</h4>
+          </div>
+          <div class="modal-footer" style="border-top: 0 !important;">
+            <%= link_to "Delete",  instructor_award_test_path(@award_test), method: :delete, :class=> "btn red" %>
+            <button type="button" class="btn default" data-dismiss="modal">Cancel</button>
+          </div>
+        <%# end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+<script>
+$(document).ready(function() {
+  $("#new_award_test").validate({
+    rules: {
+      instructor_id: {
+        required: true
+      }
+    },
+    errorPlacement: function(error, element) {
+      if ( element.attr("name") == "award_test[test_date]")
+      {
+        error.insertAfter(".error1");
+      }
+      else if ( element.attr("name") == "award_test[test_time]"  )
+      {
+        error.insertAfter(".error2");
+      }
+      else
+      {
+       error.insertAfter(element);
+      }
+    }
+  });
+  
+  Metronic.init(); 
+  Layout.init();
+  $('.date-picker').datepicker({
+      format: 'd MM yyyy'
+    });
+  $('.timepicker-no-seconds').timepicker({
+    minuteStep: 5,
+    autoclose: true,
+    defaultTime: '<%= @award_test.test_time.strftime("%I:%M %p") if @award_test.test_time? %>'
+  });
+  $('.timepicker').parent('.input-group').on('click', '.input-group-btn', function(e){
+      e.preventDefault();
+      $(this).parent('.input-group').find('.timepicker').timepicker('showWidget');
+  });
+});
+
+
+  
+  
+</script>
+<style>
+  .error {
+    color: red;
+  }
+  .bootstrap-timepicker-hour, .bootstrap-timepicker-minute, .bootstrap-timepicker-meridian{
+    border: none;
+  }
+</style>

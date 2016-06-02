@@ -1,0 +1,45 @@
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Name</th>
+      <th>NRIC</th>
+      <th class="hidden-xs">Gender</th>
+      <th class="hidden-xs">D.O.B</th>
+      <th>Contact</th>
+      <!-- <th></th> -->
+      <% count = 0 %>
+    </tr>
+  </thead>
+  <tbody>
+    <% #= @group_classes.inspect %>
+    <% @instructor_students.each do |instructor_student| %>
+      <% if instructor_student.group_classes.count == 0 %>
+        <% count = count + 1 %>
+        <tr>
+          <td><%= count %></td>
+          <td><%= link_to instructor_student.student_name, instructor_instructor_student_path(instructor_student) %></td>
+          <td ><%= instructor_student.ic_number.present? == true ? instructor_student.ic_number : "-" %></td>
+          <td class="hidden-xs"><%= instructor_student.gender.present? == true ? instructor_student.gender : "-" %></td>
+          <td class="hidden-xs"><%= instructor_student.date_of_birth.present? == true ? instructor_student.date_of_birth.strftime("%d %b %Y") : "-" %></td>
+          <% @primary_contacts = instructor_student.student_contacts.where(:primary_contact => true).first%> 
+          <% if !@primary_contacts.blank? %> 
+            <td><%= @primary_contacts.contact %></td>
+          <% else %>
+            <td>-</td>
+          <% end %>                                  
+           <%# @day_array = [{"Sun" => 0}, {"Mon" => 1}, {"Tue" =>2}, {"Wed" => 3}, {"Thu" => 4}, {"Fri" => 5}, {"Sat" => 6}] %>
+          <!-- <td><%# instructor_student.group_classes.each do |gp|%>
+              <span class="label lable-sm label-default" style="margin-right: 5px;">
+              <%#= @day_array[gp.day].first[0] + ' ' +gp.time.strftime("%I:%M %p").to_s%>
+            </span>
+              <%# end %>
+          </td>  -->
+          <!-- <td>
+            <span class="label"><%#= link_to "edit", edit_instructor_instructor_student_path(instructor_student) %></span>
+          </td> -->
+        </tr>
+      <% end %>  
+    <% end %>
+  </tbody>
+</table> 

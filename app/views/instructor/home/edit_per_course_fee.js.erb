@@ -1,0 +1,10 @@
+$modal = $('.removeFee'),
+$modalBody = $('.removeFee .modal-body'),
+$modalHeading = $('.removeFee .modal-heading');
+$modalBody.html('<%= escape_javascript(render "/instructor/home/get_add_per_course_fee_form", :student => @student, group_class: @group_class) %>');
+$modal.modal();
+$(".removeFee").find(".modal-sm").css("width", "400px");
+$('.date-picker').datepicker({
+  format: 'd MM yyyy',
+  autoclose: true
+});

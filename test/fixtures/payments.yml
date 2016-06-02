@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  invoice_id: 1
+  freshbooks_payment_id,: 1
+  amount: 1
+  expense: 1
+  note: 
+  method: 
+  mode: MyString
+
+two:
+  invoice_id: 1
+  freshbooks_payment_id,: 1
+  amount: 1
+  expense: 1
+  note: 
+  method: 
+  mode: MyString

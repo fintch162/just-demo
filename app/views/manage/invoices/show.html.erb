@@ -1,0 +1,60 @@
+<% title "Invoices #{@invoice.invoice_number}" %>
+<div class="row">
+  <div class="col-md-12">
+    <div class="portlet">
+      <center>
+        <% if !@freshbook_invoice.blank? %>
+          <%= link_to "View Invoice on Freshbooks", "#{@freshbook_invoice["invoice"]["links"]["view"]}", :target => "_blank" , :class => "btn blue"%>
+        <a data-toggle="modal" href="#responsive" class="btn default add_payment" >Add Payment </a>
+        <% end %>
+      </center>
+    </div> 
+    <div class="portlet box green">
+      <div class="portlet-title">
+        <div class="caption">
+          <i class="fa fa-cogs">></i>
+          Payments
+        </div>
+      </div>
+      <div class="portlet-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Amount.</th>
+                <th>Expense</th>
+                <th>Method</th>
+                <th>Mode</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @payments.each do |payment| %>
+                <tr>
+                  <td>
+                    <%= payment.payment_date.strftime("%d-%b") %>
+                  </td>
+                  <td>
+                    $<%= payment.amount %>
+                  </td>
+                  <td>
+                    <% if !payment.expense.nil? %>
+                      $<%= payment.expense %>
+                    <% end %>
+                  </td>
+                  <td>
+                    <%= payment.method_type %>
+                  </td>
+                  <td>
+                    <%= payment.mode %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%= render  "add_invoice_payment" %>

@@ -1,0 +1,381 @@
+<% title "Jobs Listings" %>
+
+<div class="row">
+  <div class="col-md-12">
+    <h3 class="page-title">
+      <%= page_title %>
+      <small>
+        <%= page_description %>
+      </small>
+    </h3>
+    <% if !@breadcrumbs.nil? %>
+      <ul class="page-breadcrumb breadcrumb">
+        <li class="btn-group">
+          <a class="btn btn-fit-height grey pull-right" href="<%= manage_swimming_lesson_registration_path %>"><i class="fa fa-plus"></i> New Job</a>
+        </li>
+        <% @breadcrumbs.each do |breadcrumb| %>
+          <li>
+            <%= link_to(breadcrumb[:name], breadcrumb[:url]) %>
+            <% if @breadcrumbs.last != breadcrumb %>
+              <i class="fa fa-angle-right"></i>
+            <% end %>
+          </li>
+        <% end %>
+        
+      </ul>
+    <% end %>
+  </div>
+</div>
+<!-- <div class="col-xs-4 col-xs-offset-4">  
+  <div class="input-group input-medium date date-picker">
+    <%# if @date.nil? %>
+      <input type="text" class="form-control" readonly style="width: 60%; height: 34px" id="payment_date" name="date_payment" value="<%#= Date.today.strftime("%d %b %Y") %>">
+    <%# else %>
+      <input type="text" class="form-control" readonly style="width: 60%; height: 34px" id="payment_date" name="date_payment" value="<%= @date %>">
+    <%# end %>
+      <button class="btn default" type="button" style="width: 20%; height: 34px;"><i class="fa fa-calendar"></i></button>
+  </div>
+</div> -->
+
+<%if @jobs > 0 || @jobs_invoice > 0 %>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="alert alert-warning">
+        <strong>Warning!</strong> <br>
+        <%if @jobs > 0 %>
+          Check the SMS for <%= @jobs %> instructors if have replied.<button class="btn btn-xs blue default" id="show_post"> Show All </button><br>
+        <%end%>
+        <%if @jobs_invoice > 0 %>
+          Remind <%=@jobs_invoice%> customers to pay up! <button class="btn btn-xs blue default" id="show_invoice"> Show All </button>
+        <%end%>
+      </div>
+    </div>
+  </div>
+<%end %>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="alert alert-block well fade in advanceSearchForm" style="display: none;">
+      <div class="row">
+        <div class="col-md-6">
+          <div><label class="control-label col-md-3">Date Range</label>
+            <div class="input-group input-large date-picker input-daterange col-md-9" style="padding-left: 15px;" data-date="10/11/2012" data-date-format="mm/dd/yyyy">
+              <input type="text" class="form-control start_date" name="from">
+              <span class="input-group-addon">
+              to </span>
+              <input type="text" class="form-control end_date" name="to">
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div><label class="control-label col-md-3">Status</label>
+            <div class="col-md-9">
+              <select class="form-control advance_status" style="width: 100%;">
+                <option></option>
+                <option>New</option>
+                <option>Post</option>
+                <option>Suggest</option>
+                <option>Invoice</option>
+                <option>Receipt</option>
+                <option>Delete</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>  
+      <div class="row" style="margin-top: 10px;">
+        <div class="col-md-6">
+          <div><label class="control-label col-md-3">Class Type</label>
+            <div class="col-md-9">
+              <select class="form-control advance_class_type" style="width: 100%;">
+                <option></option>
+                <% ClassType.all.each do |class_type| %>
+                  <option value="<%= class_type.id %>"><%= class_type.title %></option>
+                <% end %>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div><label class="control-label col-md-3">Age Group</label>
+            <div class="col-md-9">
+              <select class="form-control advance_age_group" style="width: 100%;">
+                <option></option>
+                <% AgeGroup.all.each do |age_group| %>
+                  <option value="<%= age_group.id %>"><%= age_group.title %></option>
+                <% end %>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 10px;">
+        <div class="col-md-6">
+          <div><label class="control-label col-md-3">Start date</label>
+            <div class="input-group input-large date-picker input-daterange col-md-9" style="padding-left: 15px;" data-date="10/11/2012" data-date-format="mm/dd/yyyy">
+              <input type="text" class="form-control as_start_date" name="from">
+              <span class="input-group-addon">
+              to </span>
+              <input type="text" class="form-control as_end_date" name="to">
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div><label class="control-label col-md-3">Location</label>
+            <div class="col-md-9">
+              <select class="form-control alocation" style="width: 100%;">
+                <option></option>
+                <% Venue.all.each do |venue| %>
+                  <option value="<%= venue.id %>"><%= venue.name %></option>
+                <% end %>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 10px;">
+        <div class="col-md-6" style="margin-left: 15px;">
+          <label>
+            <input type="checkbox" name="is_insurance" id='insurance' value="false" class="insurance" style="float: left;"><div style="float: left; margin-left: 5px;">Insurance</div>
+          </label>
+        </div>
+      </div>
+      <p class="text-center" style="margin-top: 10px;">
+        <a href="javascript:;" class="btn btn-default search_btn">Search</a>
+        <a href="javascript:;" class="btn btn-default resetAdvanceSearch">Reset </a>
+      </p>
+    </div>
+    <div class="">
+      <div class="portlet-body">
+        <table class="table table-striped table-bordered table-hover" id="sample_2" data-source="<%= manage_jobs_path(format: :json) %>">
+          
+          <thead>
+            <tr class="heading">
+              <th>
+                Date
+              </th>
+              <th>
+                Job Ref
+              </th>
+              <th>
+                Status
+              </th>
+              <th style="width: 65px;">
+                Class Type
+              </th>
+              <th style="width: 65px;">
+                Age Group
+              </th>
+              <th>
+                Start Date
+              </th>
+              <th style="width: 140px;">
+                Location
+              </th>
+              <th>
+                Name
+              </th>
+              <th>
+                Lead Contact
+              </th>
+          </thead>
+          <tfoot>
+            <tr>
+              <th>Date</th>
+              <th>Job Ref</th>
+              <th>Status</th>
+              <th>Class Type</th>
+              <th>Age Group</th>
+              <th>Start Date</th>
+              <th>Location</th>
+              <th>Name</th>
+              <th>Lead Contact</th>
+            </tr>
+          </tfoot>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>  
+<%#= render  "add_payment" %> 
+<%#= render "delete_invoice"%> 
+<!-- <script src="/assets/manage/data_table/input.js"></script> -->
+<script src="http://cdn.datatables.net/plug-ins/a5734b29083/pagination/input.js"></script>
+<script>
+var table;
+var asInitVals = new Array();
+  jQuery(document).ready(function() { 
+   // TableManaged.init();
+
+    table = $('#sample_2').dataTable({
+        sPaginationType: "listbox",
+        sPaginationType: "input",
+        aaSorting: [[ 0, "desc" ]],
+        aLengthMenu: [
+                      [20, 50, 100, -1],
+                      [20, 50, 100, "All"] // change per page values here
+                     ],
+        iDisplayLength: 20,
+        bProcessing: true,
+        bServerSide: true,
+        sAjaxSource: $('#sample_2').data('source'),
+        "fnServerParams": function ( aoData ) {
+                aoData.push( { "name": "status", "value": $('select.myselect').val() } );
+                aoData.push( { "name": "astatus", "value": $('.advance_status').val() } );
+                aoData.push( { "name": "aclass_type", "value": $('.advance_class_type').val() } );
+                aoData.push( { "name": "aage_group", "value": $('.advance_age_group').val() } );
+                aoData.push( { "name": "astart_date", "value": $('.start_date').val() } );
+                aoData.push( { "name": "aend_date", "value": $('.end_date').val() } );
+                aoData.push( { "name": "as_start_date", "value": $('.as_start_date').val() } );
+                aoData.push( { "name": "as_end_date", "value": $('.as_end_date').val() } );
+                aoData.push( { "name": "alocation", "value": $('.alocation').val() } );
+                aoData.push( { "name": "is_insurance", "value": $('.insurance').val() } );
+            },
+        fnRowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+            if(aData[2]== 'New'){
+              $(nRow).attr('class', '');
+            }
+            else if(aData[2] == 'Post'){
+              $(nRow).attr('class', 'info');
+            }
+            else if(aData[2] == 'Suggest'){
+              $(nRow).attr('class', 'danger');
+            }
+            else if(aData[2] == 'Invoice'){
+              $(nRow).attr('class', 'warning');
+            }
+            else if(aData[2] == 'Attended'){
+              $(nRow).attr('class', 'success');
+            }
+            else if(aData[2] == 'Receipt'){
+              $(nRow).attr('class', 'success');
+            } 
+            return nRow;
+        }
+      });
+
+    // $("#sample_2 tfoot th").each( function ( i ) {
+    //   var select = 
+    //     $('<select><option value=""></option></select>').appendTo( $(this).empty() ).on( 'change', function () {
+    //       var val = $(this).val();
+    //       table.column( i ).search( val ? '^'+$(this).val()+'$' : val, true, false ).draw();
+    //     });
+    //     console.log(table)
+    //     // table.column( i ).data().unique().sort().each( function ( d, j ) {
+    //     //     select.append( '<option value="'+d+'">'+d+'</option>' )
+    //     // } );
+    // } );
+
+
+           
+      $('#sample_2_wrapper .dataTables_filter input').addClass("form-control input-xmedium input-inline"); // modify table search input
+      $('#sample_2_wrapper .dataTables_length select').addClass("form-control input-xmedium input-inline"); // modify table per page dropdown
+
+      $("#sample_2_wrapper").find(".table-scrollable").removeClass("table-scrollable");
+      $("#sample_2_wrapper").find(".row").first().after('<div class="row"><div class="col-sm-6">' + '<a href="<%= manage_instructor_take_job_path %>">Instructor Take Job</a> ' +
+                          '</div><div="col-sm-6 text-right"><span style="float: right; margin-right: 15px;"><a class="btn default" href="javascript:;" id="advance_search">Search</a></span></div></div>');
+      setTimeout(function(){
+        $("#sample_2_filter")
+          .append(
+              '<label class="margin-right-10"><select aria-controls="sample_2" class="form-control input-xmedium input-inline myselect" id="job_droup_down">'+
+                '<option></option>'+
+                '<option>New</option>'+'<option>Attended</option>'+
+                '<option>Receipt</option>'+
+                '<option value="Invoice">Invoice</option>'+
+                '<option>Post</option>'+
+              '</select></label>'
+              );
+
+        $('select.myselect').change( function() {
+          table.fnFilter( $(this).val() );
+          $('#sample_2_filter').find('input').val('');
+        });
+        $('.first').html('<<').addClass('btn btn-sm btn-default');
+        $('.last').html('>>').addClass('btn btn-sm btn-default');
+        $('.previous').html("<").addClass('btn btn-sm btn-default').css({"margin-right" : "5px", "margin-left" : "5px"});
+        $('.next').html(">").addClass('btn btn-sm btn-default').css({"margin-right" : "5px", "margin-left" : "5px"});
+        $('.paginate_input').css("width", "25%");
+        $('.paging_input').css("margin-right", "-77px");
+        // $(".dataTables_paginate").append('<input type="text" class="gotoPage pull-left margin-top-10 margin-right-10" />')
+        // $(".gotoPage").keyup(function(){
+        //   table.page( 'next' ).draw( false );
+        // });
+      }, 300);
+    $('.search_btn').click(function(){
+      table.fnFilter( );
+    });
+
+
+    $('.date-picker').datepicker({
+      format: 'd MM yyyy',
+      autoclose: true
+    });
+    // .on('changeDate', function(data){
+    //   var selectedDate = moment(data.date).format('YYYY-MM-DD');
+    //   localStorage.setItem("selectedDate", selectedDate);
+    //   table.fnFilter( selectedDate );
+    // });
+    $('#insurance').change(function(){
+      if($(this).is(":checked")) {
+      console.log('check');
+        console.log($('#insurance').val());
+        $('#insurance').val(true);
+        console.log($('#insurance').val());
+      }
+      else{
+        console.log('flase-c');
+        console.log($('#insurance').val());
+        $(this).val(false)
+        console.log($('#insurance').val());
+      }
+    });
+    $(document).on("click", "#advance_search", function(){
+      var a_search = $(this).text();
+      if (a_search == "Search"){
+        $(this).text("Cancel");
+        $('.advanceSearchForm').show();
+      }
+      else{
+        $(this).text("Search");
+        $('.advanceSearchForm').hide();
+        $('.date-picker').datepicker('setDate', null);
+        $('.advanceSearchForm').find('input, select').val('');
+      }
+    });
+    $(document).on("click", '.resetAdvanceSearch', function(){
+      $('.advanceSearchForm').find('input, select').val('');
+      $('#insurance').prop('checked', false);
+      $('.date-picker').datepicker('setDate', null);
+    });
+  });
+  <% if flash[:doen_not_exist] %>
+    $(".page-title").before('<div class="alert alert-danger flash-alert"><strong>Error!</strong> <%= flash[:doen_not_exist] %></div>').delay(3000).queue(function() {
+      $(".flash-alert").fadeOut('slow');
+    });
+  <% end %>
+
+
+  $('#show_invoice').click(function(event) {
+    $('#job_droup_down').val('Invoice');
+    $('select.myselect').trigger('change');
+    $('html,body').animate({
+      scrollTop: $(".dataTable .heading").offset().top   
+    },1000);
+  });
+  $('#show_post').click(function(event) {
+    $('#job_droup_down').val('Post');
+    $('select.myselect').trigger('change');
+    $('html,body').animate({
+      scrollTop: $(".dataTable .heading").offset().top   
+    },1000);
+  });
+
+
+</script>
+
+<style type="text/css">
+
+</style>

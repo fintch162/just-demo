@@ -1,0 +1,221 @@
+<% title "Invoice Index" %>
+
+<div class="row">
+  <div class="col-md-12">
+    <h3 class="page-title">
+      Invoices
+      <small>
+        <%= page_description %>
+      </small>
+    </h3>
+    <% if !@breadcrumbs.nil? %>
+      <ul class="page-breadcrumb breadcrumb">
+        <% @breadcrumbs.each do |breadcrumb| %>
+          <li>
+            <%= link_to(breadcrumb[:name], breadcrumb[:url]) %>
+            <% if @breadcrumbs.last != breadcrumb %>
+              <i class="fa fa-angle-right"></i>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+    <div class="alert alert-warning">
+      <strong>Warning!</strong>There are <%= Invoice.where("job_id IN (?)", Job.where("job_status != ?", "Receipt").pluck("id")).where("created_at < ? ", Date.today).count %> invoices sent before today.
+      
+    </div>
+  </div>
+</div>
+
+
+<div class="row">
+  <div class="col-md-12">
+    <% if alert %>
+    <div class="Metronic-alerts alert alert-danger fade in"><button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button><%= alert %></div>
+    <% end %>
+    <div class="alert alert-block well fade in advanceSearchForm" style="display: none;">
+      <div class="row">
+        <div class="col-md-6">
+          <div><label class="control-label col-md-3">Date</label>
+            <div class="input-group input-large date-picker input-daterange col-md-9" style="padding-left: 15px;" data-date="10/11/2012" data-date-format="mm/dd/yyyy">
+              <input type="text" class="form-control start_date" name="from">
+              <span class="input-group-addon">
+              to </span>
+              <input type="text" class="form-control end_date" name="to">
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div><label class="control-label col-md-3">Start date</label>
+            <div class="input-group input-large date-picker input-daterange col-md-9" style="padding-left: 15px;" data-date="10/11/2012" data-date-format="mm/dd/yyyy">
+              <input type="text" class="form-control as_start_date" name="from">
+              <span class="input-group-addon">
+              to </span>
+              <input type="text" class="form-control as_end_date" name="to">
+            </div>
+          </div>
+        </div>
+      </div>  
+      <div class="row" style="margin-top: 10px;">
+        <div class="col-md-6">
+          <div><label class="control-label col-md-3">Status</label>
+            <div class="col-md-9">
+              <select class="form-control advance_status" style="width: 100%;">
+                <option></option>
+                <option>New</option>
+                <option>Post</option>
+                <option>Suggest</option>
+                <option>Invoice</option>
+                <option>Receipt</option>
+                <option>Delete</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div><label class="control-label col-md-3">Age Group</label>
+            <div class="col-md-9">
+              <select class="form-control advance_age_group" style="width: 100%;">
+                <option></option>
+                <% AgeGroup.all.each do |age_group| %>
+                  <option value="<%= age_group.id %>"><%= age_group.title %></option>
+                <% end %>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="text-center" style="margin-top: 10px;">
+        <a href="javascript:;" class="btn btn-default search_btn">Search</a>
+        <a href="javascript:;" class="btn btn-default resetAdvanceSearch">Reset </a>
+      </p>
+    </div>
+    <div class="portlet box green">
+      <div class="portlet-title">
+        <div class="caption">
+          <i class="fa fa-user"></i>
+          Invoices  
+        </div>
+        <a href="javascript:;"id="search_button" class="btn btn-default pull-right">Search</a>
+      </div>
+
+      <div class="portlet-body">
+        <table class="table table-striped table-bordered table-hover" id="sample_2" data-source="<%= manage_invoices_path(format: :json) %>">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Invoice No.</th>
+              <th>Job Ref.</th>
+              <th>Job Status</th>
+              <th>Expire</th>
+              <th>Start Date</th>
+              <th>Group Type</th>
+              <th>Age Group</th>
+              <th>Total</th>
+              <th>Referral</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+          
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  
+  // jQuery(document).ready(function() { 
+  //   TableManaged.init();
+  //   $("#sample_2_wrapper").find(".table-scrollable").removeClass("table-scrollable");
+  // });
+  jQuery(document).ready(function() { 
+    table = $('#sample_2').dataTable({
+      "fnDrawCallback": function(oSettings) {
+        if (oSettings.aiDisplay.length == 0) {
+            return;
+        }
+        // SUM COLUMNS WITHIN GROUPS
+        var total = 0;
+        var ref_total = 0;
+        $("#sample_2 tbody tr").each(function(index) {
+
+          if(this.cells[4].innerHTML != 'No Timer Set')
+            {
+              var invoice = this.cells[4].innerHTML 
+              l = invoice *1
+              if (l > 0 && l > 60){
+                var minute = invoice/60
+                var hours = minute/60
+                var hh = Math.floor(hours);
+                var mm = Math.floor(minute - hh*60)
+                this.cells[4].innerHTML = hh+'h '+mm+ 'm';
+              }else{
+                this.cells[4].innerHTML = 'Expired'
+              }
+            }
+          if (this.cells[7].innerHTML){ 
+            total = parseFloat(total) + parseFloat(this.cells[7].innerHTML);
+          }
+          if (this.cells[8].innerHTML){
+            ref_total = parseFloat(ref_total) + parseFloat(this.cells[8].innerHTML);
+          }
+          $("#ref_total").html(ref_total);
+          $("#total").html(total);
+            
+        });
+          //-------------------------------------------------
+      },
+      sPaginationType: "bootstrap",
+      aaSorting: [[ 0, "desc" ]],
+      "aLengthMenu": [
+                    [20, 50, 100, -1],
+                    [20, 50, 100, "All"]
+                   ],
+      iDisplayLength: 20,
+      bProcessing: true,
+      bServerSide: true,
+      "fnServerParams": function ( aoData ) {
+        aoData.push( { "name": "astatus", "value": $('.advance_status').val() } );
+        aoData.push( { "name": "aage_group", "value": $('.advance_age_group').val() } );
+        aoData.push( { "name": "astart_date", "value": $('.start_date').val() } );
+        aoData.push( { "name": "aend_date", "value": $('.end_date').val() } );
+        aoData.push( { "name": "as_start_date", "value": $('.as_start_date').val() } );
+        aoData.push( { "name": "as_end_date", "value": $('.as_end_date').val() } );
+      },
+      sAjaxSource: $('#sample_2').data('source')
+    });
+
+      $('#sample_2_wrapper .dataTables_filter input').addClass("form-control input-xmedium input-inline"); // modify table search input
+      $('#sample_2_wrapper .dataTables_length select').addClass("form-control input-xmedium input-inline"); // modify table per page dropdown
+      $("#sample_2_wrapper").find(".table-scrollable").removeClass("table-scrollable");
+      $('.search_btn').click(function(){
+        table.fnFilter( );
+      });
+      $('#sample_2_wrapper > .row:first-child').after('<div class="row"><div class="pull-right" style="margin:0 20px 0 10px;"><h4>Total: <span id="total">00</span></h4></div><div class="pull-right"><h4>Referral : <span id="ref_total">00</span></h4></div></div>');
+      $('.date-picker').datepicker({
+        format: 'd MM yyyy',
+        autoclose: true
+      });
+
+      $(document).on("click", '.resetAdvanceSearch', function(){
+        $('.advanceSearchForm').find('input, select').val('');
+        $('.date-picker').datepicker('setDate', null);
+      });
+      $(document).on("click", '#search_button', function(){
+        if ($(this).text() == "Search") {
+          $('.advanceSearchForm').show();
+          $(this).text("Cancel");
+        }
+        else {
+          $('.advanceSearchForm').find('input, select').val('');
+          $('.date-picker').datepicker('setDate', null);
+          $('.advanceSearchForm').hide();
+          $(this).text("Search");
+        }
+      });
+  });
+  
+</script>
+
+

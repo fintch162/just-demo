@@ -1,0 +1,6 @@
+$("#instructor_conversation").append('<%= j render "instructor_messages" %>');
+<% if @instructor_messages.next_page %>
+    $('#load_more_message').attr('href',"/manage/instructor_load_more_message?job_id=<%= @job.id %>&amp;page=<%= @instructor_messages.next_page %>");
+<% else %>
+    $('#load_more_message').remove();
+<% end %>

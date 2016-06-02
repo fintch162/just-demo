@@ -1,0 +1,19 @@
+<% @instructor_student.gallery.videos.each do |p| %>
+ <div class="col-md-4 col-sm-6 mix category_1 mix_all" style="display: block; opacity: 1;">
+   <div class="mix-inner">
+     <a href="<%#=  instructor_instructor_student_gallery_photo_path(@instructor_student.id,@instructor_student.gallery.id,p.id) %>" >
+       <p>
+        
+         <br />
+       <!-- <video controls="controls" preload="preload" height="240" width="380">
+        <source src="<%#= p.video_file.url %>" type="video/mp4; codecs="avc1.42E01E, mp4a.40.2"">
+      </video> -->
+         <%= videojs_rails sources: { mp4: p.video_file.url(:mp4), webm: p.video_file.url(:webm)}, width: '400', height: '200' do %>
+          Please enable <b>JavaScript</b> to see this content.
+         <% end %>
+         </p>
+     </a>|
+     <%= link_to 'Remove', instructor_instructor_student_gallery_video_path(@instructor_student.id,@instructor_student.gallery.id,p.id) , method: :delete, data: { confirm: 'Are you sure?' } %>
+   </div>
+ </div>
+<% end %>

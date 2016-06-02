@@ -1,0 +1,33 @@
+<% student = @instructor_student_award.instructor_student %>
+<% status = ["ready_for", "Ready"]%>
+<% pass_status = ["pass", "Pass", 'Pending', 'pending', 'Confirmed', 'confirmed' ]%>
+<% @ready_for_award = student.instructor_student_awards.where("award_progress IN (?) AND is_registered = (?) AND status NOT IN (?)", status, false,pass_status) %>
+<% @ready_for_award += student.instructor_student_awards.where("award_progress IN (?) AND is_registered = (?) AND status IS ?", status, false,nil) %>
+<% if @ready_for_award.count > 0 %>
+  <% @ready_for_award.each do |ready_award| %>
+    <span class="award_ready" id="award_<%= ready_award.id %>">
+      <span class="remove_award_ready" id="<%= ready_award.id %>" style="display: none;"><i class="fa fa-times"></i>
+      </span>
+      <% if !ready_award.award.short_name.nil? && !ready_award.award.short_name != "" %>
+        <%= @ready_for_award.last != ready_award ? ready_award.award.short_name + "," : ready_award.award.short_name %>
+      <% else %>
+        <%= @ready_for_award.last != ready_award ? ready_award.award.name + "," : ready_award.award.name %>
+      <% end %>
+    </span>
+  <% end %>
+<% else %>
+  -
+<% end %>
+
+<div id="add_award_form_<%= student.id %>" style="display: none;" class="add_award_form">
+<%= form_for InstructorStudentAward.new, url: instructor_update_student_award_status_path, remote: true do |f| %>
+    <% status = ["ready_for", "Ready", 'achieved', 'Achieved']%>
+    <% @all_award_ready = Award.all.order("position") %>
+    <% awards = student.instructor_student_awards.where('award_progress NOT IN (?) AND status NOT IN (?)',status,pass_status).pluck("award_id") %>
+    <% awards = student.instructor_student_awards.where('award_progress NOT IN (?) AND status IS ?',status,nil).pluck("award_id") %>
+    <% awards += student.instructor_student_awards.where(award_progress: nil).pluck("award_id") %>
+    <% @all_award_ready  = @all_award_ready.where("id IN (?)",awards) %>
+    <%= f.select :id, @all_award_ready.collect{|sts_awrd| [!sts_awrd.short_name.nil? ? sts_awrd.short_name : sts_awrd.name, sts_awrd.id]}, prompt: 'Select' %>
+    <%#= f.submit '+' %>
+<% end %>
+</div>

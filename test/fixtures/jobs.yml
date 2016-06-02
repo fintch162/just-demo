@@ -1,0 +1,75 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  job_ref: 1
+  post_date: 2014-06-09 16:57:17
+  instructor_id: 1
+  preferred_time: MyString
+  referral: 1
+  par_pax: 1
+  fee_total: 1
+  age_group: MyString
+  class_level: MyString
+  start_date: 2014-06-09
+  class_type: MyString
+  venue: MyString
+  lead_email: MyString
+  lead_contact: MyString
+  lead_name: MyString
+  day_of_week: 1
+  customer_contact: MyString
+  customer_name: MyString
+  first_attendance: MyString
+  goggles_status: MyString
+  lock_date: false
+  message_to_instructor: MyText
+  job_status: MyString
+  message_to_customer: MyText
+  coordinator_notes: MyText
+  lead_info: MyText
+  lead_address: MyText
+  lesson_count: 1
+  fee_structure: MyString
+  class_time: 2014-06-09 16:57:17
+  completed_by: 2014-06-09
+  venue_id: 1
+  show_names: false
+  free_goggles: false
+  lady_instructor: false
+
+two:
+  job_ref: 1
+  post_date: 2014-06-09 16:57:17
+  instructor_id: 1
+  preferred_time: MyString
+  referral: 1
+  par_pax: 1
+  fee_total: 1
+  age_group: MyString
+  class_level: MyString
+  start_date: 2014-06-09
+  class_type: MyString
+  venue: MyString
+  lead_email: MyString
+  lead_contact: MyString
+  lead_name: MyString
+  day_of_week: 1
+  customer_contact: MyString
+  customer_name: MyString
+  first_attendance: MyString
+  goggles_status: MyString
+  lock_date: false
+  message_to_instructor: MyText
+  job_status: MyString
+  message_to_customer: MyText
+  coordinator_notes: MyText
+  lead_info: MyText
+  lead_address: MyText
+  lesson_count: 1
+  fee_structure: MyString
+  class_time: 2014-06-09 16:57:17
+  completed_by: 2014-06-09
+  venue_id: 1
+  show_names: false
+  free_goggles: false
+  lady_instructor: false

@@ -1,0 +1,30 @@
+<div class="footer site-footer" style= "<%= params[:action] == "unpaid_fee_student" || params[:action] == "unregistered_students" ? 'display: none' : '' %>">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 col-sm-6 padding-top-10">
+        Powered by Singapore Swimming Academy.
+      </div>
+    </div>
+  </div>
+</div>
+<style type="text/css">
+* {
+		margin: 0;
+	}
+	html, body {
+		height: 90%;
+	}
+	.main {
+	  min-height: 100%;
+	  /* equal to footer height */
+		margin-bottom: -49px; 
+	}
+	.main:after {
+	  content: "";
+	  display: block;
+	}
+	.site-footer, .main:after {
+	  /* .push must be the same height as footer */
+		height: 49px; 
+	}
+</style>

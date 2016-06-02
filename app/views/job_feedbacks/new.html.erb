@@ -1,0 +1,61 @@
+<% content_for :title, "Feedback" %>
+<div class="alert alert-info col-xs-12" style="position: relative; padding-right: 15px; padding-left: 15px; margin-right: auto; margin-left: auto;">
+  <button class="close closeAlert" type="button"></button>
+    In order to get your honest feedback, this will be sent as <strong>anonymous</strong>. Your instructor will have no access to know who sent the feedback.
+</div>
+<div class="row col-xs-12">
+  <div class="col-xs-12">
+    <h1>
+      <img src="/assets/feedback_icon.png" style="margin-top: -5px;"> Feedback
+    </h1>
+  </div>
+
+  <div class="col-xs-12">
+    <table class="table table-condensed">
+      <tbody>
+        <tr>
+          <td>Venue</td>
+          <td>
+            <%= Venue.find(@job.venue_id).name if @job.venue_id %><br></td>
+        </tr>
+        <tr>
+          <td>Class</td>
+          <td><%= Date::DAYNAMES[@job.day_of_week.to_i] if @job.day_of_week %> <%= @job.class_time.strftime('%-I.%M%P') if @job.class_time %><br></td>
+        </tr>
+        <tr>
+          <td>Instructor</td>
+          <td><%= @job.instructor.name if @job.instructor %><br></td>
+        </tr>
+        <tr>
+          <td>Student(s)</td>
+          <td>
+            <% @job.students.each do |student| %>
+              <%= student.name %><br>
+            <% end %>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="col-xs-12">
+    <%= form_for @job_feedback do |f| %>
+      <div class="form-body">
+        <div class="form-group">
+          <p>How was your overall experience?</p>
+          <%= f.text_field :rates, class: 'rating', data:{size: 'sm', step: 1} %>
+        </div>
+        <div class="form-group">
+          <%= f.text_area :reasons, class: 'form-control', rows: 3, placeholder: 'Enter feedback here..' %>
+          <%= f.hidden_field :job_id, value: @job.id %>
+        </div>
+      </div>
+        <button type="submit" class="btn btn-block green" >Submit</button><br>
+    <% end %>
+  </div>
+</div>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('.clear-rating').remove();
+  });
+</script>

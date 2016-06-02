@@ -1,0 +1,68 @@
+#  Local Settings
+
+  # development:
+  #   adapter: postgresql
+  #   database: app1_development
+  #   host: localhost
+  #   username: savan
+  #   password: savan0409
+
+  # test:
+  #   adapter: postgresql
+  #   database: app1_test
+  #   host: localhost
+  #   username: savan
+  #   password: savan0409
+
+  # production:
+  #   adapter: postgresql
+  #   database: app1_development
+  #   host: localhost
+  #   username: savan
+  #   password: savan0409 
+
+#  matchmakr Settings
+
+  # development:
+  #   adapter: postgresql
+  #   database: app1_development
+  #   host: localhost
+  #   username: matchmakr
+  #   password: matchmakr
+
+  # test:
+  #   adapter: postgresql
+  #   database: app1_test
+  #   host: localhost
+  #   username: matchmakr
+  #   password: matchmakr
+
+  # production:
+  #   adapter: postgresql
+  #   database: matchmakr
+  #   host: localhost
+  #   username: matchmakr
+  #   password: matchmakr
+
+#  SSA Settings
+
+  development:
+    adapter: postgresql
+    database: ssa
+    host: localhost
+    username: ssa
+    password: matchmakr
+
+  test:
+    adapter: postgresql
+    database: app1_test
+    host: localhost
+    username: savan
+    password: savan0409
+
+  production:
+    adapter: postgresql
+    database: ssa
+    host: localhost
+    username: ssa
+    password: matchmakr

@@ -1,0 +1,87 @@
+<% title "Opportunity" %>
+<div class="main">
+  <div class="container">
+    <ul class="breadcrumb">
+      <li><a href="/instructor">Home</a></li>
+      <li class="active">Opportunity</li>
+    </ul>
+    <div class="row margin-bottom-40">
+      <%#= render :partial => "ac_side_bar" %>
+      <div class="col-md-9 col-sm-9">
+        <h1>Private Lessons opportunity</h1>
+        <div class="content-page">
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="tabbable-custom" >
+                <ul class="nav nav-pills">
+                  <li class="active">
+                    <a href="#tab_5_1" id="Active" data-toggle="tab">
+                    New (<%=  @total_new_jobs %>) </a>
+                  </li>
+                  <li>
+                    <a href="#tab_5_2" id="Inactive" data-toggle="tab">
+                    Pending (<%= @total_pending_jobs%>) </a>
+                  </li>
+                </ul>
+                <div class="tab-content" style="border:0px;">
+                  <div class="tab-pane active" id="tab_5_1">
+                    <div class="row">
+                      <div class="col-sm-8" id="opportunity">
+                        <%= render :partial => "opportunities", :locals => { :jobs => @new_jobs } %>
+                      </div>
+                      <div class="col-sm-8" style="float:left;">
+                        <%= link_to 'Loading more jobs....', instructor_opportunity_path(:page => @new_jobs.next_page), :class => 'load-more-jobs', :remote => true if @new_jobs.next_page %>  
+                      </div>  
+                    </div>  
+                  </div>
+
+                  <div class="tab-pane" id="tab_5_2">
+                    <div class="row">
+                      <div class="col-sm-8" id="opportunity1">
+                        <%= render :partial => "pending_opportunities", :locals => { :pending_jobs => @jobs_pending } %>
+                      </div>
+                      <div class="col-sm-8" style="float:left;">
+                        <%= link_to 'Loading more jobs....', instructor_opportunity_path(:page => @jobs_pending.next_page), :class => 'load-more-pending-jobs ', :remote => true if @jobs_pending.next_page %>   
+                      </div>  
+                    </div>  
+                  </div>
+                </div>
+              </div>
+            </div>  
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+ <script type="text/javascript">
+  $(function() {
+    var loading_posts,pending_jobs;
+    loading_posts = false;
+    pending_jobs = false;
+    return $('a.load-more-jobs').on('inview', function(e, visible) {
+      if (loading_posts || !visible) {
+        return;
+      }
+        loading_posts = true;
+        return $.getScript($(this).attr('href'), function() {
+        return loading_posts = false;
+      });
+    });
+   
+  });
+  $(function() {
+    var loading_posts,pending_jobs;
+    loading_posts = false;
+    pending_jobs = false;
+   return $('a.load-more-pending-jobs').on('inview', function(e, visible) {
+      if (pending_jobs || !visible) {
+        return;
+      }
+        pending_jobs = true;
+        return $.getScript($(this).attr('href'), function() {
+        return pending_jobs = false;
+      });
+    });
+  });
+</script>

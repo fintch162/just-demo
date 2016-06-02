@@ -1,0 +1,183 @@
+<!-- breadcrumb -->
+<div class="row">
+  <div class="col-md-12">
+    <!-- BEGIN PAGE TITLE & BREADCRUMB -->
+    <h3 class="page-title">Payments</h3>
+    <ul class="page-breadcrumb breadcrumb">
+      <li>
+        <i class="fa fa-home"></i>
+        <a href="<%=accountant_root_path%>">Home</a>
+        <i class="fa fa-angle-right"></i>
+      </li>
+      <li>
+        <a href="#">
+          Payments
+        </a>
+      </li>
+    </ul><!-- END PAGE TITLE & BREADCRUMB-->
+  </div>
+</div>
+
+<!-- advance search -->
+<div class="row">
+  <div class="advanceSearchForm">
+    <!-- left part -->
+    <div class="col-md-6">
+      <!-- SatrtDate EndDate -->
+      <div class="row btn_Search">
+        <label class="control-label col-md-2">Date</label>
+        <div class="input-group input-large date-picker input-daterange col-md-9" style="padding-left: 15px;" data-date-format="mm/dd/yyyy">
+          <input type="text" class="form-control start_date" name="from">
+          <span class="input-group-addon">to </span>
+          <input type="text" class="form-control end_date" name="to">
+        </div>
+      </div>
+
+      <!-- Invoice id -->
+      <div class="row btn_Search">
+        <label class="control-label col-md-2">Job Id</label>
+        <div class="col-md-9">
+          <input type="text" class="form-control advance_job_id" />
+        </div>
+      </div>
+
+    </div>
+
+    <!-- right part -->
+    <div class="col-md-6">
+      <!-- Status -->
+      <div class="row btn_Search">
+        <label class="control-label col-md-2">Status</label>
+        <div class="col-md-9">
+          <select class="form-control advance_status">
+            <option></option>
+            <option>New</option>
+            <option>Post</option>
+            <option>Suggest</option>
+            <option>Invoice</option>
+            <option>Receipt</option>
+            <option>Invoice</option>
+          </select>
+        </div>
+      </div>   
+
+    </div>
+  </div>
+</div>
+
+<!-- button --> 
+<div class="row btn_Search">
+  <div class="col-md-offset-5">
+    <a href="javascript:;" class="btn btn-default search_btn">Search</a>
+    <a href="javascript:;" class="btn btn-default resetAdvanceSearch">Reset </a>
+  </div>
+</div>
+
+
+<!-- datatable -->
+<div>
+  <table id="sample_2" class="table table-striped table-bordered table-hover table-full-width" data-source="<%#=accountant_payments_path(format: :json) %>">
+    <thead>
+      <tr class="heading">
+        <th class="hidden-xs">No</th>
+        <th class="hidden-xs">Date</th>
+        <th class="hidden-xs">Job ID</th>
+        <th class="hidden-xs">Job Status</th>
+        <th class="hidden-xs">Referral</th>
+        <th class="hidden-xs">Balance</th>
+        <th class="hidden-xs">Total</th>
+        <th class="hidden-xs">Payment Method</th>
+        <th class="hidden-xs">Goggles Status</th>
+        <th class="hidden-xs">Notes</th>
+        <th class="hidden-xs">Invoice</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</div>
+
+<script type="text/javascript">
+var table;
+jQuery(document).ready(function() {
+  table=$('#sample_2').dataTable({
+    sPaginationType: "bootstrap",
+    aaSorting: [[ 0, "desc" ]],
+    aLengthMenu: [
+      [20, 50, 100, -1],
+      [20, 50, 100, "All"] // change per page values here
+      ],
+    iDisplayLength: 20,
+    bProcessing: true,
+    bServerSide: true,
+    sAjaxSource: $('#sample_2').data('source'),
+    "fnServerParams" : function (aoData){
+      aoData.push({"name" : "start_date", "value" : $('.start_date').val()});
+      aoData.push({"name" : "end_date", "value" : $('.end_date').val()});
+      aoData.push({"name" : "job_id", "value" : $('.advance_job_id').val()});
+      aoData.push({"name" : "status", "value" : $('.advance_status').val()});
+    },
+    "fnDrawCallback" : function(oSettings){
+      if(oSettings.aiDisplay.length==0){
+        $("#referral").html("0");
+        $('#balance').html("0");
+        $("#amount").html("0");
+        return;
+      }
+      // sum column
+      var referral=0;
+      var balance = 0
+      var amount = 0
+      $("#sample_2 tbody tr").each(function(index) {
+        if (this.cells[4].innerHTML && this.cells[4].innerHTML != "-"){ 
+          referral = parseFloat(referral) + parseFloat(this.cells[4].innerHTML);
+        }
+        if (this.cells[5].innerHTML && this.cells[5].innerHTML != "-"){ 
+          balance = parseFloat(balance) + parseFloat(this.cells[5].innerHTML);
+        }
+        if (this.cells[6].innerHTML && this.cells[6].innerHTML != "-"){ 
+          amount = parseFloat(amount) + parseFloat(this.cells[6].innerHTML);
+        }
+        $("#referral").html(referral);
+        $('#balance').html(balance);
+        $("#amount").html(amount);
+      });
+    }
+  });
+
+  $('#sample_2_wrapper .dataTables_filter input').addClass("form-control input-xmedium input-inline");
+  $('#sample_2_wrapper .dataTables_length select').addClass("form-control input-xmedium input-inline");
+  $("#sample_2_wrapper").find(".table-scrollable").removeClass("table-scrollable");
+
+  $('#sample_2_filter').append('<label><span>Referral : <span id="referral"></span></span><span id="m-total">Balance : <span id="balance"> </span></span><span id="m-total">Total : <span id="amount"></span></span></label>');
+
+  // datepicker for to and form date
+  $('.date-picker').datepicker({
+    format: 'd MM yyyy',
+    autoclose: true
+  });
+
+  // search button
+  $('.search_btn').click(function(){
+      table.fnFilter( );
+  });
+
+  $(document).on("click", '.resetAdvanceSearch', function(){
+    $('.advanceSearchForm').find('input, select').val('');
+    $('.date-picker').datepicker('setDate', null);
+  });
+
+});
+</script>
+
+<style type="text/css">
+ .btn_Search{
+
+    margin: 10px;
+  }
+  #m-total{
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+</style>
+

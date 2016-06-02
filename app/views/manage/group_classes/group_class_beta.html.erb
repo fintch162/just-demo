@@ -1,0 +1,204 @@
+<a href="<%= manage_levels_path %>" class="toggle-custome" style="top: 20px; right: 20px; padding: 20px; cursor: pointer; position: absolute; background: #d5dade url(/assets/icon-color.png) center no-repeat; z-index: 999;"></a>
+<div class="row">
+  <div class="col-md-12">
+    <h3 class="page-title">
+      Group Class Beta
+    </h3>
+    <% if !@breadcrumbs.nil? %>
+      <ul class="page-breadcrumb breadcrumb">
+        <% @breadcrumbs.each do |breadcrumb| %>
+          <li>
+            <%= link_to(breadcrumb[:name], breadcrumb[:url]) %>
+            <% if @breadcrumbs.last != breadcrumb %>
+              <i class="fa fa-angle-right"></i>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+</div>
+
+<div class="">
+  <div class=" box blue-madison">
+    <div >
+      <div class="row">
+        <div class="col-md-12">
+          <%= form_tag manage_group_class_beta_search_path, :id => "search_gp_form", :remote => true do %>
+            <div class="alert alert-info">
+              <div class="row">
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label>Venue</label>
+                    <%= select_tag "venue", options_from_collection_for_select(Venue.order(:name), "id", "name"), {:class => "form-control" ,:prompt => "Any"} %>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label>Instructor</label>
+                    <%= select_tag "instructor", options_from_collection_for_select(Instructor.order(:name), "id", "name"),{:class => "form-control" ,:prompt => "Any"} %>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label>Age Group</label>
+                    <%= select_tag "age_group", options_from_collection_for_select(AgeGroup.all, "id", "title"),{:class => "form-control" ,:prompt => "Any"} %>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="pull-right"><%= submit_tag "Search", :class => "btn btn-primary", :id => "search_gp", data: { disable_with: "Searching..." } %></div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <div class="search-result">
+    </div>
+  </div>
+</div>
+<script>
+jQuery(function() {
+    var age_group, instructor, venue;
+    venue = $("#venue").find("option:selected").text();
+    instructor = $("#instructor").find("option:selected").text();
+    age_group = $("#age_group").find("option:selected").text();
+    // if (venue === "Any" && instructor === "Any" && age_group === "Any") {
+    //   $("#search_gp").addClass("disabled");
+    // }
+    $("#venue").change(function() {
+      venue = $("#venue").find("option:selected").text();
+      instructor = $("#instructor").find("option:selected").text();
+      age_group = $("#age_group").find("option:selected").text();
+      if (venue !== "Any") {
+        $("#search_gp").removeClass("disabled");
+      } else if (venue === "Any") {
+        if (venue === "Any" || instructor !== "Any" || age_group !== "Any") {
+          $("#search_gp").removeClass("disabled");
+        }
+        // if (venue === "Any" && instructor === "Any" && age_group === "Any") {
+        //   $("#search_gp").addClass("disabled");
+        // }
+      }
+    });
+    $("#instructor").change(function() {
+      venue = $("#venue").find("option:selected").text();
+      instructor = $("#instructor").find("option:selected").text();
+      age_group = $("#age_group").find("option:selected").text();
+      if (instructor !== "Any") {
+        $("#search_gp").removeClass("disabled");
+      } else if (instructor === "Any") {
+        if (venue !== "Any" || instructor === "Any" || age_group !== "Any") {
+          $("#search_gp").removeClass("disabled");
+        }
+        // if (venue === "Any" && instructor === "Any" && age_group === "Any") {
+        //   $("#search_gp").addClass("disabled");
+        // }
+      }
+    });
+    return $("#age_group").change(function() {
+      venue = $("#venue").find("option:selected").text();
+      instructor = $("#instructor").find("option:selected").text();
+      age_group = $("#age_group").find("option:selected").text();
+      if (age_group !== "Any") {
+        $("#search_gp").removeClass("disabled");
+      } else if (age_group === "Any") {
+        if (venue !== "Any" || instructor !== "Any" || age_group === "Any") {
+          $("#search_gp").removeClass("disabled");
+        }
+        // if (venue === "Any" && instructor === "Any" && age_group === "Any") {
+        //   $("#search_gp").addClass("disabled");
+        // }
+      }
+    });
+  });
+  $(document).on('change', '.inst-list', function(event) {
+    var age,venue,prsnt_age=false,prsnt_venue=false
+    if($(".age-list").length > 0){
+      prsnt_age=true
+    }
+    if($(".venue-list").length > 0){
+      prsnt_venue=true
+    }
+    age = $(".age-list").val();
+    venue = $(".venue-list").val();
+    if (!age){
+      age = $("#age_group").val();
+    }
+    if (!venue){
+      venue = $("#venue").val();
+    }
+    $.ajax({
+      url: '/manage/search_beta',
+      dataType: 'script',
+      data: {venue: venue,age_group: age,instructor: $(this).val(),under: true,age: prsnt_age, ven: prsnt_venue,inst: true},
+    })    
+  });
+  $(document).on('change', '.age-list', function(event) {
+    var inst,venue,prsnt_inst=false,prsnt_venue=false
+    if($(".inst-list").length > 0){
+      prsnt_inst=true
+    }
+    if($(".venue-list").length > 0){
+      prsnt_venue=true
+    }
+    inst = $(".inst-list").val();
+    venue = $(".venue-list").val();
+    if (!inst){
+      inst = $("#instructor").val();
+    }
+    if (!venue){
+      venue = $("#venue").val();
+    }
+    $.ajax({
+      url: '/manage/search_beta',
+      dataType: 'script',
+      data: {venue: venue,age_group: $(this).val(),instructor: inst,under: true,inst: prsnt_inst,ven: prsnt_venue,age: true},
+    })    
+  });
+  $(document).on('change', '.venue-list', function(event) {
+    var inst,age,prsnt_inst=false,prsnt_age=false
+    if($(".inst-list").length > 0){
+      prsnt_inst=true
+    }
+    if($(".age-list").length > 0){
+      prsnt_age=true
+    }
+    inst = $(".inst-list").val();
+    age = $(".age-list").val();
+    if (!inst){
+      inst = $("#instructor").val();
+    }
+    if (!age){
+      age = $("#age_group").val();
+    }
+    $.ajax({
+      url: '/manage/search_beta',
+      dataType: 'script',
+      data: {venue: $(this).val(),age_group: age,instructor: inst,under: true,inst: prsnt_inst, age: prsnt_age,ven: true},
+    })    
+  });
+  $(document).on('click', '.btn-gc', function(event) {
+    $('.spin').show();
+  });
+  $(document).on('click', '.btn-avail', function(event) {
+    $('#gc-' + $(this).attr('id')).html("<img src='/assets/input-spinner.gif' alt='loading' class='spin'>")
+  });
+  $(document).on('click', '.inst_name', function(event) {
+    if($(".inst-list").length > 0){
+      $(".inst-list").val($(this).attr('data-value')).trigger('change');
+    }
+  }); 
+</script>
+<style>
+.btn-gc{
+  margin-top: 10px;
+  width: 100px;
+}
+.btn-avail{
+  margin-top: 10px;
+}
+</style>

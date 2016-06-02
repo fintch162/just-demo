@@ -1,0 +1,6 @@
+$modal = $('.inst_student')
+$modal.html('<%= escape_javascript(render partial: "add_student_timing") %>');
+// $modal.modal();
+setTimeout(function(){ 
+	$('.timepicker').focus();
+}, 500);

@@ -1,0 +1,75 @@
+<div class="modal-dialog">
+  <div class="modal-content">    
+    <div class="modal-body">
+      <h2 class="pull-left">Preview & Send</h2>
+      <button type="button" class="btn default pull-right" data-dismiss="modal">Cancel</button>
+      <%= form_tag (manage_group_award_message_manage_path + "?isReqXhr=true"), remote: true, :class=>"multi_send_form"  do %>
+        <input type="hidden" id="send_message" name="stundent_ids" value="<%= @std_id %>"/>
+        <input type="hidden" id="msg" name="text_msg" value="<%= @msg %>">
+        <input type="hidden" id="award_id" name="awaard_id" value="<%= @award_test.id %>">
+        <%= submit_tag "Send to All",  :id => "send_all_button", :class => "btn blue pull-right" %>
+      <% end %>
+      <h4 class="pull-right" style="margin: 7px 10px 0px 0px;"><%= @student.count %> students </h4>
+      <br/><br/>
+      <div class="box">
+        <div class="portlet-title">
+          <div class="caption">
+            <span  style="margin-left: 17px;">Name</span> <span class="pull-right col-md-4" >Contact</span> 
+          </div>
+        </div>
+        <div class="portlet-body">
+          <div class="panel-group accordion" id="accordion3">
+            <% @student.each do |std| %>
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h4 class="panel-title"> 
+                  <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion3" href="#demo_<%= std.id %>">
+                  <span><%= std.student_name %></span>
+                  <span class="pull-right col-md-4">
+                    <% if std.student_contacts.count > 0 %>
+                      <% if std.student_contacts.where(primary_contact: true).count > 0 %>
+                        <%= std.student_contacts.where(primary_contact: true).first.contact %>
+                      <% else  %> 
+                       <%= std.student_contacts.first.contact %>
+                      <% end %>
+                    <% else %>
+                      -
+                    <% end %>
+                  </span>
+                  </a>
+                  </h4>
+                </div>
+                <div id="demo_<%= std.id %>" class="panel-collapse collapse">
+                  <div class="panel-body">
+                    <p>
+                      <label>Message:</label></br>
+                      <% @student_msg_path = 'http://app.swimsafer.com.sg/student/' + std.secret_token %>
+                      <% @awaard_ids.inspect %>
+                      <% @award_obj = @award_test.award %>
+                      <% @award_name = @award_obj.name %>
+                      <% @award_date = @award_test.test_date.strftime("%-d %b %Y") %>
+                      <% @award_time = @award_test.test_time.strftime("%-I:%M%P") %>
+                      <% @award_venue = Venue.find(@award_test.venue_id).name  %>
+
+                      <pre style="background-color: #fff; padding: 0; border: none; margin: -10px 0px -35px 0px;"><%= @msg.gsub("<student_link>", @student_msg_path).gsub('<student_name>', std.student_name).gsub('<award_name>', @award_name).gsub('<award_date>', @award_date).gsub('<award_time>', @award_time).gsub('<award_venue>', @award_venue) %>
+
+                      </pre></br>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+$(document).on("click",'#send_all_button',function(){
+  $(this).val("Sending...");
+  setTimeout(function(){
+    $('#send_all_button').prop("disabled", true);
+  }, 200);
+});
+</script>

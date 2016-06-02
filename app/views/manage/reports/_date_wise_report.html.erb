@@ -1,0 +1,68 @@
+  <div class="col-md-8">
+    <div class="portlet box purple">
+      <div class="portlet-title">
+        <div class="caption">
+          <i class="fa fa-gift"></i>Pie chart of Jobs
+        </div>
+      </div>
+      <div class="portlet-body">
+        <h4>Number of Jobs(Status = Receipt) - <%= @jobs_completed_total %></h4>
+          <div id="pie_chart_1" class="chart">
+            <% if @total_amount[0] != 0 || @total_amount[1] != 0 %>
+               <%= pie_chart [["Private class", @total_amount[0]], 
+                 ["Group Class", @total_amount[1]]
+                ] %>
+            <% else %>  
+              No data available
+            <% end %>  
+          </div>
+      </div>
+    </div>
+    <h3>Report by job enquiry</h3>
+    <table class="table table-striped table-hover">
+      <tbody>
+        <tr>
+          <td style="width: 90%;">Total number of jobs</td>
+          <td><%= @jobs %></td>
+        </tr> 
+        <tr>
+          <td style="width: 90%;">Total number of jobs completed</td>
+          <td><%= @jobs_completed_total %></td>
+        </tr> 
+        <tr>
+          <td style="width: 90%;">Sum of total amount for all completed jobs</td>
+          <td><%= @jobs_fee_total %></td>
+        </tr> 
+        <tr>
+          <td style="width: 90%;">Sum of referral for all completed jobs</td>
+          <td><%= @jobs_refered_total %></td>
+        </tr>
+        <tr>
+          <td style="width: 90%;">Balance collected</td>
+          <td><%= @total_balance %></td>
+        </tr>   
+      </tbody>
+    </table>
+    <h3>By start date <%= link_to "(Detailed view)" ,   manage_detailed_view_path %>  </h3>
+    <table class="table table-striped table-hover">
+      <tbody>
+        <tr>
+          <td style="width: 90%;">Total number of jobs</td>
+          <td><%= @jobs_start_date_total %></td>
+        </tr> 
+        <tr>
+          <td style="width: 90%;">Number of students</td>
+          <td><%= @students %></td>
+        </tr> 
+        <tr>
+          <td style="width: 90%;">Sum of total amount</td>
+          <td><%= @jobs_start_date_fee_total %></td>
+        </tr> 
+        <tr>
+          <td style="width: 90%;">Sum of referral</td>
+          <td><%= @jobs_start_date_refered_total %></td>
+        </tr>  
+      </tbody>
+    </table>
+  </div>
+  

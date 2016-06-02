@@ -1,0 +1,44 @@
+<%= title "Home page"  %>
+<%= javascript_include_tag "//www.google.com/jsapi", "chartkick" %>
+<div class="row">
+  <div class="col-md-12">
+    <!-- BEGIN PAGE TITLE & BREADCRUMB
+    -->
+    <h3 class="page-title">
+      Dashboard
+    </h3>
+    <ul class="page-breadcrumb breadcrumb">
+      <li>
+        <i class="fa fa-home"></i>
+        <a href="index.html">Home</a>
+        <i class="fa fa-angle-right"></i>
+      </li>
+      <li>
+        <a href="#">Dashboard</a>
+      </li>
+      <li class="pull-right">
+        <div class="dashboard-date-range tooltips" data-original-title="Change dashboard date range" data-placement="top" id="dashboard-report-range" style="display: block;">
+          <i class="fa fa-calendar"></i>
+          <span></span>
+          <i class="fa fa-angle-down"></i>
+        </div><!-- 
+        <div id="reportrange" class="btn default active">
+          <i class="fa fa-calendar"></i>
+          &nbsp; <span>February 22, 2015 - March 23, 2015</span>
+          <b class="fa fa-angle-down"></b>
+        </div> -->
+      </li>
+    </ul>
+    <!-- END PAGE TITLE & BREADCRUMB
+    -->
+  </div>
+</div>
+<div class="custom_filter">
+  <%= render "dashboard" %>
+</div>
+<script>
+  
+  Index.initDashboardDaterange();
+
+
+</script>

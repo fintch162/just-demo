@@ -1,0 +1,29 @@
+/ %h1 Listing instructor_students
+
+/ %table
+/   %tr
+/     %th Student name
+/     %th Age
+/     %th Gender
+/     %th Contact
+/     %th Job
+/     %th Date of birth
+/     %th
+/     %th
+/     %th
+
+/   - @instructor_students.each do |instructor_student|
+/     %tr
+/       %td= instructor_student.student_name
+/       %td= instructor_student.age
+/       %td= instructor_student.gender
+/       %td= instructor_student.contact
+/       %td= instructor_student.job_id
+/       %td= instructor_student.date_of_birth
+/       %td= link_to 'Show', instructor_student
+/       %td= link_to 'Edit', edit_instructor_student_path(instructor_student)
+/       %td= link_to 'Destroy', instructor_student, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+/ %br
+
+/ = link_to 'New Instructor student', new_account_instructor_student_path

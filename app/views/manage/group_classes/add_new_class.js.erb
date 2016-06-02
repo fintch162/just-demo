@@ -1,0 +1,9 @@
+
+$modal = $('.modal'),
+$modalBody = $('.modal .modal-body'),
+$modalHeading = $('.modal .modal-heading');
+$modalHeading.html("Add Class");
+$modalBody.html('<%= escape_javascript(render "/manage/instructors/instructor_add_new_class_inline") %>');
+$modal.modal();
+$(".modal-footer").css({"display":"none"});
+$(".modal-header").hide();

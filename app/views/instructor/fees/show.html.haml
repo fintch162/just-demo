@@ -1,0 +1,21 @@
+%p#notice= notice
+
+%p
+  %b Payment date:
+  = @fee.payment_date
+%p
+  %b Course type:
+  = @fee.course_type
+%p
+  %b Monthly detail:
+  = @fee.monthly_detail
+%p
+  %b Amount:
+  = @fee.amount
+%p
+  %b Course detail:
+  = @fee.course_detail
+
+= link_to 'Edit', edit_fee_path(@fee)
+\|
+= link_to 'Back', fees_path

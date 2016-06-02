@@ -1,0 +1,76 @@
+.portlet.box
+  .portlet-body.form
+    = form_for [:manage, @message_template_suggest], :html => { :id => "message_template_suggest" } do |f|
+      = hidden_field_tag :job_status, 'suggest'
+      .form-body
+        .form-group
+          .checkbox-list
+            %label
+              %span
+                = f.check_box :has_instructor, :class => "checked-suggest", :id => "suggest_message_template_has_instructor"
+              Instructor's Message
+        .form-group.suggest_instructor_template_body
+          %label Instructor Template Description
+          = f.text_area :instructor_template_body, :class => "form-control", :rows => 5, :id => "suggest_message_template_instructor_template_body"
+        .form-group
+          .checkbox-list
+            %label
+              %span
+                = f.check_box :has_customer, :class => "checked-suggest", :id => "suggest_message_template_has_customer"
+              Customer's Message
+        .form-group.suggest_customer_template_body
+          %label Customer Template Description
+          = f.text_area :customer_template_body, :class => "form-control", :rows => 5, :id => "suggest_message_template_customer_template_body"
+        .left
+          %button.btn.green{type: "submit"} Save
+          %button.btn.default{type: "button"} Cancel
+:css
+  .suggest_instructor_template_body {
+    display: none;
+  }
+  .suggest_customer_template_body {
+    display: none;
+  }
+:javascript
+  $("#new_message_template").validate();
+  $(document).ready(function(){
+    var instructor_template_body_is_check = $("#suggest_message_template_has_instructor").is(":checked");
+    var customer_template_body_is_check = $("#suggest_message_template_has_customer").is(":checked");
+    if(instructor_template_body_is_check == true) {
+      $(".suggest_instructor_template_body").show();
+    }
+    if(customer_template_body_is_check == true) {
+      $(".suggest_customer_template_body").show();
+    }
+    $('#suggest_message_template_has_instructor').click(function() {
+      if($(this).is(":checked")) {
+        $(".suggest_instructor_template_body").show();
+        $(".suggest_instructor_template_body").attr("required");
+      }
+
+      else
+        $(".suggest_instructor_template_body").hide();
+    });
+    $('#suggest_message_template_has_customer').click(function() {
+      if($(this).is(":checked"))
+        $(".suggest_customer_template_body").show();
+      else
+        $(".suggest_customer_template_body").hide();
+    });
+  });
+  $('#message_template_suggest').submit(function(){
+    if($(".suggest_instructor_template_body").is(":visible"))
+    {
+      if($("#suggest_message_template_instructor_template_body").val() == ""){
+        $("#suggest_message_template_instructor_template_body").after("<span style='color: #f00;'>Instructor template description can not be blank!</span>");
+        return false;
+      }
+    }
+    if($(".suggest_customer_template_body").is(":visible"))
+    {
+      if($("#suggest_message_template_customer_template_body").val() == ""){
+        $("#suggest_message_template_customer_template_body").after("<span style='color: #f00;'>Customer template description can not be blank!</span>")
+        return false;
+      }
+    }
+  });

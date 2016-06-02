@@ -1,0 +1,5 @@
+$('#display_time_<%=@time_id%>').html('<%if @instructor_student_timing.count > 0 %><%@instructor_student_timing.each do |inst_stu_time|%> <div id="inst_stud_<%=inst_stu_time.id %>"><%= link_to instructor_student_timing_path(inst_stu_time.id), remote: :true,class: 'load-modal' do%><small><%=inst_stu_time.date.strftime('%d-%m-%y') %> <%=inst_stu_time.time.strftime('%M')== "00" ? inst_stu_time.time.strftime('%S') : inst_stu_time.time.strftime('%-M:%S') %>s</small><br><%end %></div><%end%><%end%>')
+
+$('#inst_stud_<%= @student_id%>_time_<%=@time_id%>').html('<%if @instructor_student_timing.count > 0 %><div id="inst_time_<%=@inst_timing.id%>"><%= link_to instructor_student_timing_path(@inst_timing.id), remote: :true,class: 'load-modal' do%><%=@inst_timing.time.strftime('%M')== "00" ? @inst_timing.time.strftime('%S') : @inst_timing.time.strftime('%-M:%S') %>s<br><small class="grp_small_size"> <%=@inst_timing.date.strftime('%d-%m-%y')%> </small><br></div><%end %><%end%>')
+
+$('.inst_student').modal('hide');

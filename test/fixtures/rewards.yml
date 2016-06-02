@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  instructor_id: 
+  points: 
+  job_id: 
+
+two:
+  instructor_id: 
+  points: 
+  job_id: 

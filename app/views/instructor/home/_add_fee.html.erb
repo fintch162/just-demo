@@ -1,0 +1,126 @@
+<!-- <div class="modal fade" id="basic-<%#= student.id %>" tabindex="-1" role="basic" aria-hidden="true"> -->
+  <div class="modal-dialog modal-sm" style="margin-top: 100px;">
+    <div class="modal-content">
+      <%= form_for([:instructor, student, fee], :html => {:class=> "form-horizontal add_fee", :remote => true} ) do |f| %>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss = "modal" aria-hidden="true"></button>
+          <h4 class="modal-title">Fee Action</h4>
+        </div>
+        <%= hidden_field_tag :group_class, group_class.id %>
+        <% if params[:start_month].present? && params[:end_month].present? %>
+          <%= hidden_field_tag :less_or_more_month, "true" %>
+        <% end %>
+        <div class="modal-body" style="padding-top: 0px; padding-bottom: 0px;">
+          <div class="portlet-body form">
+            <div class="form-body">
+              <div class="form-group" style="margin-bottom: 0px;">
+                Student : <%= student.student_name %><br/>
+                <div class= "fee_month">
+                  <%= "Month: " + @month%>
+                </div>
+                <label>
+                  <%= f.radio_button :payment_status,'Paid',class: 'payment_status chk_paid_payment' %>
+                  Receipt
+                </label>
+                  <%#= f.label :payment_status, "Fee Paid", value: 'Paid' %>
+
+              </div>
+              <div class="form-group" style="margin-bottom: 0px;">
+                <%= f.label :payment_date, "Date of Payment" %>
+                <div class="input-group input-medium date date-picker payment-date" data-date-format="dd-mm-yyyy" disabled="disabled">
+                  <%= f.text_field :payment_date, :class => "form-control", :value => Time.now.strftime('%e %B %Y'), :id=> "payment_date",:readonly => true, :style=> "background-color: #eee !important;" %>
+                  <span class="input-group-btn">
+                    <button class="btn default" type="button" style="height: 34px;"><i class="fa fa-calendar"></i></button>
+                  </span>
+                </div>
+              </div>
+              <%= f.hidden_field :course_type, :value => "per month" %>
+              <%= f.hidden_field :payment_status, :value => "Paid" %>
+              <%= f.hidden_field :payment_mode %>
+              <%#= hidden_field_tag :fee_id, fee.id unless fee.new_record? %>
+              <%= f.hidden_field :monthly_detail, :id => "monthly_detail", value: month %>
+              <%= hidden_field_tag :show_amount, params[:show_amount] %>
+              <input type="hidden" value="<%= student.id %>-<%= month %>" id="dataStr"></input>
+
+              <div class="form-group amount_paid" style="margin-bottom: 0px;">
+                <% @student_fee = student.fee  %>
+                <%= f.label :amount, "Amount Paid" %>
+                <%# if  @student_fee == 0 %>
+                  <%#= f.text_field :amount, :value => group_class.fee, :class=>"form-control"%>
+                <%# elsif @student_fee.nil? %>
+                  <%#= f.text_field :amount, :value => group_class.fee, :class=>"form-control"%>
+                <%# else %>
+                  <%#= f.text_field :amount, :value => student.fee, :class=>"form-control"%>
+                <%# end %>
+                <% if  @student_fee == 0 || @student_fee.nil? %>
+                  <%= f.text_field :amount, :value => group_class.fee, :class=>"form-control"%>
+                <% else %>
+                  <%= f.text_field :amount, :value => student.fee, :class=>"form-control"%>
+                <% end %>
+              </div>
+              <div class="form-group" style="margin-bottom: 0px;">
+                <label>
+                  <%= f.radio_button :payment_status, 'Due',class: 'payment_status chk_due_payment' %>
+                  Invoice
+                </label>
+                <%#= f.label :payment_status, "Set payment due", value: "Due" %>
+
+              </div>
+              <div class="form-group" style="margin-bottom: 0px;">
+                <%= f.label :amount, "Amount Due" %>
+                <%# if  @student_fee == 0 %>
+                  <%#= f.text_field :amount, :value => group_class.fee, :class=>"form-control amount_due"%>
+                <%# elsif @student_fee.nil? %>
+                  <%#= f.text_field :amount, :value => group_class.fee, :class=>"form-control amount_due"%>
+                <%# else %>
+                  <%#= f.text_field :amount, :value => student.fee, :class=>"form-control amount_due"%>
+                <%# end %>
+                <% if  @student_fee == 0 || @student_fee.nil? %>
+                  <%= f.text_field :amount, :value => group_class.fee, :class=>"form-control amount_due"%>
+                <% else %>
+                  <%= f.text_field :amount, :value => student.fee, :class=>"form-control amount_due"%>
+                <% end %>
+              </div>
+              <div class="form-group" style="margin-bottom: 0px;">
+                <%= f.label :due_date, "Due Date", id:"lbl-due-date" %>
+                <div class="input-group input-medium date date-picker due-date" data-date-format="dd-mm-yyyy" disabled="disabled">
+                  <%= f.text_field :due_date, :class => "form-control",:readonly => true, :style=> "background-color: #eee !important;", value: fee.try(:due_date).present? ? fee.due_date.strftime('%e %B %Y') : "" %>
+                  <span class="input-group-btn">
+                    <button class="btn default" type="button" style="height: 34px;"><i class="fa fa-calendar"></i></button>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" style="margin-top: 0px;">
+          <%= link_to "Delete Due", instructor_instructor_student_fee_path(student.id,fee.id,group_class: group_class.id), method: :delete, class: "btn red delete-due", remote: true unless fee.new_record? %>
+          <button type="button" class="btn default" data-dismiss="modal">Close</button>
+          <!-- <button type="submit" class="btn green" >Save</button> -->
+          <%= f.submit "Save" , data: { disable_with: "Saving..." },:class=>"btn green save_payment"%>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<!-- </div> -->
+
+<script type="text/javascript">
+  
+   $(document).ready(function() {
+    $('#basic-<%= student.id %>').on('hidden.bs.modal', function(){
+      $('.save_payment').val('Save');
+    });
+
+  });
+</script>
+<style type="text/css">
+  .datepicker {
+    z-index: 999 !important;
+  }
+  .top-padding-zero{
+    padding-top: 0px;
+  }
+  .bottom-margin-zero{
+    margin-bottom: 0px;
+  }
+</style>

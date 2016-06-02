@@ -1,0 +1,153 @@
+<% title "Reward" %>
+<!-- <a href="javascript:;" class="toggle-custome" style="top: 20px; right: 20px; padding: 20px; cursor: pointer; position: absolute; background: #d5dade url(/assets/icon-color.png) center no-repeat; z-index: 999;"></a> -->
+<div class="row">
+  <div class="col-md-12">
+    <h3 class="page-title">
+      Rewards
+      <small>
+        <%= page_description %>
+      </small>
+    </h3>
+    <% if !@breadcrumbs.nil? %>
+      <ul class="page-breadcrumb breadcrumb">
+        <li class="btn-group">
+          <a class="btn btn-fit-height grey pull-right" href="javascript:;" id="addPoint"><i class="fa fa-plus"></i> Add Points</a>
+        </li>
+        <% @breadcrumbs.each do |breadcrumb| %>
+          <li>
+            <%= link_to(breadcrumb[:name], breadcrumb[:url]) %>
+            <% if @breadcrumbs.last != breadcrumb %>
+              <i class="fa fa-angle-right"></i>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+</div>
+
+<div class="row newRewardForm">       
+  <div class="col-md-6">
+    <div class="portlet box green">
+      <div class="portlet-title">
+        <div class="caption">
+          <i class="fa fa-plus"></i>Add Points
+        </div>
+        <div class="tools">
+          <a href="javascript:;" class="remove removeRewardForm"></a>
+        </div>
+      </div>
+
+      <div class="portlet-body form">
+        <%= form_for @reward, :url => manage_rewards_path, method: :post, :html => { :class => "form-horizontal" } do |f| %>
+          <div class="form-body">
+            <div class="form-group">
+              <label class="col-md-3 control-label">Instructor</label>
+              <div class="col-md-6">
+                <%= f.select :instructor_id, Instructor.all.map { |i| [i.name, i.id] },{:prompt => "Select Instructor"}, { :class => "form-control" , :required => true } %>
+              </div>
+            </div>
+          </div>
+          <div class="form-body">
+            <div class="form-group">
+              <label class="col-md-3 control-label">Points</label>
+              <div class="col-md-6">
+                <%= f.text_field :points, :class => "form-control" , :required => true  %>
+              </div>
+            </div>
+          </div>
+          <div class="form-body">
+            <div class="form-group">
+              <label class="col-md-3 control-label">Job Ref</label>
+              <div class="col-md-6">
+                <%= f.select :job_id, Job.all.map { |i| [i.id, i.id] }, { :prompt => "Select Job Ref" }, { :class => "form-control" } %>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-body">
+            <div class="form-group">
+              <label class="col-md-3 control-label">Description</label>
+              <div class="col-md-6">
+                <%= f.text_area :reward_description, :class => "form-control", :rows => 4 %>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions fluid">
+            <div class="col-md-offset-3 col-md-9">
+              <button type="submit" class="btn blue">Submit</button>
+              <button type="button" class="btn default">Cancel</button>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">       
+  <div class="col-md-12">
+    <div class="box yellow">
+      <div class="portlet-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+          <thead>
+          <tr>
+            <th>No</th>
+            <th>Instructor</th>
+            <th>Points</th>
+            <th>Job Ref</th>
+            <th>Date</th>
+          </tr>
+          </thead>
+          <tbody>
+            <% cnt = 1 %>
+            <% if @rewards.count > 0 %>
+              <% @rewards.order('created_at DESC').each do |reward| %>
+                <tr>
+                  <td><%= cnt %></td>
+                  <td><%= reward.instructor.name unless !reward.instructor_id.present?  %></td>
+                  <td><%= reward.points %></td>
+                  <td><%= reward.job_id %></td>
+                  <td><%= reward.created_at.strftime("%d %b %Y") %></td>
+                </tr>
+                <% cnt += 1 %>
+              <% end %>
+            <% else %>
+              <tr><td colspan="4"><center>No reward found</center></td></tr>
+            <% end %>
+          </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- END BORDERED TABLE PORTLET-->
+  </div>
+</div>
+
+<script type="text/javascript">
+  $("#addPoint").click(function(event) {
+    $(".newRewardForm").slideDown('500');
+  });
+  $(".removeRewardForm").click(function(event) {
+    $(".newRewardForm").slideUp('fast');
+  });
+
+  $("#reward_instructor_id").change(function(event) {
+    var selectedInstructor = $(this).find('option:selected').val();
+    $.ajax({
+      url: '/manage/find_instructor',
+      type: 'GET',
+      dataType: 'script',
+      data: { instructor: selectedInstructor },
+    });
+  });
+  $("#new_reward").validate();
+
+</script>
+<style type="text/css">
+  .newRewardForm {
+    display: none;
+  }
+</style>

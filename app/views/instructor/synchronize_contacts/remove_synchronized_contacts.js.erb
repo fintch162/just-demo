@@ -1,0 +1,11 @@
+<% if @token_expire %>
+	location.reload();
+<% else %>
+	<% if !@error %>	
+		$('#remove'+<%= @student.id %>).html('Removed')
+		$('[id='+<%= @student.id %>+']').html("<%= escape_javascript(button_to 'Synch', instructor_synchronize_contact_path(id: @student.id), data: { disable_with: "Synchronizing..." }, remote: true, method: :get, class: 'btn-link') %>");
+	<% else %>
+		$('#remove'+<%= @student.id %>).html('Error')
+	<% end %>
+<% end %>
+<% flash[:alert] = nil %>

@@ -1,0 +1,64 @@
+<%= title "Identity Card"  %>
+<div class="row">
+  <div class="col-md-6 ">
+    <div class="portlet box blue">
+      <div class="portlet-title">
+        <div class="caption">
+          Identity Cards
+        </div>
+      </div>
+      <div class="portlet-body form">
+        <div class="portlet-body form_border">
+        <table class="table table-striped table-bordered table-hover" id="sample_2" data-source="<%= manage_jobs_path(format: :json) %>">
+          
+          <thead>
+            <tr class="heading">
+              <th>Card Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if @identity_cards.count > 0 %>
+              <% @cont = 0 %>
+              <% @identity_cards.each do |identity_card| %>
+                <tr>
+                  <td><%= identity_card.name %></td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td><center> No Card type found.</center></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="portlet box blue">
+      <div class="portlet-title">
+        <div class="caption">
+          Add Identity Cards
+        </div>
+      </div>
+      <div class="portlet-body form">
+        <%= form_for [:manage, IdentityCard.new] ,:html => { :id => "instructor"} do |f| %>
+          <div class="form-body form_border">
+            <div class="form-group">
+              <label>Card Name</label>
+              <%= f.text_field :name, :class => "form-control", :required => true, :placeholder => "Enter card type" %>
+            </div>
+            <input class="btn btn-primary" name="commit" type="submit" value="Save" id="instrutor_submit">
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style type="text/css">
+  .form_border{
+     border-bottom: 1px solid #869AB3;
+  }
+  </style>

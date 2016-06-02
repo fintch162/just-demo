@@ -1,0 +1,48 @@
+!!!
+%html.no-js{lang: "en"}
+  %head
+    %meta{charset: "utf-8"}/
+    %title swimming-lesson-registration
+    %meta{content: "IE=edge", "http-equiv" => "X-UA-Compatible"}/
+    %meta{content: "width=device-width, initial-scale=1.0", name: "viewport"}/
+    %link{href: "http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all", rel: "stylesheet", type: "text/css"}/
+    = stylesheet_link_tag "manage"
+    = javascript_include_tag "manage"
+    = csrf_meta_tags
+  %body.page-header-fixed{style: ""}
+    .page-header.navbar.navbar-fixed-top
+      .page-header-inner
+        .page-logo
+          %a{href: "index.html"}
+            = image_tag "logo.png", class: "logo-default"
+          .menu-toggler.sidebar-toggler.hide
+        .menu-toggler.responsive-toggler{"data-target" => ".navbar-collapse", "data-toggle" => "collapse"}
+        .top-menu
+          
+  .clearfix
+  .page-container
+    .page-content-wrapper
+      .page-content{style: "min-height:783px"}
+        #portlet-config.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "myModalLabel", role: "dialog", tabindex: "-1"}
+          .modal-dialog
+            .modal-content
+              .modal-header
+                %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", type: "button"}
+                %h4.modal-title Modal title
+              .modal-body
+                Widget settings form goes here
+              .modal-footer
+                %button.btn.blue{type: "button"} Save changes
+                %button.btn.default{"data-dismiss" => "modal", type: "button"} Close
+        .row
+          .col-md-12
+            %h3.page-title
+              = page_title
+              %small= page_description
+        = yield
+  .page-footer
+    .page-footer-inner
+      Powered by Singapore Swimming Academy.
+    .page-footer-tools
+      %span.go-top
+        %i.fa.fa-angle-up

@@ -1,0 +1,19 @@
+$('.<%= @award.id %>').html('<%= escape_javascript(render "student_award_progress", :a=>@award ) %>');
+$('.award_progress').each(function(){
+  var progress = $(this).val();
+  if (progress == "achieved"){
+    $(this).closest('.row').find('.achieved_date').show();
+  }
+});
+$('.date-picker').each(function(){
+      $(this).datepicker({
+        format: 'd MM yyyy'
+      }).on('changeDate',function(e){
+        $(e.target).parent().next().find('input').removeClass('disabled');
+        $(e.target).parent().next().find('a').removeClass('disabled');
+        save_count++;
+        $(e.target).parent().next().find('input').click(function(event) {
+          save_count--;
+        });
+      });
+    });

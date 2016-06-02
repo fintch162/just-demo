@@ -1,0 +1,121 @@
+<td colspan="10">
+  <%= form_for [:manage, @group_class] , :html => {:class=> "horizontal-form", :id=> "group_class_form", :remote => true } do |f| %>
+    <div class="form-body">
+      <div class="row">
+        <div class="col-sm-1">
+            <%= f.select :day, [ ["Monday", 1], ["Tuesday",2], ["Wednesday", 3], ["Thursday", 4], ["Friday", 5], ["Saturday" , 6], ["Sunday" , 0]] ,{ :include_blank => 'Please Select' } , :class => "form-control"%>
+        </div>
+        <div class="col-sm-1">
+          <input class="form-control" data-date-format="hh:mm A/PM" id="group_class_time" name="group_class[time]" type="text">
+        </div>
+        <div class="col-sm-1">
+            <%= f.text_field :duration , :class=>"form-control", :placeholder=>"Enter Duration", :required => true %>
+        </div>
+        <div class="col-sm-2">
+            <%= f.collection_select :venue_id , Venue.all, :id, :name ,{ :include_blank => 'Please Select'},{:class=>"form-control" ,:required => true } %>
+        </div>
+        <div class="col-sm-1">
+          <% if !current_admin_user.instructor? %>
+            <%= f.collection_select  :instructor_id,  Instructor.all, :id, :name , {:include_blank => 'Please Select' } ,{ :class=>"form-control" ,:required => true } %>
+          <% end %>
+        </div>
+        <div class="col-sm-1">
+          <%= f.collection_select :age_group_id , AgeGroup.all, :id, :title , { :include_blank => 'Please Select'}, {:class=>"form-control" ,:required => true } %>
+        </div>
+        <div class="col-sm-1">
+          <%= f.text_field :fee , :class=>"form-control", :placeholder=>"e.g 60(for $60)",:required => true %>
+        </div>
+        <div class="col-sm-2">
+          <%= f.collection_select :fee_type_id , FeeType.all, :id, :name ,{ :prompt => 'Please Select'},{:class=>"form-control" ,:required => true } %>
+        </div>
+        <div class="col-sm-1 lesson_count">
+          <%= f.text_field :lesson_count ,:class=>"form-control", :placeholder=>"Lessons", :required => true %>
+        </div>
+        <div class="form-actions text-right col-sm-1">
+          <%= f.submit "Update", :class=>"btn green", :id => "save_gp" %>
+          <button class="btn default close-gpform-editable" type="button">Cancel</button>
+          <a data-toggle="modal" id="basicModalOpeno" href="#basic-<%= @group_class.id %>" class="btn red basicModalOpen">Delete</a>  
+        </div>
+        
+      <% end %>
+    </div>
+  </div>
+
+<div class="modal fade" id="basic-<%= @group_class.id %>" tabindex="-1" role="basic" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+        <h4 class="modal-title" id="del_modal_title">Confirm delete?</h4>
+      </div>
+      <div class="modal-footer" style="border-top: 0 !important;">
+        <%= link_to "Delete", manage_group_class_path(@group_class.id), method: :delete, :class=> "btn red destroyGp", :remote => true %>
+        <button type="button" class="btn default" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+</td>
+
+<script>
+  // $('.basicModalOpen').click(function() {
+  //   var hrefVal = '<%= manage_group_class_path(@group_class.id) %>';
+  //   $(".destroyGp").attr("href", hrefVal)
+  // });
+
+  $("#group_class_form").validate({
+    rules: {
+      instructor_id: {
+        required: true
+      }
+    }
+  });
+  $(".close-gpform-editable").click(function() {
+    if($(".editable-gpform").is(":visible"))
+      $(".editable-gpform").remove();
+  });
+  jQuery(document).ready(function() {       
+    Metronic.init();
+    ComponentsPickers.init();
+    $('#group_class_fee_type_id').change(function() {
+      var category = $(this).find("option:selected").text();
+      category = category.toLowerCase();
+      if(category == "per course")
+        $("#group_class_lesson_count").removeAttr('disabled');
+      else {
+        $("#group_class_lesson_count").attr('disabled', true);
+        $("#group_class_lesson_count").val('');
+      }
+    });
+    var group_class_fee = $('#group_class_fee_type_id').find("option:selected").text();
+    group_class_fee = group_class_fee.toLowerCase();
+    if(group_class_fee == "per course")
+      $("#group_class_lesson_count").removeAttr('disabled');
+    else {
+      $("#group_class_lesson_count").attr('disabled', true);
+      $("#group_class_lesson_count").val('');
+    }
+  });  
+  
+
+  $('#group_class_form').on('ajax:beforeSend', function(event) {
+    $("#save_gp").val('Saving data...').addClass('disabled');
+  }).on('ajax:complete', function(event) {
+    $("#save_gp").val('Update').removeClass('disabled');
+  });
+  $('#group_class_time').timepicker({
+    minuteStep: 5,
+    autoclose: true,
+    defaultTime: '<%= @group_class.time.strftime("%I:%M %p") if @group_class.time? %>'
+  });
+</script>
+<style>
+  .error { color: red; }
+  .group-form {
+    width: 8% !important;
+    margin-left: -7px !important;
+  }
+  .instructor_name{
+    /*width: 14% !important;*/
+  }
+</style>

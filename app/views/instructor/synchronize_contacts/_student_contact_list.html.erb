@@ -1,0 +1,71 @@
+<table class="table table-hover student_name_highlight">
+  <thead>
+    <tr class="text-left">
+    	<th><label><input type="checkbox" name="selectall" id="selectall"> Select All</label></th>
+      <th>Student Name</th>
+	    <th>Contact</th>
+      <th colspan="2">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+  	<% if @instructor_students.count == 0 %>
+  		<tr class="text-left">
+  			<td colspan="4">No records found</td>
+  		</tr>
+  	<% else %>
+	  	<% @instructor_students.each do |student| %> 
+		  	<tr class="text-left">
+		  		<td>
+		  			<% @contacts = student.student_contacts %>
+		  			<% if @contacts.count > 0 %>
+		  				<input type="checkbox" class="student-contact" value="<%= student.id %>" >
+		  			<% end %>
+		  		</td>
+		  		<td>
+		  			<%= link_to student.student_name, instructor_instructor_student_path(student)  %>
+		  		</td>
+		  		<td>
+		  			<% @contacts.each do |contact|  %>
+		  				<% if contact %>
+		  					<%= contact.relationship && contact.relationship != '' ? contact.relationship : 'Null' %>
+		  					-
+		  					<%= contact.contact %>
+		  				<% else %>
+		  					-
+		  				<% end %>
+		  				<%= @contacts.last != contact ? '<br>'.html_safe : '' %>
+		  			<% end %>
+		  		</td>
+		  		<td id = "<%= student.id %>">
+		  			<% if student.google_contact_id && student.google_contact_id != "" %>
+			  			Synchronized
+			  		<% else %>
+			  			<% if session[:access_token] != nil %>
+			  				<% if @contacts.count > 0 %>
+			  					<%= button_to 'Synch', instructor_synchronize_contact_path(student.id), data: { disable_with: "Synchronizing..." }, remote: true, method: :get, class: 'btn-link' %>
+			  				<% else %>
+			  					-
+			  				<% end %>
+			  			<% else %>
+			  				<% if @contacts.count > 0 %>
+			  					<%= link_to 'Synch', '/auth/google_oauth2' %>
+			  				<% else %>
+			  					-
+			  				<% end %>
+			  			<% end %>
+			  		<% end %>
+		  		</td>
+		  		<td id = "remove<%= student.id %>">
+		  			<% if student.google_contact_id && student.google_contact_id != "" %>
+		  				<% if session[:access_token] != nil %>
+		  					<%= button_to 'Remove', instructor_remove_synchronized_contacts_path(id: student.id),remote: true, data: {confirm: 'Are you sure?', disable_with: "Removing..."}, class: 'btn-link' %>
+		  				<% else %>
+			  				<%= link_to 'Remove', '/auth/google_oauth2' %>
+		  				<% end %>
+		  			<% end %>
+		  		</td>
+		  	</tr>
+		  <% end %>
+	  <% end %>
+  </tbody>
+</table>

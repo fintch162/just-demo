@@ -1,0 +1,23 @@
+<% if @group_class %>
+	<div>
+		
+		<% if @group_class.venue %>
+			<%= @group_class.venue.name && @group_class.venue.name != '' ? @group_class.venue.name : '' %>
+		<% end %>
+		<img src="/assets/input-spinner.gif" alt="loading" class="spin" style="display: none;"><br>
+
+		<% if @group_class.time && @group_class.duration %>
+			<%= @group_class.time.strftime("%-I.%M%P").to_s + " - " + (@group_class.time +  @group_class.duration*60).strftime("%-I.%M%P").to_s %>
+			<br>
+		<% end %>
+
+
+		<% if @group_class.age_group %>
+			<%= @group_class.age_group.title? ? @group_class.age_group.title : '' %> class <br>
+		<% end %>
+
+		Fee: $<%= @group_class.fee ? @group_class.fee : '' %>/<%= @group_class.fee_type_id ? FeeType.find(@group_class.fee_type_id).name == "per month" ? "Month" : "Course" : '' %><br>
+	</div>
+		<%= link_to 'Book this slot!', manage_book_group_class_path(@group_class),data: {disable_with: 'wait..'},remote: true, class: 'btn blue btn-avail',id: @group_class.id %><br>
+<% else %>
+<% end %>

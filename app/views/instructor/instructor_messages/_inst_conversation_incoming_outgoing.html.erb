@@ -1,0 +1,66 @@
+<div class="pull-right" style="margin-bottom: 10px;">
+  <%= will_paginate @inst_messages %>
+</div>
+<table class="table table-striped table-bordered table-hover dataTable">
+  <thead>
+    <tr role="row">
+      <th style="width: 20px;">Phon No</th>
+      <th>
+        <% if @message_direction == 'outgoing' %>
+          Bulk Id
+        <% end %>
+      </th>
+      <th>Message</th>
+      <th>Status</th>
+      <th class="hidden-xs">Date</th>
+      <th>Time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if @inst_conversations == "Disconnected" %>
+      <tr class="unread" data-messageid="1">
+        <td colspan="6" class="alert alert-danger" style="background: #fff;">
+          <div class="Metronic-alerts alert alert-danger fade in">You will need to setup your telerivet API in order to send or receive SMS</div>
+        </td>
+      </tr> 
+    <% else %>
+      <% if @inst_messages.count == 0 %>
+        <tr class="unread" data-messageid="1">
+          <td colspan="6" style="background: #fff;">
+            <h3>No messages found!</h3>
+          </td>
+        </tr>
+      <% else %>
+        <% @inst_messages.each do |message| %>   
+          <tr class="unread" data-messageid="1">
+            <td class="view-message" style="width: 20px;">
+              <%= link_to message.to_number, instructor_conversation_path(message.instructor_conversation_id)  %>
+            </td>
+            <td class="view-message">
+              <% if @message_direction == 'outgoing' && message.bulk_sms_id %>
+                <%= link_to message.bulk_sms_id, instructor_instructor_outing_messages_path(bulk_id: message.bulk_sms_id) %>
+              <% end %>
+            </td>
+            <td class="view-message">
+              <%= link_to message.msg_des.truncate(100),instructor_conversation_path(message.instructor_conversation_id) %>
+            </td>
+            <!-- <td class="view-message inbox-small-cells">
+              <%#  if conversation.unread_count != 0 %>
+                <button class="btn red btn-xs" type="button"><%#= conversation.unread_count%></button>
+              <%# end %>
+            </td> -->
+            <td class="view-message">
+              <%= message.status %>
+            </td>
+            <td class="hidden-xs" style="width: 20px;">
+              <%= message.time_created.strftime('%d/%m/%Y')%>
+            </td>
+            <td class="view-message text-right">
+              <%= message.time_created.strftime('%I:%M %p') %>
+            </td>
+          </tr>
+        <% end %>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>

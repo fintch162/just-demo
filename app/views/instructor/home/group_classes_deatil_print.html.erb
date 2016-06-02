@@ -1,0 +1,152 @@
+<!-- <div class="modal-load"></div> -->
+<div class="main">
+	<div class="container">
+		<% @group_classes.order('day asc,time asc').each_with_index do |group_class,index| %>
+		  <div class="gruop_class_detail <%= index == 0 ? '' : 'page-break-before' %>">
+			<% @group_class = group_class %>
+		  <% @students_list = @group_class.instructor_students.where(:group_id => nil) %>
+		  <% @endMonth = Date.today if @fee_attendance == "latestLesson" %>
+		  <% displayDays = [@group_class.day] %>
+		  <% @result = (@startMonth..@endMonth).to_a.select {|k| displayDays.include?(k.wday)} if @fee_attendance != "no" %>
+		  	 <%= render "/instructor/home/fee_view_search" %>
+		  </div>
+		<% end %>
+    </div>
+</div>
+<link rel="stylesheet" type="text/css" href="/assets/global/plugins/index_page_css/components.css" media="print">
+<link rel="stylesheet" type="text/css" href="/assets/twitter-bootstrap-static/bootstrap.css" media="print">
+<link rel="stylesheet" type="text/css" href="/assets/global/plugins/index_page_css/style.css" media="print">
+<style type="text/css">
+  @media print {
+    @page {size: landscape}
+    body {
+
+      background-color: #fff !important;
+    }
+    .content-page{
+      margin-top: -70px !important;
+    }
+  
+    .breadcrumb{
+      display: none;
+    }
+    a[href]:after {
+      content: none !important;
+    }
+    .add_s{
+      display: none;
+    }
+    .hidden-xs{
+      display: block !important;
+    }
+    .nav{
+      display: none;
+    }
+    .header {
+      display: none;
+    }
+    .pre-header{
+      display: none;
+    }
+    .sidebar {
+      display: none;
+    }
+
+    .theme-panel {
+      display: none;
+    }
+
+    .hidden-print {
+      display: none;
+    }
+    .newSmsSend{
+     display: none; 
+    }
+
+    .page-footer {
+      display: none;
+    }
+
+    .no-page-break {
+      page-break-after: avoid;
+    }
+
+    .page-container {
+      margin: 0px !important;
+      padding: 0px !important;
+    }
+
+    .page-content {
+      min-height: 300px !important;
+      padding: 0px 20px 20px !important;
+      margin: 0 !important;
+    }
+    .footer{
+      display: none;
+    }
+    .column-selector{
+     display: none; 
+    }
+    .newSmsSend{
+      display: none !important;
+    }
+    .fees_color{
+      color: red !important;
+   }
+    
+    .ins_std_tm_style{
+      color: red !important;
+    }
+   .clr-green{
+    color: green !important;
+    }
+
+   html, body, .main,.container, .scrollspy-example, .tab-pane, .content-page, .row, .col-sm-12{ float: none; }
+    .page-break-before{
+      page-break-before: always;
+      -webkit-page-break-before: always; /* Chrome, Safari, Opera */
+      break-before: always; /* IE 10+ */
+      margin-top: -50px !important;
+      padding-top: 0px !important;
+    }
+    .no-page-break-before{
+      page-break-before: avoid;
+      -webkit-page-break-before: avoid; /* Chrome, Safari, Opera */
+      break-before: avoid; /* IE 10+ */
+
+    }
+    .block-unallocated{
+      margin-top: 30px !important; 
+    }
+    .hide_print{
+      display: none;
+    }
+    .clr-red > .fa-plus{
+      color: red !important;
+      /*-webkit-print-color-adjust: exact; */
+    }
+    .clr-red {
+      color: red !important;
+      /*-webkit-print-color-adjust: exact; */
+    }
+
+  }
+  .column-selector{
+  	display: none;
+  }
+</style>
+<script type="text/javascript">
+	$(document).ready(function($) {
+	// 	window.print();
+	// 	setTimeout(function(){
+	// 	  $('.gruop_class_detail').remove();
+	// 	  window.close();
+	// 	}, 500);
+	// });
+	// $(window).load(function() { 
+	// 	setTimeout(function(){
+	// 	  $('.gruop_class_detail').remove();
+	// 	  window.close();
+	// 	}, 500); 
+	});
+</script>

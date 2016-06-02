@@ -1,0 +1,12 @@
+<% if @job %>
+	if($("#manualPayments").find('tr:first').length != 1)
+		$("#manualPayments").append("<tr><%= escape_javascript(render 'manual_payment_data', manual_payment: @manual_payment, :job => @job, :index => @totalCount) %></tr>");
+	else {	
+		$("#manualPayments").find('tr:last').after("<%= escape_javascript(render 'manual_payment_data', manual_payment: @manual_payment, :job => @job, :index => @totalCount) %>");
+    }
+	$("#manual_payment_job_id").next('p').remove();
+<% elsif @job_not_found %>
+	$("#manual_payment_job_id").next('p').remove();
+	$("#manual_payment_job_id").after("<p>Job does not exists!</p>");
+<% end %>
+$('.best_in_place').best_in_place();

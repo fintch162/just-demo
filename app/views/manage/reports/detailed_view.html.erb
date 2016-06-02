@@ -1,0 +1,158 @@
+<% title "Sorted by start date" %> 
+<div class="row">
+  <div class="col-md-4">
+    <%= form_tag manage_date_wise_started_jobs_path , :id=>"new_started_report" ,:remote => true do %>
+      <div>
+        <div class="input-group input-large date-picker input-daterange" data-date="10/11/2012" data-date-format="mm/dd/yyyy" style="position: relative; float: left;">
+          <input type="text" class="form-control" id="report_date_from" name="from">
+            <span class="input-group-addon">
+            to </span>
+          <input type="text" class="form-control" name="to" id="report_date_to">
+        </div>
+        <%= submit_tag "Generate", :id => "submit_report", :class=> "btn green pull-right", :style => "position: absolute; margin-left: 3px;" %>
+      </div>
+        <div class="error" style="float: left;"></div>
+    <% end %>  
+  </div>
+</div>  
+<div class="content-page">
+  <div class="row">
+    <div class="col-sm-12">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th style="width:30px;">#</th>
+            <th>Start Date </th>
+            <th>Ref ID</th>
+            <th>Class Type</th>
+            <th>Age Group</th>
+            <th>Student(s)</th>
+            <th>Fee</th>
+            <th>Referral</th>
+            <% count = 0 %>
+          </tr>
+        </thead>
+        <tbody id="job_start_date">
+          <% @jobs_start_date.each do |job| %>
+            <tr>
+              <% count = count + 1 %>
+              <td>
+                <%= count %>
+              </td>
+              <td>
+                <%= job.start_date ? job.start_date.strftime("%e %b %Y") : nil %>
+              </td>
+              <td>
+                <%= job.id %>
+              </td>
+              <td>
+                <%=  ClassType.find(job.class_type.to_i).title if job.class_type? %>
+              </td>
+              <td>
+                <%=  AgeGroup.find(job.age_group.to_i).title if job.age_group? %>
+              </td>
+              <td>
+                <%=  job.students.count %>
+              </td>
+              <td>
+                <%=  job.fee_total %>
+              </td>
+              <td>
+                <%= job.referral %>
+              </td>
+            </tr>
+          <% end %>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Total Fee:</td>
+            <td><%= @jobs_start_date_fee_total %></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Total Referral:</td>
+            <td><%= @jobs_start_date_refered_total %></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script type="text/javascript">
+    $(document).ready(function() {
+  var currentDate = new Date();
+  var new_date = new Date(currentDate);
+  new_date.setDate(new_date.getDate() - 30);
+  var to = "<%= session[:to].to_date %>";
+  var from = "<%= session[:from].to_date %>";
+  var to_date = new Date(to);
+  var from_date = new Date(from);
+  $('#report_date_from').datepicker({
+    format: 'd MM yyyy'
+  });
+  $('#report_date_to').datepicker({
+    format: 'd MM yyyy',
+  });
+  if(currentDate == to_date && new_date == from_date || to == "" && from == "")
+  {
+    $("#report_date_from").datepicker("setDate", new_date);
+    $("#report_date_to").datepicker("setDate", currentDate);
+  }
+  else {
+    $("#report_date_from").datepicker("setDate", from_date);
+    $("#report_date_to").datepicker("setDate", to_date);
+  }  
+ 
+ 
+  $("#submit_report").click(function(){
+    var from = $("#report_date_from").val();
+    var to = $("#report_date_to").val();
+    var startDate = new Date(from);
+    var endDate = new Date(to);
+    if(from == "" && to == ""){
+      $(".error").html("Please enter From and To Date").show();
+      return false;
+    }
+    else if(from == "") {
+      $(".error").html("Please enter From Date").show();
+      return false;
+    }
+    else if(to == "") {
+      $(".error").html("Please enter To Date").show();
+      return false;
+    }
+    else {
+      if(startDate > endDate){
+        $(".error").html("From date should be less than To date").show();
+         return false;
+      }
+      else {
+        $(".error").hide();
+        return true;
+      }
+    }
+  });
+  jQuery(document).on("ajax:beforeSend", "#new_report", function() {
+    $('#submit_report').val("Generating Report").addClass("disabled");
+  });
+  $("#new_report").on('ajax:complete', function(event) {
+    $('#submit_report').val("Generate").removeClass("disabled");
+  });
+});
+ $('#report_date_from').change(function(){
+    $('.datepicker').hide();
+  });
+ $('#report_date_to').change(function(){
+   $('.datepicker').hide();
+});  
+
+
+  </script>

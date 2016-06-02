@@ -1,0 +1,195 @@
+<% title "Referrals" %>
+<div class="main">
+  <div class="container">
+    <ul class="breadcrumb">
+      <li><a href="/instructor">Home</a></li>
+      <li class="active">Referals</li>
+    </ul>
+    <div class="row margin-bottom-40">
+      <%#= render :partial => "ac_side_bar" %>
+      <div class="col-md-12 col-sm-12">
+        <!-- <h1>Referrals</h1> -->
+        <div class="content-page">
+          <div class="row">
+            <div class="col-sm-12">
+
+
+
+              <div class="portlet-body">
+                <div id="navbar-example2" class="navbar navbar-default navbar-static" role="navigation">
+                  <div class="navbar-header">
+                    <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-js-navbar-scrollspy">
+                    <span class="sr-only">
+                    Toggle navigation </span>
+                    <span class="fa fa-bar">
+                    </span>
+                    <span class="fa fa-bar">
+                    </span>
+                    <span class="fa fa-bar">
+                    </span>
+                    </button>
+                    <a class="navbar-brand" href="javascript:;">
+                      Referral Menu
+                    </a>
+                  </div>
+                  <div class="collapse navbar-collapse bs-js-navbar-scrollspy">
+                    <ul class="nav navbar-nav">
+                      <li class="classView">
+                        <a href="#Opportunity" data-toggle="tab">
+                          Opportunity (<%=  @total_new_jobs %>)
+                        </a>
+                      </li>
+                      <li class="">
+                        <a href="#Pending" data-toggle="tab">
+                          Pending (<%= @total_pending_jobs%>)
+                        </a>
+                      </li>
+                      <li class="">
+                        <a href="#Attending" data-toggle="tab">
+                          Attending (<%=  @jobs.count %>)
+                        </a>
+                      </li>
+                      <li class="">
+                        <a href="#Attended" data-toggle="tab">
+                          Attended (<%=  @attended_jobs.count %>)
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div data-spy="scroll" data-target="#navbar-example2" data-offset="0" class="scrollspy-example" style="height: 100%; overflow: hidden;">
+                  <div class="tab-content" style="border:0px; background: #fff; padding-left: 0px;">
+                    <div class="tab-pane active" id="Opportunity">
+                      <%= render :partial => "opportunities", :locals => { :jobs => @new_jobs } %>
+                      <div class="col-sm-8" style="float:left;">
+                        <%= link_to 'Loading more jobs....', instructor_opportunity_path(:page => @new_jobs.next_page), :class => 'load-more-jobs', :remote => true if @new_jobs.next_page %>  
+                      </div>
+                    </div>
+                    <div class="tab-pane" id="Pending">
+                      <%= render :partial => "pending_opportunities", :locals => { :pending_jobs => @jobs_pending } %>
+                      <div class="col-sm-8" style="float:left;">
+                        <%= link_to 'Loading more jobs....', instructor_opportunity_path(:page => @jobs_pending.next_page), :class => 'load-more-pending-jobs ', :remote => true if @jobs_pending.next_page %>   
+                      </div>
+                    </div>
+                    <div class="tab-pane" id="Attending">
+                      <%= render :partial => "attending_referrals", :locals => { :jobs => @jobs } %>
+                      <div class="col-sm-8" style="float:left;">
+                        <%= link_to 'Loading more jobs....', instructor_referrals_path(:page => @jobs.next_page), :class => 'load-more-jobs', :remote => true if @jobs.next_page %>  
+                        </div> 
+                    </div>
+                    <div class="tab-pane" id="Attended">
+                      <%= render :partial => "attended_referrals", :locals => { job_attended: @attended_jobs } %>
+                      <div class="col-sm-8" style="float:left;">
+                        <%= link_to 'Loading more jobs....', instructor_referrals_path(:page => @attended_jobs.next_page), :class => 'load-more-attended-jobs ', :remote => true if @attended_jobs.next_page %>   
+                      </div>  
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+              <!-- 
+                <div class="tabbable-custom" >
+                  <ul class="nav nav-pills">
+                    <li class="active">
+                      <a href="#tab_5_1" id="Attending" data-toggle="tab">
+                      Attending (<%=  @jobs.count %>) </a>
+                    </li>
+                    <li>
+                      <a href="#tab_5_2" id="Attended" data-toggle="tab">
+                      Attended (<%=  @attended_jobs.count %>) </a>
+                    </li>
+                  </ul>
+                  <div class="tab-content" style="border:0px;">
+                    <div class="tab-pane active" id="tab_5_1">
+                      <div class="row">
+                        <div class="col-sm-8" id="attending_referrals">
+                          <%#= render :partial => "attending_referrals", :locals => { :jobs => @jobs } %>
+                        </div>
+                        <div class="col-sm-8" style="float:left;">
+                          <%#= link_to 'Loading more jobs....', instructor_referrals_path(:page => @jobs.next_page), :class => 'load-more-jobs', :remote => true if @jobs.next_page %>  
+                        </div>  
+                      </div>  
+                    </div>
+
+                    <div class="tab-pane" id="tab_5_2">
+                      <div class="row">
+                        <div class="col-sm-8" id="attended_referrals">
+                          <%#= render :partial => "attended_referrals", :locals => { job_attended: @attended_jobs } %>
+                        </div>
+                        <div class="col-sm-8" style="float:left;">
+                          <%#= link_to 'Loading more jobs....', instructor_referrals_path(:page => @attended_jobs.next_page), :class => 'load-more-attended-jobs ', :remote => true if @attended_jobs.next_page %>   
+                        </div>  
+                      </div>  
+                    </div>
+                  </div>
+                </div>
+              -->
+            </div>  
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+ <script type="text/javascript">
+  $(function() {
+    var loading_posts, pending_jobs;
+    loading_posts = false;
+    pending_jobs = false;
+    return $('a.load-more-jobs').on('inview', function(e, visible) {
+      if (loading_posts || !visible) {
+        return;
+      }
+      loading_posts = true;
+      var t = $.getScript($(this).attr('href'), function() {
+        return loading_posts = false;
+      });
+    });
+  });
+
+  $(function() {
+    var loading_posts, pending_jobs;
+    loading_posts = false;
+    pending_jobs = false;
+    return $('a.load-more-attended-jobs').on('inview', function(e, visible) {
+      if (pending_jobs || !visible) {
+        return;
+      }
+        pending_jobs = true;
+        return $.getScript($(this).attr('href'), function() {
+        return pending_jobs = false;
+      });
+    });
+  });
+
+  $(function() {
+    var loading_posts,pending_jobs;
+    loading_posts = false;
+    pending_jobs = false;
+    return $('a.load-more-jobs').on('inview', function(e, visible) {
+      if (loading_posts || !visible) {
+        return;
+      }
+        loading_posts = true;
+        return $.getScript($(this).attr('href'), function() {
+        return loading_posts = false;
+      });
+    });
+  });
+
+  $(function() {
+    var loading_posts,pending_jobs;
+    loading_posts = false;
+    pending_jobs = false;
+   return $('a.load-more-pending-jobs').on('inview', function(e, visible) {
+      if (pending_jobs || !visible) {
+        return;
+      }
+        pending_jobs = true;
+        return $.getScript($(this).attr('href'), function() {
+        return pending_jobs = false;
+      });
+    });
+  });
+</script>

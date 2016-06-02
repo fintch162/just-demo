@@ -1,0 +1,11 @@
+var style = "style='position: relative; font-size: 20px; background: #EEEEEE; right: 500px; padding: 10px; width: 300px; color: #000; z-index: 999999; border: 1px solid;'";
+$(".top-menu").css("position", "relative");
+$(".top-menu").fadeIn().html('<div id="job_success_message" '+ style +'>Payment successfully created.</div>');
+$('html,body').animate({ scrollTop: $('#job_success_message').offset().top }, 1000).delay(3000)
+                       .queue(function() {
+                           $("#job_success_message").fadeOut('slow');
+                           $(this).dequeue();
+                       });
+$("#payment-note-"+<%= @online_payment_id %>).closest('tr').find('td:eq(3)').html("<%= @online_payment.status %>");
+console.log($("#payment-note-"+<%= @online_payment_id %>).closest('tr'));
+$("#payment-note-"+<%= @online_payment_id %>).remove();

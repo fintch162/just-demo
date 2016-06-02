@@ -1,0 +1,11 @@
+$modal = $('.inst_student')
+$modal.html('<%= escape_javascript(render partial: "bulk_invoice_month_selection") %>');
+$modal.modal();
+$('.date-picker').datepicker({
+      format: 'd MM yyyy'
+    });
+$('.date-picker1').datepicker({
+  format: 'MM yyyy',
+  startView: 1,
+  minViewMode: 1
+});

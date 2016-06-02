@@ -1,0 +1,174 @@
+<div class="col-md-6">
+  <%= form_for @award_test , :url => manage_create_award_test_path ,:html => {:id => "new_award_test"} do |f| %>
+    <div class="string input required stringish form-group" id="instructor_name_input">
+      <label class=" control-label" for="instructor_name">Date<abbr title="required">*</abbr></label>
+      <span class="form-wrapper">
+        <div class="input-group date date-picker" data-date-format="dd-mm-yyyy" data-date-start-date="+0d">
+          <% if @award_test.test_date? %>
+            <input type="text" class="form-control" readonly="true" name="award_test[test_date]" style="background-color: #eee !important;" required="required" value="<%= @award_test.test_date.strftime('%e %B %Y')%>">
+          <% else %>
+            <input type="text" class="form-control" readonly="true" name="award_test[test_date]" style="background-color: #eee !important;" required="required" >
+          <% end %>  
+          <span class="input-group-btn">
+            <button class="btn default" type="button" style="height: 34px;"><i class="fa fa-calendar"></i></button>
+          </span>
+        </div>
+        <div class="error1"></div>
+      </span>
+    </div>
+
+    <div class="email input required stringish form-group" id="instructor_email_input">
+      <label class=" control-label" for="instructor_email">Time<abbr title="required">*</abbr></label>
+      <span class="form-wrapper">
+        <div class="input-group">
+          <input type="text" class="form-control timepicker timepicker-no-seconds "  name="award_test[test_time]" required="required" readonly="true" style="background-color: #eeeeee !important;" data-date-format="hh:mm A/PM">
+          <span class="input-group-btn">
+          <button class="btn default" type="button" style="height: 34px;"><i class="fa fa-clock-o"></i></button>
+          </span>
+        </div>
+        <div class="error2"></div>
+      </span>  
+    </div>
+
+    <div class="string input required stringish form-group" id="instructor_mobile_input">
+      <label class=" control-label" for="instructor_mobile">Award<abbr title="required">*</abbr></label>
+      <span class="form-wrapper"><%= f.collection_select :award_id , Award.all, :id, :name ,{ :prompt => 'Please Select'},{:class=>"form-control" ,:required => true } %></span>
+    </div>
+
+    <div class="string input required stringish form-group" id="instructor_mobile_input">
+      <label class=" control-label" for="instructor_mobile">Venue<abbr title="required">*</abbr></label>
+      <span class="form-wrapper"><%= f.collection_select :venue_id , Venue.all, :id, :name ,{ :prompt => 'Please Select'},{:class=>"form-control" ,:required => true } %></span>
+    </div>
+
+    <div class="email input required stringish form-group">
+      <label class=" control-label">Number of slots</label>
+      <span class="form-wrapper">
+        <div class="input-group col-md-12">
+          <%= f.text_field :total_slot, :class=>"form-control" %>
+        </div>
+      </span>  
+    </div>
+
+    <div class="email input required stringish form-group">
+      <label class=" control-label">Test Fee</label>
+      <span class="form-wrapper">
+        <div class="input-group col-md-12">
+          <%= f.text_field :test_fee, :class=>"form-control", :required => true %>
+        </div>
+      </span>  
+    </div>
+    <div class="string input required stringish form-group" id="instructor_mobile_input">
+      <label class=" control-label" for="instructor_mobile">Organiser</label>
+      <span class="form-wrapper"><%= f.collection_select  :assessor,  Instructor.order(:name) , :id, :name ,{:include_blank => true },{ :class=>"form-control" } %></span>
+    </div>
+    <div class="string input required stringish form-group" id="instructor_name_input">
+      <label class=" control-label" for="instructor_name">Cut Off Date<abbr title="required"></abbr></label>
+      <span class="form-wrapper">
+        <div class="input-group date date-picker" data-date-format="dd-mm-yyyy" data-date-start-date="+0d">
+          <% if @award_test.cut_off_date? %>
+            <input type="text" class="form-control" readonly="true" name="award_test[cut_off_date]" style="background-color: #eee !important;" required="required" value="<%= @award_test.cut_off_date.strftime('%e %B %Y')%>">
+          <% else %>
+            <input type="text" class="form-control" readonly="true" name="award_test[cut_off_date]" style="background-color: #eee !important;" required="required" >
+          <% end %>  
+          <span class="input-group-btn">
+            <button class="btn default" type="button" style="height: 34px;"><i class="fa fa-calendar"></i></button>
+          </span>
+        </div>
+        <div class="error1"></div>
+      </span>
+    </div>
+    <%= f.submit "Save", :class=>"btn green" %>
+    <%= link_to "Cancel",  manage_award_tests_path, :class=> "btn default" %>
+  <% end %>
+</div>
+<script>
+$(document).ready(function() {
+  $("#new_award_test").validate({
+    rules: {
+      instructor_id: {
+        required: true
+      }
+    },
+    errorPlacement: function(error, element) {
+      if ( element.attr("name") == "award_test[test_date]")
+      {
+        error.insertAfter(".error1");
+      }
+      else if ( element.attr("name") == "award_test[test_time]"  )
+      {
+        error.insertAfter(".error2");
+      }
+      else
+      {
+       error.insertAfter(element);
+      }
+    }
+  });
+  
+  Metronic.init(); 
+  Layout.init();
+  $('.date-picker').datepicker({
+      format: 'd MM yyyy'
+    });
+  $('.timepicker-no-seconds').timepicker({
+    minuteStep: 5,
+    autoclose: true,
+    defaultTime: '<%= @award_test.test_time.strftime("%I:%M %p") if @award_test.test_time? %>'
+  });
+  $('.timepicker').parent('.input-group').on('click', '.input-group-btn', function(e){
+      e.preventDefault();
+      $(this).parent('.input-group').find('.timepicker').timepicker('showWidget');
+  });
+});
+
+/*for cutoff date */
+$(document).ready(function() {
+  $("#new_award_test").validate({
+    rules: {
+      instructor_id: {
+        required: true
+      }
+    },
+    errorPlacement: function(error, element) {
+      if ( element.attr("name") == "award_test[cut_off_date]")
+      {
+        error.insertAfter(".error1");
+      }
+      else if ( element.attr("name") == "award_test[cut_off_date]"  )
+      {
+        error.insertAfter(".error2");
+      }
+      else
+      {
+       error.insertAfter(element);
+      }
+    }
+  });
+  
+  Metronic.init(); 
+  Layout.init();
+  $('.date-picker').datepicker({
+      format: 'd MM yyyy'
+    });
+  $('.timepicker-no-seconds').timepicker({
+    minuteStep: 5,
+    autoclose: true,
+    defaultTime: '<%= @award_test.cut_off_date.strftime("%I:%M %p") if @award_test.cut_off_date? %>'
+  });
+  $('.timepicker').parent('.input-group').on('click', '.input-group-btn', function(e){
+      e.preventDefault();
+      $(this).parent('.input-group').find('.timepicker').timepicker('showWidget');
+  });
+});
+
+  
+  
+</script>
+<style>
+  .error {
+    color: red;
+  }
+  .bootstrap-timepicker-hour, .bootstrap-timepicker-minute, .bootstrap-timepicker-meridian{
+    border: none;
+  }
+</style>

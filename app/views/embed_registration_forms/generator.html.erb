@@ -1,0 +1,1329 @@
+<div class="col-sm-10 col-md-8" id="lead_show">
+  <div class="margin-top-20">
+    
+    <div class="message-notice">
+      <% if notice %>
+        <div class="Metronic-alerts alert alert-success fade in"><button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button><%= notice %></div>
+      <% end %>
+    </div>
+<!-- 
+    <div class="form-group">
+      <legend> URL GENERATOR</legend>
+      <input class="form-control url_gan" id="url_gan" name="job[url_gan]" value="<%#= request.domain %>/swimming-lessons-registration/" type="text">
+    </div>
+ -->
+    <%= nested_form_for [:manage, @job], url: "/embed_registration_forms", method: :post, :html => { :class => "form-horizontal", :id=>"new_lead", :target => "_parent" } do |f| %>
+      <fieldset>
+
+        <legend>Lesson Preference</legend>
+        <div id="lead_class_type" >
+          <div class="form-group">
+            <label class="col-sm-4 control-label class_type">I am registering for..<span class="required" aria-required="true">*</span></label>
+            <div class="clearfix col-sm-8">
+              <div data-toggle="buttons">
+                <% ClassType.all.each do |a|%>
+                  <% if  a.title.downcase == "group" %>
+                    <% if a.title.downcase == "private" %>
+                      <label class="radio-inline"><%= f.radio_button :lead_class_type, a.id ,:class=>"toggle",:id => a.title , :autocomplete =>"off" %> <%= a.title %> Lessons </label></br>
+                    <% elsif a.title.downcase == "group" %>
+                      <label class="radio-inline"> <%= f.radio_button :lead_class_type, a.id ,:class=>"toggle",:id => a.title  , :autocomplete =>"off" %> <%= a.title %> Class </label></br>
+                    <% end %>
+                  <% else %>
+                    <% if a.title.downcase == "private" %>
+                      <label class="radio-inline"><%= f.radio_button :lead_class_type, a.id ,:class=>"toggle",:id => a.title , :autocomplete =>"off" %> <%= a.title %> Lessons</label></br>
+                    <% elsif a.title.downcase == "group" %>
+                      <label class="radio-inline"><%= f.radio_button :lead_class_type, a.id ,:class=>"toggle",:id => a.title , :autocomplete =>"off" %> <%= a.title %> Class</label></br>
+                    <% end %>
+                    </label>
+                  <% end %>  
+                <% end %>
+              </div>
+              <div class="grpup_class_error" style="font-size: 13px; display: none;">Please select one.</div>
+              <div id="err_lead_class_type" style="font-size: 13px; color:#A94442;"></div>
+            </div>
+          </div>
+        </div>
+        <div id="age_group_private" style="display: none;">
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Age Group<span class="required" aria-required="true">*</span></label>
+            <div class="col-sm-8">
+              <% AgeGroup.where("LOWER(title) IN (?)", ['lady', 'adult', 'kids']).each do |ag|%>
+                <% if ag.title == "Kids" %>
+                  <label  id="kids_p"><%= f.radio_button :age_group, ag.id ,:class =>"age_group kids_p" ,:id =>""%> <%= ag.title %> (6yrs onwards)</label></br>
+                <% elsif ag.title  == "Adult" %>
+                  <label id="Adult" ><%= f.radio_button :age_group, ag.id ,:class =>"age_group adult_p" %> <%= ag.title %>  (15yrs onwards)</label></br>
+                <% end %>
+              <% end %>
+              <div class="grpup_class_error" style="font-size: 13px; display: none;">Please select one.</div>
+            </div>
+          </div>
+        </div>
+        <div id="age_group_group" style="display: none;">
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Age Group<span class="required" aria-required="true">*</span></label>
+            <div class="col-sm-8">
+              <% AgeGroup.where("LOWER(title) IN (?)", ['lady', 'adult', 'kids']).each do |ag|%>
+                <% if ag.title == "Kids" %>
+                  <label id="kids"><%= f.radio_button :age_group, ag.id ,:class =>"age_group_grp kids_g " %> <%= ag.title %>  Group (from $70 per month)</label><br/>
+                <% elsif ag.title  == "Adult" %>
+                  <label id="adult"><%= f.radio_button :age_group, ag.id ,:class =>"age_group_grp adult_g" %> <%= ag.title %>  Group (from $200 per course)</label><br/>
+                <% elsif  ag.title  == "Lady" %>
+                  <label id="lady"><%= f.radio_button :age_group, ag.id ,:class =>"age_group_grp lady_g" %> <%= ag.title %> Group (from $250 per course)</label><br/>
+                <% end %>
+              <% end %>
+              <div class="grpup_class_error" style="font-size: 13px; display: none;">Please select one.</div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" id="lady_instructor_only" style="display: none;" >
+          <label class="col-sm-4 control-label"></label>
+          <div class="col-sm-8">
+            <%= f.check_box :lead_lady_instructor_only %>
+            <%= f.label :lead_lady_instructor_only, "Lady Instructor Only" %>
+              <p class="help-block" style="font-size: 13px">Please note that it will take a longer time to match an available lady instructor.</p>
+          </div>
+        </div>
+        <div id="age_group_tbl" style="display: none;" >
+          <div class="form-group" >
+            <label class="col-sm-4 control-label">Choose<span class="required" aria-required="true">*</span></label>
+            <div class="col-sm-8 col-xs-12">
+              <% AgeGroup.all.each do |age_group| %>
+                <% registration_packages_count = age_group.registration_packages.count %>
+                <% if registration_packages_count > 0 %>
+                  <%  sort_registration_packages = age_group.registration_packages.order("no_of_student")%>
+                  <% @student_count = sort_registration_packages.pluck("no_of_student").uniq %>
+                  <table class="table table-condensed table-hover age_group_<%= age_group.id %>" style="display: none;">
+                    <caption>Package of 4 x 45min lesson</caption>
+                    <tbody>
+                      <tr>
+                        <th></th>
+                        <th class="text-center">Male Coach<br></th>
+                        <th class="text-center">Lady Coach<br></th>
+                      </tr>
+                      <% cnt = 0 %>
+                      <% @student_count.each do |registration_package| %>
+                      <% reg_package = age_group.registration_packages.where(:no_of_student => registration_package) %>
+                        <% studnet_count =  registration_package %>
+                          <tr>
+                            <td><%= studnet_count %> student<br></td>
+                            <% male_fee = 0 %>
+                            <% m_id = 0 %>
+                            <% lady_fee = 0 %>
+                            <% l_id = 0%>
+
+                            <% reg_package.each do |reg_package| %>
+                              <% if reg_package.is_lady? %>
+                                <% lady_fee = reg_package.price %>
+                                <% l_id = reg_package.id %>
+                              <% else %> 
+                                <% male_fee = reg_package.price %>
+                                <% m_id = reg_package.id %>
+                              <% end %>
+                            <% end %>
+                          <td class="text-center">
+                            <label>
+                              <input type="radio" name="job[registration_package_id]" value="<%= registration_package %>,<%= m_id %>" > $<%= male_fee.to_i %>
+                            </label>
+                          </td>
+                          <td class="text-center">
+                            <label>
+                              <input type="radio" name="job[registration_package_id]" value="<%= registration_package %>,<%= l_id %>" > $<%= lady_fee.to_i %>
+                            </label>
+                          </td>
+                        </tr>
+                      <% end %>
+                    </tbody>
+                  </table>
+                <% end %>
+              <% end %>
+              <div class="grpup_class_error" style="font-size: 13px; display: none;">Please select one.</div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Contact details</legend>
+        <div class="row">
+          <div class="col-sm-12" id="lead_name">
+            <div class="form-group">
+              <label class="col-sm-4 control-label">
+                <%= f.label :lead_name, "Name", :"data-name" => :lead_name %><span class="required" aria-required="true">*</span>
+              </label>
+              <div class="col-sm-8">
+                <%= f.text_field :lead_name, :class => "form-control error-rm" , :placeholder => "e.g.Jane Toh"%>
+                <!-- <div id="err_lead_name" style="font-size: 13px;"></div> -->
+                <span class="e_name" style="display:none; font-size: 13px; color:#a94442;">Please enter your name</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12" id="lead_contact">
+            <div class="form-group">
+              <label class="col-sm-4 control-label">
+              <%= f.label :lead_contact, "Mobile" %><span class="required" aria-required="true">*</span>
+              </label>
+              <div class="col-sm-8">
+                <%= f.text_field :lead_contact, :class => "form-control error-rm" , :placeholder => "e.g.12345678" %>
+                <div id="err_lead_contact" style="font-size: 13px;"></div>
+                <span class="e_msg" style="display:none; font-size: 13px; color:#a94442;">Contact number is not valid</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12"  id="lead_email">
+            <div class="form-group ">
+              <label class="col-sm-4 control-label">
+                <%= f.label :lead_email, "Email" %><span class="required" aria-required="true">*</span>
+              </label>
+              <div class="col-sm-8">
+                <%= f.text_field :lead_email, :class => "form-control error-rm" , :placeholder => "e.g.example@gmail.com"%>
+                <div id="err_lead_email" style="font-size: 13px;"></div>
+                <span class="e_msg_e" style="display:none; font-size: 13px; color:#a94442;">Email is not valid</span>
+              </div>
+            </div>
+          </div>
+            <!--  <div class="col-sm-12">
+            <div class="form-group">
+              <label class="col-sm-4 control-label" for="address">
+                <%#= f.label :lead_address, "Address" %>
+              </label>
+              <div class="col-sm-8">
+                <%#= f.text_area :lead_address, :class => "form-control error-rm", :rows => 3%>
+              </div>
+            </div>
+          </div> -->
+        </div>
+      </fieldset>
+       <fieldset>
+        <legend>Student Details</legend>
+        <div class="col-sm-12 students">
+          <%= f.fields_for :students do |student| %>
+            <%= render 'manage/registration/student_fields', :f => student %>
+          <% end %>
+          <div class="row">
+            <div class="col-xs-12">
+              <%= f.link_to_add :students, { :class => "btn default btn-block"} do %>
+                Add another student
+              <% end %>
+              <br/>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Venue & Schedule </legend>
+        <div id="show_private" style="display: none;">
+          <div id="private_lesson">
+            <div class="form-group">
+              <label class="col-sm-4 control-label">Venue<span class="required" aria-required="true">*</span></label>
+              <div class="col-sm-8">
+                <label ><%= f.radio_button :private_lesson ,true,:class =>"condominium private_lesson" %> Condominium
+                </label></br>
+                <label ><%= f.radio_button :private_lesson ,false,:class =>"public_pool private_lesson" %> Public pool
+                </label></br>
+                <div class="grpup_class_error" style="font-size: 13px; color:#A94442; display: none;">Please select one.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="other_venue">
+          <div class="form-group other_venue" style="display: none;">
+            <label class="col-sm-4 control-label" for="address">Condo Name</label>
+            <div class="col-sm-8">
+              <%= f.text_field :other_venue, :class => "form-control error-rm" %>
+            <div class="grpup_class_error" style="font-size: 13px; color:#A94442; display: none;">Please enter condo name</div>
+            </div>
+          </div> 
+        </div>
+        <% if browser.ie8? %>
+          <div class="form-group" id="venues_ids">
+            <label class="col-sm-3 control-label class_type">Public Venues</label>
+            <% @n = Venue.all.in_groups(3) %>
+            <% @m = @n[0].length %>
+            <% @cnt = 0 %>
+            <%= f.collection_check_boxes :venue_ids, Venue.all, :id, :name do |b| %>
+              <% if @cnt % @m == 0 %>
+                <div class="col-sm-3 ">
+              <% end %>
+              <span>
+                <label>
+                  <%= b.check_box %>
+                  <%= b.text.to_s.sub("Swimming Complex", 'SC') %>
+                </label>
+                <br/>
+              </span>
+              <% @cnt = @cnt + 1 %> 
+              <% if (@cnt % @m == 0 ) || @cnt == Venue.count %>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        <% else %>
+          <div id="public_venue">
+            <div class="form-group public_venue" style="display: none;">
+              <label class="control-label col-xs-12 col-sm-4">Public Venues</label>
+              <div class="col-sm-8">
+                <%= f.select(:private_lesson_venue_id, @venues.order(:name).map {|x| [x.name.to_s.sub("Swimming Complex", 'SC'), x.id] }, {:include_blank => true}, :class=>"form-control error-rm") %> 
+                <div class="grpup_class_error" style="font-size: 13px; color:#A94442; display: none;">Please select one.</div>
+              </div>
+            </div>
+          
+          </div>
+         <!--  <div class="form-group" id="private_public_venue" style="display: none;">
+            <label class="control-label col-xs-12 col-sm-4">Public Venues</label>
+            <div class="col-sm-8">
+              <%#= f.select(:private_lesson_venue_id, @venues.order(:name).map {|x| [x.name.to_s.sub("Swimming Complex", 'SC'), x.id] }, {:include_blank => true}, :class=>"form-control error-rm") %> 
+            </div>
+          </div> -->
+          <div class="form-group" id="venues_ids">
+            <label class="control-label col-xs-12 col-sm-4" >Public Venues<span class="required" aria-required="true">*</span></label>
+            <div class="col-xs-6 col-sm-4 ">
+              <% @venue =  Venue.where("name NOT IN (?)", ['Bukit Timah Swimming Complex', 'Buona Vista Swimming Complex', 'Condo', 'Kallang Basin Swimming Complex']) %>
+              <% v_count = @venue.count %>
+              <% vne_count = v_count/2 %>
+              <% cnt = 0 %>
+              <%= collection_check_boxes(:job, :venue_ids, @venue.order("name"), :id, :name_with_initial ) do |b| %>
+                <% cnt = cnt + 1 %>
+                <%=  b.label(:style => "display: inherit;") { b.check_box(:style => "margin-left: 2px; margin-right: 3px;", :class=> "publicVenueList") + b.text } %>
+                <% if cnt == vne_count %>
+                  </div>
+                  <div class="col-xs-6 col-sm-4 ">
+                <% end %>
+                <% if cnt == v_count %>  
+                  </div>
+                <% end %>
+              <% end %>
+            <div class="col-sm-4"></div><div class="venue_class_error col-xs-8" style="font-size: 13px; display: none; padding-left: 0px;">Please select one.</div>
+          </div>
+        <% end %>
+        <div class="form-group" id="preferred_day_group">
+          <label class="col-sm-4 control-label">Preferred day & time<span class="required" aria-required="true">*</span></label>
+          <div class="col-sm-8">
+            <%= f.text_area :lead_day_time, :class => "form-control error-rm", :rows => 2, :placeholder =>"e.g. Mon - Fri 5pm onwards, Sat 3pm - 7pm, Sun whole day"%>
+            <div id="err_lead_day" style="font-size: 13px;"></div>
+          </div>
+        </div>
+        <div class="form-group" id="lead_starting_on">
+          <label class="col-sm-4 control-label">Start After<span class="required" aria-required="true">*</span></label>
+            <div class="col-sm-8">
+              <div class="input-group input-medium date date-picker sdate"  data-date-format="dd-mm-yyyy" data-date-start-date="+0d">
+                <%= f.text_field :lead_starting_on, :class => "form-control error-rm", :readonly => true %>
+                <span class="input-group-btn">
+                <a href="javascript:;" class="btn default" style="height: 34px;"> <i class="fa fa-calendar"></i></a>
+                </span>
+              </div>
+            <div id="err_lead_start_on" style="font-size: 13px;"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-4 control-label">Additional Information</label>
+          <div class="col-sm-8">
+            <%= f.text_area :lead_info, :class=>"form-control error-rm",:rows => 2, :placeholder => "Any medical problems, or disability etc.." %>
+            <%= f.hidden_field :lead_affiliate, :value => params[:aff] %>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-4 control-label">Referred</label>
+          <div class="col-sm-8">
+            <%= f.text_field :referred, :class=>"form-control error-rm",:placeholder => "e.g. Adwords campaign 2" %>
+          </div>
+        </div>
+
+      </fieldset>
+      <fieldset>
+        <legend> URL GENERATOR</legend>
+        <div class="row">
+          <div class="col-sm-12" id="lead_name">
+            <div class="form-group">
+              <div class="col-sm-12">
+               <input class="form-control url_gan" id="url_gan" name="job[url_gan]" value="http://app.singaporeswimming.com/swimming-lessons-registration/" type="text">
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    <!--  <div class="row padding-top-25">
+      <center>
+        <%#= f.submit "Submit Registration", :class => "btn btn-primary btn-lg submit_form"  %>
+      </center>
+    </div> -->
+    <% end %>
+  </div>
+</div>
+
+<script type="text/javascript" src="/assets/manage/jquery.validate.min.js"></script>
+<script>
+ $("#new_lead").attr('autocomplete', 'off');
+  $("#Private ").click(function(){
+    $("input[name='job[lead_lady_instructor_only]']").prop('checked', false);
+    $("input[name='job[age_group]']").prop('checked', false);
+    $("input[name='job[is_insurance]']").prop('checked', false);
+    $("input[name='job[private_lesson]']").prop('checked', false);
+    $('.add_nested_fields').hide();
+    $('.remove_nested_fields').hide();    
+    $('#age_group_private').show();
+    if($('#age_group_group').is(":visible") == true){
+      $('#age_group_group').hide();
+    }
+    if($('#lady_instructor_only').is(":visible") == true){
+      $('#lady_instructor_only').hide(); 
+    }
+    if($('#insurance').is(":visible") == true){
+      $('#insurance').hide(); 
+    }
+  });
+  $("#Group ").click(function(){
+    $("input[name='job[lead_lady_instructor_only]']").prop('checked', false);
+    $("input[name='job[registration_package_id]']").prop("checked",false);
+    $("input[name='job[is_insurance]']").prop('checked', false);
+    $(".age_group").prop('checked', false);
+    $("input[name='job[private_lesson]']").prop('checked', false);
+    //$("input[name='job[age_group]']").prop('checked', false);
+    $('.add_nested_fields').show();
+    $('.remove_nested_fields').show();    
+    $('#age_group_group').show();
+    if($('#age_group_private').is(":visible") == true){
+      $('#age_group_private').hide();
+      $('.public_venue').hide();
+      $('#age_group_tbl').hide(); 
+    }
+    if($('#insurance').is(":visible") == true){
+      $('#insurance').hide(); 
+    }
+    s_cnt = last_clicked_vlu;
+    for(var j=s_cnt;j>0;j--)
+      {
+   // //console.log(s_cnt);
+        $('#fields-'+j).hide();
+      }
+  }); 
+  $(".age_group").click(function () {
+    var selectedGroup = $(this).val();
+    $('#age_group_tbl').show();
+    $('#insurance').show();
+    $('#age_group_tbl').find('.table-condensed').each(function(){
+      $(this).hide();
+    });
+    $('.age_group_'+selectedGroup).show();
+  });
+  $("#kids").click(function () {
+    $('#lady_instructor_only').show();
+    $('#insurance').show();
+  });
+  $("#kids_p").click(function () {
+    //$('#lady_instructor_only').show();
+    $('#insurance').hide();
+  });
+  
+  $(".condominium").click(function () {
+    $('.other_venue').show();
+    if($('.public_venue').is(":visible") == true){
+      $('.public_venue').hide();
+    } 
+  }); 
+  $(".public_pool").click(function () {
+    $('.public_venue').show();
+    if($('.other_venue').is(":visible") == true){
+      $('.other_venue').hide();
+    }
+  });
+  function doClick(e) { 
+    if($('#lady_instructor_only').is(":visible") == true){
+      $('#lady_instructor_only').hide(); 
+    }
+    if($('#insurance').is(":visible") == true){
+      $('#insurance').hide(); 
+    }
+  }
+   $("#Adult").click(function () {
+    if($('#insurance').is(":visible") == true){
+      $('#insurance').hide(); 
+    }
+   });
+  $('#adult').click(doClick);
+  $('#lady').click(doClick);
+
+  var max_value = 4;
+  var isCreated = false;
+  var last_clicked_vlu = 0 ;
+  $("input[name='job[registration_package_id]']").change(function (id) {
+    if(isCreated==false)
+    {
+      for(var i=1;i<max_value;i++)
+    {
+     $('.add_nested_fields').click();
+     $('.add_nested_fields').css({"display":"none"});
+     $('.remove_nested_fields').css({"display":"none"});
+
+    }
+      isCreated = true;
+    }
+    var s = $(this).val();
+    var s_no = Number(s.split(",")[0]);
+    for(var j=0;j<max_value;j++)
+    {
+      if(j<s_no)
+        $('#fields-'+j).css({"display":"block"});  
+      else
+      {
+        $('#fields-'+j).css({"display":"none"});  
+      }
+    }
+    last_clicked_vlu = s_no;
+  });
+
+  var cnt = 0;
+  function formvalidation(){
+    cnt = 0;
+    var lead_name = $("#job_lead_name").val();
+    addErrorClass("#err_lead_name", lead_name, "Please enter your name");
+    var lead_contact = $("#job_lead_contact").val();
+    addErrorClass("#err_lead_contact", lead_contact, "Please enter your mobile number");
+    validateNumber("#err_lead_contact", lead_contact, "Mobile number must have at least 8 digits");
+    var lead_email = $("#job_lead_email").val();
+    addErrorClass("#err_lead_email", lead_email, "Please enter your email address");
+    validateEmail("#err_lead_email", lead_email, "This is not a valid email address");
+
+    var lead_class_type = $('#lead_class_type input[name="job[lead_class_type]"]:checked').length
+    if (lead_class_type == 0){
+      if (cnt == 0){
+        $(this).focus();
+        $('html,body').animate({
+        scrollTop: $("#lead_class_type").offset().top},
+        'slow');
+        $("#lead_class_type").focus();
+      }
+      cnt = 1;
+    }
+    $('.student_name').each(function(i){
+      var s_name = $("#" + idSname + i).val();
+      if($("#" + idSname + i).is(":visible") == true){
+        if(s_name == ""){
+          $("#" + idSname + i).closest('.col-sm-12').addClass("has-error");
+          if (cnt == 0){
+            $("#" + idSname + i).focus();
+            $('html,body').animate({
+              scrollTop: $(this).offset().top},
+              'slow');
+          }
+          cnt = 1;
+        }
+        else{
+          $("#" + idSname + i).closest('.col-sm-12').removeClass("has-warning has-error");
+        }
+      }
+    });
+    $('.gender').each(function(i){
+      var s_gender = $("#" + idGender + i).find('option:selected').val();
+      if($("#" + idGender + i).is(":visible") == true){
+        if(s_gender == ""){
+          $("#" + idGender + i).closest('.col-xs-4').addClass('has-error').removeClass("has-warning");
+          
+          if (cnt == 0){
+            $("#" + idGender + i).focus();
+            $('html,body').animate({
+              scrollTop: $(this).offset().top},
+              'slow');
+          }
+          cnt = 1;
+        }
+        else{
+           $("#" + idGender + i).closest('.col-xs-4').removeClass("has-warning has-error");
+        }
+      }
+    });
+    $('.ages').each(function(i){
+      var s_age = $("#" + idAuto + i).find('option:selected').val();
+      if($("#" + idAuto + i).is(":visible") == true){
+        if(s_age == ""){
+          $("#" + idAuto + i).closest('.col-xs-4').addClass('has-error');
+          if (cnt == 0){
+            $("#" + idAuto + i).focus();
+            $('html,body').animate({
+              scrollTop: $(this).offset().top},
+              'slow');
+          }  
+          cnt = 1;
+        }
+        else{
+          $("#" + idAuto + i).closest('.col-xs-4').removeClass("has-warning has-error");
+        }
+      }
+    });
+    $('.age_month_p').each(function(i){
+      var s_age = $("#" + idAgeMonth + i).find('option:selected').val();
+      if($("#" + idAgeMonth + i).is(":visible") == true){
+        if(s_age == ""){
+          $("#" + idAgeMonth + i).closest('.col-xs-4').addClass('has-error');
+          if (cnt == 0){
+            $("#" + idAgeMonth + i).focus();
+            $('html,body').animate({
+              scrollTop: $(this).offset().top},
+              'slow');
+          }  
+          cnt = 1;
+        }
+        else{
+          $("#" + idAgeMonth + i).closest('.col-xs-4').removeClass("has-warning has-error");
+        }
+      }
+    });
+    if($("#private_lesson").is(":visible") == true){
+      var private_lesson = $('#private_lesson input[name="job[private_lesson]"]:checked').length
+      if (private_lesson == 0){
+        if (cnt == 0){
+          $("#private_lesson").focus();
+          $('html,body').animate({
+            scrollTop: $("#private_lesson").offset().top},
+            'slow');
+        }
+        cnt = 1;
+      }
+    }
+    if($("#job_other_venue").is(":visible") == true){
+      var other_venue = $('#job_other_venue').val();
+      ////console.log(other_venue);
+      if (other_venue == ""){
+        if (cnt == 0){
+          $("#job_other_venue").focus();
+          $('html,body').animate({
+            scrollTop: $("#job_other_venue").offset().top},
+            'slow');
+        }
+        cnt = 1;
+      }
+    }
+    if($("#job_private_lesson_venue_id").is(":visible") == true){
+      var public_venue = $('#job_private_lesson_venue_id').val();
+      ////console.log(public_venue);
+      if (public_venue == ""){
+        if (cnt == 0){
+          $("#job_private_lesson_venue_id").focus();
+          $('html,body').animate({
+            scrollTop: $("#job_private_lesson_venue_id").offset().top},
+            'slow');
+        }
+        cnt = 1;
+      }
+    }
+    if($("#venues_ids").is(":visible") == true){
+      var venues_ids = $("#venues_ids input[name='job[venue_ids][]']:checked").length
+      if (venues_ids == 0){
+        if (cnt == 0){
+          $("#venues_ids").focus();
+          $('html,body').animate({
+            scrollTop: $("#venues_ids").offset().top},
+            'slow');
+        }
+        cnt = 1;
+      }
+    }
+    if($("#preferred_day_group").is(":visible") == true){
+      var preferred_day_group = $("#job_lead_day_time").val();
+      if (preferred_day_group == ""){
+        if (cnt == 0){
+          $("#job_lead_day_time").focus();
+          $('html,body').animate({
+            scrollTop: $("#job_lead_day_time").offset().top},
+            'slow');
+        }
+        cnt = 1;
+      }
+    }
+    if($("#lead_starting_on").is(":visible") == true){
+      var lead_starting_on = $("#job_lead_starting_on").val();
+      if (lead_starting_on == ""){
+        if (cnt == 0){
+          $("#job_lead_starting_on").focus();
+          $('html,body').animate({
+            scrollTop: $("#job_lead_starting_on").offset().top},
+            'slow');
+        }
+        cnt = 1;
+      }
+    }    
+    var terms_and_conditions = $('#terms_and_conditions input[name="terms_and_conditions"]:checked').length
+    if (terms_and_conditions == 0){
+      if (cnt == 0){
+        $(this).focus();
+        $('html,body').animate({
+          scrollTop: $("#terms_and_conditions").offset().top},
+          'slow');
+      }
+      cnt = 1;
+    }
+    var do_not_call = $('#do_not_call input[name="do_not_call"]:checked').length
+    if (do_not_call == 0){
+      if (cnt == 0){
+        $(this).focus();
+        $('html,body').animate({
+          scrollTop: $("#do_not_call").offset().top},
+          'slow');
+      }
+      cnt = 1;
+    }    
+
+    //   $('.class_type').addClass('has-error').removeClass("has-warning");
+    //   $('#err_lead_class_type').html('<span style="color:#a94442 margin: 3px;">Select Group class or Private lessons</span>');
+    //   if (cnt == 0){
+    //     $(this).focus();
+    //   }
+    //   cnt = 1;
+    // }
+    // else{
+    //   $('.class_type').removeClass("has-warning has-error");
+    //   $("#err_lead_class_type").html("");
+    // }
+    if($("#job_lead_day_time").is(":visible") == true){
+      var day_time = $("#job_lead_day_time").val();
+      addErrorClass("#err_lead_day",day_time, "Enter a valid range for day and time");
+    }
+    if($("#preferred_day_private").is(":visible") == true){
+
+    }
+    var starting_on = $("#job_lead_starting_on").val();
+    addErrorClass("#err_lead_start_on",starting_on, "Enter the date you would like to start on");
+  }
+  function addErrorClass(key, value,error_message){
+    var dvalue = value
+    var error_message = error_message
+    if(dvalue == ""){
+      $(key).parents('.form-group').removeClass('has-warning');
+      $(key).parents('.form-group').addClass('has-error');
+      // $('<span style="margin-left: 242px;">'+error_message+'</span>').insertAfter($(key).parents('.form-group'));
+      $(key).html(error_message);
+      if(cnt == 0 ){
+        $(key).prev("input, textarea").focus();
+      }
+      cnt = 1;
+    }
+    else{
+      $(key).parents('.form-group').removeClass('has-warning has-error');
+      $(key).html("");
+    }
+  }
+  function validateNumber(key, value,error_message){
+    var primary_phone = value.replace(/ /g,'');
+    var dvalue = primary_phone.length;
+    var error_message = error_message
+    if(dvalue < 8){
+      $(key).parents('.form-group').removeClass('has-warning');
+      $(key).parents('.form-group').addClass('has-error');
+      // $('<span style="margin-left: 242px;">'+error_message+'</span>').insertAfter($(key).parents('.form-group'));
+      $(key).html(error_message);
+      if(cnt == 0 ){
+        $(key).focus();
+        $('html,body').animate({
+        scrollTop: $("#lead_contact").offset().top},
+        'slow');
+        $("#job_lead_contact").focus();
+      }
+      cnt = 1;
+    }
+    else{
+      $(key).parents('.form-group').removeClass('has-warning has-error');
+      $(key).html("");
+    }
+  }
+  function validateEmail(key, value,error_message){
+    var dvalue = value
+    var pattern = /^\b[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i;    
+    var error_message = error_message
+    if(!pattern.test(dvalue)){
+      $(key).parents('.form-group').removeClass('has-warning');
+      $(key).parents('.form-group').addClass('has-error');
+      // $('<span style="margin-left: 242px;">'+error_message+'</span>').insertAfter($(key).parents('.form-group'));
+      $(key).html(error_message);
+      if(cnt == 0 ){
+         $(key).focus();
+         $('html,body').animate({
+          scrollTop: $("#lead_email").offset().top},
+          'slow');
+         $("#job_lead_email").focus();
+      }
+      cnt = 1;
+
+    }
+    else{
+      $(key).parents('.form-group').removeClass('has-warning has-error');
+      $(key).html("");
+    }
+  }
+  function toTitleCase(str)
+  {
+    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+  }
+  $('#job_lead_name').blur(function() {
+    var lead_name = $("#job_lead_name").val();
+     lead_name = lead_name.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+     $("#job_lead_name").val(lead_name);
+     
+  });
+  function validatePhone(txtPhone){
+    var a = $("#job_lead_contact").val();
+    var filter = /^[+-]?[0-9]+$/;
+    if(filter.test(a))
+      return true;
+    else
+      return false;
+  }
+
+  // For generated url
+  function generate_new_url(p_name,p_id){
+    
+    ////console.log("p_name"+p_name +"p_id"+ p_id);
+
+    var current_url = $('.url_gan').val();
+    
+    ////console.log(current_url);
+
+    if (current_url.indexOf(p_name) == -1){
+      if (current_url.indexOf('?') > -1){
+        current_url =  current_url + '&'+p_name+'=' + $("#"+p_id).val().split(' ').join('%20');
+      }
+      else{
+        current_url = current_url + '?'+p_name+'=' + $("#"+p_id).val().split(' ').join('%20');
+      }
+    }
+    else{
+      var divide_url = current_url.split('?');
+      var split_params = divide_url[1].split('&');
+      for (var i = 0; i < split_params.length; i++) {
+        if (split_params[i].indexOf(p_name) > -1){
+          split_params[i] = p_name+'='+ $("#"+p_id).val().split(' ').join('%20');
+          var joint_params=split_params.join('&')
+          current_url = divide_url[0]+'?'+joint_params
+        }
+      };
+      var remove_element = [];
+      if(p_name == 'class_type'){  
+        for (var i = 0; i < split_params.length; i++) {
+          if (split_params[i].indexOf('age_group') > -1){
+            split_params.splice(i,1);
+            i--;
+          }
+          else if (split_params[i].indexOf('registration_package_id') > -1){
+           split_params.splice(i,1);
+            i--;
+          }
+          else if (split_params[i].indexOf('sname') > -1){
+           split_params.splice(i,1);
+            i--;
+          }
+          else if (split_params[i].indexOf('gender') > -1){
+           split_params.splice(i,1);
+            i--;
+          }
+          else if (split_params[i].indexOf('age') > -1){
+           split_params.splice(i,1);
+            i--;
+          }
+          else if (split_params[i].indexOf('age_month') > -1){
+           split_params.splice(i,1);
+            i--;
+          }
+        }
+        var joint_params=split_params.join('&')
+        current_url = divide_url[0]+'?'+joint_params
+      }
+    }
+    $('.url_gan').val(current_url); 
+  }
+
+  // For Generate url for age_group
+  function generate_url_for_sub(select_age_group, selecte_age_group){
+    ////console.log(select_age_group, selecte_age_group);
+    var current_url = $('.url_gan').val();
+
+    if (current_url.indexOf(select_age_group) == -1){
+      if (current_url.indexOf('?') > -1){
+        current_url =  current_url + '&'+select_age_group+'=' + selecte_age_group;
+      }
+      else{
+        current_url = current_url + '?'+select_age_group+'=' + selecte_age_group;
+      }
+    }
+    else{
+      var divide_url = current_url.split('?');
+      var split_params = divide_url[1].split('&');
+      for (var i = 0; i < split_params.length; i++) {
+        if (split_params[i].indexOf(select_age_group) > -1){
+          split_params[i] = select_age_group+'='+ selecte_age_group
+          var joint_params=split_params.join('&')
+          current_url = divide_url[0]+'?'+joint_params
+        }
+      };
+    }
+    $('.url_gan').val(current_url);
+  }
+
+  $('#job_lead_contact').blur(function(e) {
+    var a = $("#job_lead_contact").val();
+    a = a.replace(/\s/g, '');
+    a = a.replace(/-/g, '');
+     $("#job_lead_contact").val(a);
+    if (validatePhone(a)) {
+      $("#job_lead_contact").parents('.form-group').removeClass('has-warning has-error');
+      $(".e_msg").hide();
+      generate_new_url("mobile","job_lead_contact"); 
+    }
+    else {
+     $("#job_lead_contact").parents('.form-group').removeClass('has-warning');
+     $("#job_lead_contact").parents('.form-group').addClass('has-error');
+      $(".e_msg").show();
+      // $("#job_lead_contact").focus();
+      return false;
+    }
+  });
+  function validateEml(txtPhone){
+    var b = $("#job_lead_email").val();
+    var filter = /^\b[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i;
+    if(filter.test(b))
+      return true;
+    else
+      return false;
+  }
+ 
+  $('#job_lead_email').blur(function(e) {
+    var b = $("#job_lead_email").val();
+    b = b.replace(/\s/g, '');
+    b = b.replace(/\s/g, '');
+     $("#job_lead_email").val(b);
+    if (validateEml(b)) {
+      $("#job_lead_email").parents('.form-group').removeClass('has-warning has-error');
+      $(".e_msg_e").hide();
+      generate_new_url("email","job_lead_email");
+    }
+    else {
+     $("#job_lead_email").parents('.form-group').removeClass('has-warning');
+     $("#job_lead_email").parents('.form-group').addClass('has-error');
+      $(".e_msg_e").show();
+      // $("#job_lead_email").focus();
+      return false;
+    }
+  }); 
+  $('#job_lead_name').blur(function(e) {
+    var c = $("#job_lead_name").val();
+    if (c != "") {
+      $("#job_lead_name").parents('.form-group').removeClass('has-warning has-error');
+      $(".e_name").hide();
+
+      // Get current url
+      generate_new_url("name","job_lead_name");
+    }
+    else {
+     $("#job_lead_name").parents('.form-group').removeClass('has-warning');
+     $("#job_lead_name").parents('.form-group').addClass('has-error');
+      $(".e_name").show();
+      // $("#job_lead_name").focus();
+      return false;
+    }
+  });
+  $('#job_lead_day_time').blur(function(e) {
+    var c = $("#job_lead_day_time").val();
+    if (c != "") {
+      // Get current url
+      generate_new_url("day_time","job_lead_day_time");
+    }
+    else {
+      return false;
+    }
+  });
+  $('#job_lead_info').blur(function(e) {
+    var c = $("#job_lead_info").val();
+    if (c != "") {
+      // Get current url
+      generate_new_url("info","job_lead_info");
+    }
+    else {
+      return false;
+    }
+  });
+  $('#job_other_venue').blur(function(e) {
+    var c = $("#job_other_venue").val();
+    if (c != "") {
+      // Get current url
+      generate_new_url("other_venue","job_other_venue");
+    }
+    else {
+      return false;
+    }
+  });
+  $('#job_private_lesson_venue_id').blur(function(e) {
+    var c = $("#job_private_lesson_venue_id").val();
+    if (c != "") {
+      // Get current url
+      generate_new_url("private_lesson_venue_id","job_private_lesson_venue_id");
+    }
+    else {
+      return false;
+    }
+  });
+  $('#job_lead_starting_on').change(function() {
+    var c = $("#job_lead_starting_on").val();
+    generate_new_url("starting_on","job_lead_starting_on");
+  });
+  $('#job_private_lesson_true').click(function() {
+    var selecte_age_group = $("#job_private_lesson_true").val()
+    generate_url_for_sub('private_lesson', selecte_age_group)
+  });
+  $('#job_private_lesson_false').click(function() {
+    var selecte_age_group = $("#job_private_lesson_false").val()
+    generate_url_for_sub('private_lesson', selecte_age_group)
+  });
+  $('#Private').click(function() {
+    generate_new_url("class_type","Private");  
+  });
+  $('#Group').click(function() {
+    generate_new_url("class_type","Group");
+  });
+  $('.adult_p').click(function() {
+    var selecte_age_group = $(".adult_p").val()
+    generate_url_for_sub('age_group', selecte_age_group)
+  });
+  $('.adult_g').click(function() {
+    var selecte_age_group = $(".adult_g").val()
+    generate_url_for_sub('age_group', selecte_age_group)
+  });
+  $('.kids_p').click(function() {
+    var selecte_age_group = $(".kids_p").val()
+    generate_url_for_sub('age_group', selecte_age_group)
+  });
+  $('.kids_g').click(function() {
+    var selecte_age_group = $(".kids_g").val()
+    generate_url_for_sub('age_group', selecte_age_group)
+  });
+  $('.lady_g').click(function() {
+    var selecte_age_group = $(".lady_g").val()
+    generate_url_for_sub('age_group', selecte_age_group)
+  });
+  var myTransaction1 = [];
+  $(".publicVenueList").click(function() {
+    if($(this).is(":checked")){
+      if($.inArray($(this).val(),myTransaction1))
+      {
+        myTransaction1.push($(this).val());
+      }
+    }
+    else {
+      if($.inArray($(this).val(),myTransaction1) != -1){
+        myTransaction1.splice($.inArray($(this).val(),myTransaction1), 1);
+      }
+      if ($('.publicVenueList:checked').length == 0){
+      }
+    }
+    var selecte_age_group = myTransaction1;
+    //console.log(selecte_age_group);
+    generate_url_for_sub('venue_ids', selecte_age_group)
+  });
+  $("input[name='job[registration_package_id]']").click(function() {
+    var selecte_age_group = $(this).val();
+    //console.log(selecte_age_group);
+    generate_url_for_sub('registration_package_id', selecte_age_group)
+  });
+  $("#job_lead_lady_instructor_only").click(function() {
+    var selecte_age_group = $(this).val();
+    //console.log(selecte_age_group);
+    generate_url_for_sub('lead_lady_instructor_only', selecte_age_group)
+  });
+
+  $('#job_referred').blur(function(e) {
+    var c = $("#job_referred").val();
+    if (c != "") {
+      // Get current url
+      generate_new_url("ref","job_referred");
+    }
+    else {
+      return false;
+    }
+  });
+ 
+/*.....................................................................................................................*/
+  $("#new_job").on('ajax:complete', function(event) {
+    document.getElementById('new_job').reset();
+  });
+  var idSname = 'sname-';
+  var prefday = 'pref-';
+  var preftime = 'preftime-';
+  var resetC = 'reset-';
+  
+  $(document).ready(function($) {
+    setTimeout(function(){$(".alert-success").fadeOut('slow', function() { });},3000);
+    $('.sdate').datepicker({
+      format: 'd MM yyyy'
+    });
+    // $('.timepicker-no-seconds').timepicker({
+    //   minuteStep: 5,
+    //   autoclose: true,
+    //   defaultTime: ''
+    // });
+    // $('.timepicker').parent('.input-group').on('click', '.input-group-btn', function(e){
+    //     e.preventDefault();
+    //     $(this).parent('.input-group').find('.timepicker').timepicker('showWidget');
+    // });
+    // $('.choice').each(function(i) {
+    //   $(this).attr({id: idSname + i});
+      
+    //   if(i == 0)
+    //     $("#" + idSname + i).html("1st <br> <a href='javascript:;' class='reset'><span class='text-danger'>(reset)</span></a>");
+    //   else if(i == 1)
+    //     $("#" + idSname + i).html("2nd <br> <a href='javascript:;' class='reset'><span class='text-danger'>(reset)</span></a>");
+    //   else if(i == 2)
+    //     $("#" + idSname + i).html("3rd <br> <a href='javascript:;' class='reset'><span class='text-danger'>(reset)</span></a>");
+    //   else if(i == 3)
+    //     $("#" + idSname + i).html("4th <br> <a href='javascript:;' class='reset'><span class='text-danger'>(reset)</span></a>");
+    //   else if(i == 4)
+    //     $("#" + idSname + i).html("5th <br> <a href='javascript:;' class='reset'><span class='text-danger'>(reset)</span></a>");
+      
+    //   $('.reset').attr({class: resetC + i});
+    //   $("." + resetC + i).click(function(){
+    //     $("#" + prefday + i).val("");
+    //     $("#" + preftime + i).val("").attr("readonly","readonly");
+    //   });
+    // });
+
+    // $('.prf_time').each(function(i) {
+    //   $(this).attr({id: preftime + i});
+    // });
+    // $('.preferred_day').each(function(i) {
+    //   $(this).attr({ id: prefday + i });
+      
+    //   $("#" + prefday + i).change(function(){
+
+    //     var m = $(this).find('option:selected').text();
+    //     if(m == '-Select Day-')
+    //     {
+    //       $('#' + preftime + i).prop('readonly', true);
+    //       $('#' + preftime + i).val("");
+    //     }
+    //     else {
+    //       $('#' + preftime + i).timepicker('showWidget');
+    //         $('#' + preftime + i).prop('readonly', false);
+    //     }
+    //   });     
+     
+    // });
+
+    // $('#job_lead_name').parents('.form-group').addClass('has-warning');
+    // $('#job_lead_contact').parents('.form-group').addClass('has-warning');
+    // $('#job_lead_email').parents('.form-group').addClass('has-warning');
+    // $('.student_name').parents('.col-md-9').addClass('has-waring');
+    // $('.class_type').addClass('has-warning');
+    // $('#job_lead_day_time').parents('.form-group').addClass('has-warning');
+    // $('#job_lead_starting_on').parents('.form-group').addClass('has-warning');
+  });
+  function setCookie(cname,cvalue,exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires=" + d.toGMTString();
+    document.cookie = cname+"="+cvalue+"; "+expires;
+  }
+//********************************************************** 
+// function getCookie(cname) {
+//     var name = cname + "=";
+//     var ca = document.cookie.split(';');
+//     for(var i=0; i<ca.length; i++) {
+//         var c = ca[i];
+//         while (c.charAt(0)==' ') c = c.substring(1);
+//         if (c.indexOf(name) != -1) {
+//             return c.substring(name.length, c.length);
+//         }
+//     }
+//     return "";
+// }
+
+// function checkHeight(){
+//   setInterval(setH, 1000);
+// }
+// var staticH = 0
+// function setH(){
+//    var x = getCookie("h");
+//   if (x != staticH){
+//     staticH = x;
+//     $('#idIframe').height(staticH);
+//   } 
+// }
+// window.onload = function(){checkHeight();}
+// ******************************
+  function resizeW(){
+    var h;
+    if ($(document))
+      h = $(document).height();
+    else if($(window)) {
+      h = $(window).height();
+    }
+      var div_h = $('.content-form-page').height();
+      setCookie("h", div_h + 36 + 'px', 1);
+  }
+  $(document).ready(function() {
+    resizeW();
+    
+    $('.content-form-page').onresize = function(){resizeW();}
+    ComponentsDropdowns.init();
+    $('.add_nested_fields').on('click', function(){
+      resizeW();
+   
+    // iframe.style.height = h + div_h+ 36 + 'px';
+    });
+    $('input[name="job[age_group]"]').click(function(){
+      $(this).parents('.form-group').removeClass('has-error');
+      $('.grpup_class_error').hide();
+      
+    });
+    $('input[name="job[registration_package_id]"]').click(function(){
+      $(this).parents('.form-group').removeClass('has-error');
+       $('.grpup_class_error').hide();
+    });
+    // $('input[name="job[is_insurance]"]').click(function(){
+    //   $(this).parents('.form-group').removeClass('has-error');
+    //    $('.grpup_class_error').hide();
+    // });
+    $('input[name="terms_and_conditions"]').click(function(){
+      $(this).parents('.form-group').removeClass('has-error');
+       $('.grpup_class_error').hide();
+    });
+    $('input[name="do_not_call"]').click(function(){
+      $(this).parents('.form-group').removeClass('has-error');
+       $('.grpup_class_error').hide();
+    });
+    $('input[name="job[lead_class_type]"]').click(function(){
+      $(this).parents('.form-group').removeClass('has-error');
+       $('.grpup_class_error').hide();
+    });
+    $("input[name='job[venue_ids][]']").click(function(){
+      $('#venues_ids').removeClass('has-error');
+      $('.venue_class_error').hide();
+    });
+    $('input[name="job[private_lesson]"]').click(function(){
+      $(this).parents('.form-group').removeClass('has-error');
+       $('.grpup_class_error').hide();
+    });
+    $('input[name="job[other_venue]"]').click(function(){
+      $(this).parents('.form-group').removeClass('has-error');
+       $('.grpup_class_error').hide();
+    });
+    $('#job_private_lesson_venue_id').click(function(){
+      $(this).parents('.form-group').removeClass('has-error');
+       $('.grpup_class_error').hide();
+    });
+    
+  });  
+  $('form').submit(function(){
+    // var selected_group = $('input[name="job[lead_class_type]"]:checked').attr('id');
+    // if (selected_group == "Group"){
+      var check_count = $('#age_group_group input[name="job[age_group]"]:checked').length
+      if (check_count == 0){
+        $('#age_group_group').find('.form-group').addClass('has-error');
+        $('#age_group_group').find('.grpup_class_error').show();
+      }
+    // }
+    // else{
+      var check_count = $('#age_group_private input[name="job[age_group]"]:checked').length
+      if (check_count == 0){
+        $('#age_group_private').find('.form-group').addClass('has-error');
+        $('#age_group_private').find('.grpup_class_error').show();
+      }else{
+        var check_count_t = $('#age_group_tbl input[name="job[registration_package_id]"]:checked').length
+        if (check_count_t == 0){
+          $('#age_group_tbl').find('.form-group ').addClass('has-error');
+          $('#age_group_tbl').find('.grpup_class_error').show();
+        }
+      }
+    // }
+    var publicVenueList = $("input[name='job[venue_ids][]']:checked").length
+    if (publicVenueList == 0){
+      $('#venues_ids').addClass('has-error');
+      $('.venue_class_error').show();
+    }
+    var private_lesson = $('#private_lesson input[name="job[private_lesson]"]:checked').length
+    if (private_lesson == 0){
+      $('#private_lesson').find('.form-group').addClass('has-error');
+      $('#private_lesson').find('.grpup_class_error').show();
+    }else{
+     if($("#other_venue").is(":visible") == true) {
+        var other_venue = $('#job_other_venue ').val();
+        if (other_venue == ""){
+          $('#other_venue').find('.form-group').addClass('has-error');
+          $('#other_venue').find('.grpup_class_error').show();
+        }
+      }
+      if($("#job_private_lesson_venue_id").is(":visible") == true){
+        var public_venue = $('#job_private_lesson_venue_id').val();
+        if (public_venue == ""){
+            $('#public_venue').find('.form-group').addClass('has-error');
+            $('#public_venue').find('.grpup_class_error').show();
+        }  
+      }     
+    }
+    // var insurance = $('#insurance input[name="job[is_insurance]"]:checked').length
+    // if (insurance == 0){
+    //   $('#insurance').find('.form-group').addClass('has-error');
+    //   $('#insurance').find('.grpup_class_error').show();
+    // }
+    var terms_and_conditions = $('#terms_and_conditions input[name="terms_and_conditions"]:checked').length
+    if (terms_and_conditions == 0){
+      $('#terms_and_conditions').find('.form-group').addClass('has-error');
+      $('#terms_and_conditions').find('.grpup_class_error').show();
+    }
+    var do_not_call = $('#do_not_call input[name="do_not_call"]:checked').length
+    if (do_not_call == 0){
+      $('#do_not_call').find('.form-group').addClass('has-error');
+      $('#do_not_call').find('.grpup_class_error').show();
+    }
+    var lead_class_type = $('#lead_class_type input[name="job[lead_class_type]"]:checked').length
+    if (lead_class_type == 0){
+      $('#lead_class_type').find('.form-group').addClass('has-error');
+      $('#lead_class_type').find('.grpup_class_error').show();
+    }
+    formvalidation();
+  
+    if (cnt == 0){
+      $('.submit_form').val("Submitting..").addClass("disabled default");
+      return true;
+    }
+    return false;
+  });
+
+  $(document).ready(function() {       
+    // Metronic.init();
+    Layout.init();
+  
+  });
+
+  var url = (window.location != window.parent.location) ? document.referrer : document.location;
+  // //console.log(url);
+  // //console.log(url.href);
+  if (url.href.indexOf("aff=") > 0){
+    var affv = url.href.split("aff=");
+    var final_affv = affv[1].split("&");
+    $('#job_lead_affiliate').val(final_affv[0]);
+  }
+</script>
+<style type="text/css">
+  .has-error {
+    color: #a94442;
+  }
+  .form-control{
+    color: #777 !important;
+  }
+  .has-warning .form-control, .has-warning  {
+    border-color: #c09853 !important;
+  }
+  .has-warning .control-label, .has-warning {
+    color: #c09853 !important;  
+  }
+  .has-error .form-group, .has-error .form-control, .has-error{
+    border-color: #a94442 !important;
+    color: #a94442 !important; 
+  }
+  .ms-container .ms-selectable li.ms-hover, .ms-container .ms-selection li.ms-hover {
+    cursor: pointer;
+    color: #000;
+    text-decoration: none;
+    background-color: #eee;
+    }
+  .error-rm:focus{
+    border: 1px solid #999 !important;
+  }
+  body.ecommerce {
+    background: #fff;
+  }
+</style>

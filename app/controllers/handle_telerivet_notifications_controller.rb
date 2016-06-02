@@ -1,0 +1,2 @@
+class HandleTelerivetNotificationsController < ApplicationController
+end

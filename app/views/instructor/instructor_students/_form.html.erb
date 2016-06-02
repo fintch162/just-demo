@@ -1,0 +1,321 @@
+<div class="content-page">
+  <%= nested_form_for [:instructor, @instructor_student], :html => {:class=> "form-horizontal relationship",:multipart => true} do |f| %>
+    <div class="row">
+      <% if params[:action] == "edit" %>
+        <h1>Edit Student </h1>
+      <% else %>
+        <h1>Add New Student  </h1>
+      <% end %>
+      <div class="form-body col-sm-6">
+        <div class="form-group">
+          <h3>Profile picture</h3>
+        </div>  
+        <div class="form-group last">
+          <label class="control-label col-sm-4">Profile picture</label>
+          <div class="col-sm-8">
+            <% if params[:action] == "new" %>
+              <div class="fileinput fileinput-new" data-provides="fileinput">
+                <div class="fileinput-new thumbnail" style="width: 200px; height: 150px;">
+                  <img src="http://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image" alt=""/>
+                </div>
+                <div class="fileinput-preview fileinput-exists thumbnail" style="width: 200px; height: 150px;">
+                </div>
+                <div>
+                  <span class="btn default btn-file">
+                  <span class="fileinput-new">
+                  Select image </span>
+                  <span class="fileinput-exists">
+                  Change </span>
+                  <input type="file" id="instructor_student_profile_picture" name="instructor_student[profile_picture]">
+                  </span>
+                  <a href="#" class="btn red fileinput-exists" data-dismiss="fileinput">
+                  Remove </a>
+                </div>
+              </div>
+            <% elsif params[:action] == "edit" %>
+              <div class="fileinput fileinput-new" data-provides="fileinput">
+                <div class="fileinput-new thumbnail" style="width: 200px; height: 150px;">
+                  <% if @instructor_student.profile_picture? %>
+                    <%= image_tag(@instructor_student.profile_picture) %>
+                  <% else %>
+                    <!-- <img src="http://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image" alt=""/> -->
+                    <img src="/assets/no_image.gif" alt="", class="img-responsive" style="width:200px;height:150px;" />
+                  <% end %>  
+                </div>
+                <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 150px;">
+                </div>
+                <div>
+                  <span class="btn default btn-file">
+                  <span class="fileinput-new">
+                  Select image </span>
+                  <span class="fileinput-exists">
+                  Change </span>
+                  <input type="file" id="instructor_student_profile_picture" name="instructor_student[profile_picture]">
+                  </span>
+                  <a href="#" class="btn red fileinput-exists" data-dismiss="fileinput">
+                  Remove </a>
+                </div>
+              </div>
+            <% end %>
+            <%= f.hidden_field :is_update, :value => true %>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <h3>Personal Detail</h3>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-4">Student name<span class="required" aria-required="true">*</span></label>
+          <div class="col-sm-8">
+            <% if params[:action] == "edit" %>
+              <% if @instructor_student.student_name.nil? %>
+                <%= f.text_field :student_name, :class=>"form-control", :required => true, :value => @instructor_student.student_name %>
+              <% else %>
+                <%= f.text_field :student_name, :class=>"form-control", :required => true, :value => @instructor_student.student_name.titleize %>
+              <% end %>
+            <% else %>
+              <%= f.text_field :student_name, :class => "form-control", :required => true %>
+            <% end %>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-4">Ic number</label>
+          <div class="col-sm-8">
+            <% if params[:action] == "edit" %>
+              <%= f.text_field :ic_number, :class=>"form-control", :value => @instructor_student.ic_number ? @instructor_student.ic_number.upcase : nil %>
+            <% else %>
+              <%= f.text_field :ic_number, :class => "form-control"%>
+            <% end %>
+          </div>
+        </div>
+        <div class="form-group">
+          <%= f.label :date_of_birth, "Date of birth", :class=>"col-sm-4 control-label"  %>
+          <div class="col-sm-8">
+            <% if @instructor_student.date_of_birth? %>
+              <%= f.text_field :date_of_birth, :class => "form-control form-control-inline date-picker", :value => "#{@instructor_student.date_of_birth.strftime('%e %B %Y')}", :readonly => true, :style=> "background-color: #eee !important;" %>
+            <% else %>
+              <%= f.text_field :date_of_birth, :class => "form-control form-control-inline date-picker", :readonly => true,:style=> "background-color: #eee !important;" %>
+            <% end %>
+          </div>
+        </div>
+         
+        <div class="form-group">
+          <%= f.label :gender, "Gender", :class=>"col-sm-4 control-label"  %>
+          <div class="col-md-6" style="margin-top: 5px;">
+            <label>
+              <%= f.radio_button :gender, "Male" %> Male
+            </label>
+            <label>
+              <%= f.radio_button :gender, "Female" %> Female
+            </label>
+            <div id="gender_is"></div>
+          </div>          
+        </div>
+        <% if params[:action] == "new" %>
+          <div class="form-group">
+            <%= f.label :country, :class=>"col-sm-4 control-label" %>
+            <div class="col-sm-8">
+              <div class="input-group">
+                <span class="input-group-addon">
+                <i class="fa fa-search"></i>
+                </span>
+                  <input type="text" id="typeahead_example_2" name="instructor_student[country]" class="form-control"/>
+              </div>
+            </div>
+          </div>
+        <% elsif params[:action] == "edit" %>
+          <div class="form-group">
+            <%= f.label :country, :class=>"col-sm-4 control-label" %>
+            <div class="col-sm-8">
+              <div class="input-group">
+                <span class="input-group-addon">
+                <i class="fa fa-search"></i>
+                </span>
+                  <input type="text" id="typeahead_example_2" name="instructor_student[country]" class="form-control" value="<%= @instructor_student.country %>"/>
+              </div>
+            </div>
+          </div>
+        <% end %>  
+        <div class="form-group">
+          <%= f.label :address, :class=>"col-sm-4 control-label" %>
+          <div class="col-sm-8">
+            <%= f.text_area :address, :class=>"form-control"%>
+          </div>
+        </div> 
+        <!-- <div class="form-group">
+          <%#= f.label :contact, "Contact number", :class=>"col-sm-4 control-label"  %>
+          <div class="col-sm-8">
+            <%#= f.text_field :contact, :class => "form-control"%>
+          </div>
+        </div> -->
+        
+        <div class="form-group">
+          <%= f.label :additional_description, :class=>"col-sm-4 control-label" %>
+          <div class="col-sm-8">
+            <%= f.text_field :additional_description, :class=>"form-control"%>
+          </div>
+        </div>
+        <div class="form-group">
+          <%= f.label :group_class_id, "Select Group Classes", :class=>"control-label col-sm-4" %> 
+          <input name="instructor_student[group_class_ids][]" type="hidden">
+          <div class="col-sm-8">
+            <select id="select2_sample2" class="form-control select2" multiple name="instructor_student[group_class_ids][]">
+              <%= @day_array = [{"Monday" => 1}, {"Tuesday" =>2}, {"Wednesday" => 3}, {"Thursday" => 4}, {"Friday" => 5}, {"Saturday" => 6}, {"Sunday" => 0}] %>
+              <% @day_array.each do |day|%>
+                <% if @day_list.include? day.first[1] %>
+                <optgroup label="<%= day.first[0]%>">
+                  <% @group_classes.where(:day => day.first[1]).order(:time).each do |group_class|%>
+                    <% if group_class.time.present? %>
+                    <option value="<%= group_class.id %>"><%= group_class.time.strftime("%I:%M %p").to_s + " - "+group_class.venue.name.sub('Swimming Complex', 'SC') %></option>
+                    <% end %>
+                  <% end %>
+                </optgroup>
+                <% end %>
+              <% end %>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <%= f.label :join_date, "Join", :class=>"col-sm-4 control-label"  %>
+          <div class="col-sm-8">
+            <% if @instructor_student.join_date? %>
+              <% if browser.ie6? || browser.firefox? || browser.safari? || browser.safari?%>
+                <%= f.text_field :join_date, :class => "form-control form-control-inline date-picker", :value => "#{@instructor_student.join_date.strftime('%e %B %Y')}" %>
+              <% else %>
+                <%= f.date_field :join_date, :class=> "form-control" %>
+              <% end %>
+            <% else %>
+              <%= f.text_field :join_date, :class => "form-control form-control-inline date-picker" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <div class="form-body col-sm-6">
+        <div class="clearfix"></div>
+        <div class="col-sm-12">
+          <div class="form-group">
+            <h3>Contact details
+              <small><%= f.link_to_add "Add Contact", :student_contacts, :data => { :target => "#student_contact_detail" } %></small>
+            </h3>
+          </div>
+          <div id="student_contact_detail">
+            <%= f.fields_for :student_contacts do |student_contact| %> 
+              <%= render 'instructor_student_student_contacts_fields', f: student_contact %> 
+            <% end %>
+          </div>
+          <div class="col-sm-4"></div> 
+        </div>
+      </div>
+    </div>  
+    <div class="row">
+      <div class="col-sm-12 text-right">
+        <% if params[:action] == "edit" %>
+          <a data-toggle="modal" id="basicModalOpen" href="#basic" class="btn red">Delete Student</a>
+        <% end %>
+        <%= f.submit "Save", :class=>"btn green" %>
+        <%= link_to "Cancel",  instructor_instructor_students_path, :class=> "btn default" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+<% if params[:action] == "edit" %>
+  <div class="modal fade" id="basic" tabindex="-1" role="basic" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <% if @instructor_student.fees.count != 0 %>
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            <h4 class="modal-title" id="del_modal_title">Delete not allowed</h4>
+          </div>
+          <div class="modal-body">
+            You must first delete all fees from this student.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn default" data-dismiss="modal">Okay</button>
+          </div>
+        <% else %>
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            <h4 class="modal-title" id="del_modal_title">Are you sure?</h4>
+          </div>
+          <div class="modal-footer" style="border-top: 0 !important;">
+            <%= link_to "Delete",  instructor_instructor_student_path(@instructor_student), method: :delete, :class=> "btn red" %>
+            <button type="button" class="btn default" data-dismiss="modal">Cancel</button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+<script type="text/javascript">
+$(document).ready(function(){
+  Metronic.init(); // init metronic core components
+  Layout.init(); // init current layout
+  ComponentsDropdowns.init();
+  ComponentsFormTools.init();
+
+  $('#new_instructor_student').validate();
+
+  // $('#new_instructor_student').validate({
+    // rules: {
+      // 'instructor_student[gender]': { required:true },
+      // 'instructor_student[job_id]': { required:true}
+    // },
+    // errorPlacement: function(error, element) {
+    //   if (element.attr("type") === "radio") {
+    //     if (element.attr("name") == "instructor_student[gender]"){
+    //       $("#gender_is").html(error);
+    //     }
+    //     else{
+    //       error.appendTo($("#job_ids"));
+    //     }
+    //   } else {
+    //     error.insertAfter(element);
+    //   }
+    // }
+  // });    
+  $('.date-picker').datepicker({
+    format: 'd MM yyyy',
+    startView: 2,
+    minViewMode: 0
+  });
+  $('#select2_sample2').select2({
+    placeholder: "Select Group Classes",
+    allowClear: true
+  });
+  $('#instructor_student_student_name').blur(function() {
+    var name = $(this).val();
+    name = name.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    $('#instructor_student_student_name').val(name);
+  });
+  var name = $('#instructor_student_student_name').val();
+  name = name.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+  $('#instructor_student_student_name').val(name);
+  $('#instructor_student_ic_number').blur(function() {
+    var ic_number = $(this).val();
+    ic_number = ic_number.toUpperCase();
+    $('#instructor_student_ic_number').val(ic_number);
+  });
+  // <%# if session[:group_class_id] != "" %>
+  //   $('#s2id_select2_sample2').select2('val', '<%#= session[:group_class_id] %>')
+  // <%# end %>
+  <% if params[:action] == "edit"%>
+    var selectedValues = <%=@instructor_student.group_classes.pluck('id')%>
+    $('#s2id_select2_sample2').select2('val', selectedValues)
+  <% end %>
+  <% if params[:action] == "new" %>
+    <% if  @group_class != "" %>
+      var select_value = <%= @group_class.id %>
+      $('#s2id_select2_sample2').select2('val', select_value)
+    <% end %>
+  <% end %>
+});
+</script>
+<style type="text/css">
+  @media only screen and (max-width: 350px) {
+   .relationship label {
+     font-size: 10px;
+   }
+}
+</style>

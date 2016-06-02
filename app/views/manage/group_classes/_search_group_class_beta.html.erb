@@ -1,0 +1,71 @@
+<%if @group_classes.where(is_deleted: false).count > 0 %>
+  <div class="row">
+    <% if @venues.count > 0 %>
+      <div class="col-xs-3">
+        <div class="form-group">
+          <%= select_tag "venue", options_from_collection_for_select(@venues, "id", "name", params[:venue]),{class: 'form-control venue-list', prompt: 'Venues'} %>
+          <p class="help-block"><%= @venues.count %> venues</p>
+        </div>
+      </div>
+    <% end %>
+    <% if @instructors.count > 0 %>
+      <div class="col-xs-2">
+        <div class="form-group">
+          <%= select_tag "instructor", options_from_collection_for_select(@instructors, "id", "name", params[:instructor]),{class: 'form-control inst-list', prompt: 'Instructors'} %>
+          <p class="help-block"><%= @instructors.count %> instructors</p>
+        </div>
+      </div>
+    <% end %>
+    <% if @age_groups.count > 0 %>
+      <div class="col-xs-2">
+        <div class="form-group">
+          <%= select_tag "age_group", options_from_collection_for_select(@age_groups, "id", "title", params[:age_group]),{class: 'form-control age-list', prompt: 'Age Group'} %>
+        </div>
+      </div>
+    <% end %>
+    <% @flag = 0 %>
+    <% if @venues.count == 0 &&  @instructors.count == 0 && @age_groups.count == 0%>
+      <% @flag = 1 %>
+    <% end %>
+    <div style="color: red; font-size:150%;">
+      <div class="col-xs-2 <%= @flag == 1 ?  'col-xs-offset-6' : ''%>">
+        <div class="pull-right">
+        Available: <%= @group_classes.where(booking_status: true).count %></div>
+      </div>
+      <div class="col-xs-1">
+        Full: <%= @group_classes.where(booking_status: false).count %>
+      </div>
+      <div class="col-xs-2">
+        Clear: <%= @group_classes.where('booking_status IS NULL').count %>
+      </div>
+    </div> 
+  </div>
+  <% @group_classes.where(is_deleted: false).group_by(&:venue_id).each do |gc_by_venue| %>
+  <div class="portlet box green">
+    <div class="portlet-title">
+      <div class="caption">
+        <i class="fa fa-gift"></i><%= Venue.find(gc_by_venue[0]).name %>
+      </div>
+      <div class="tools">
+        <a href="javascript:;" class="collapse">
+        </a>
+      </div>
+    </div>
+    <div class="portlet-body">
+      <div class="panel-group accordion" id="accordion3">
+        <% sunday = nil %>
+        <% gc_by_venue[1].group_by(&:day).each do |gc_by_day| %>
+          <% if gc_by_day[0] == 0 %>
+          <% sunday = gc_by_day %>
+          <% else %>
+            <%= render 'panel_body', gc_by_day: gc_by_day, venue_id: gc_by_venue[0].to_s  %>
+          <% end %>
+        <% end %>
+        <% if sunday %>
+          <%= render 'panel_body', gc_by_day: sunday, venue_id: gc_by_venue[0].to_s  %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <% end %>
+<%end %>

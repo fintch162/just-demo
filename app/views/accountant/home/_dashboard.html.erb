@@ -1,0 +1,99 @@
+<div class="row">
+  <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+    <div class="dashboard-stat blue-madison">
+      <div class="visual">
+        <i class="fa fa-comments"></i>
+      </div>
+      <div class="details">
+        <div class="number totalEnquiries">
+          <%#= @sms_count %>0
+        </div>
+        <div class="desc">
+          Outgoing SMS
+        </div>
+      </div>
+      <a class="more" href="#">
+        View more
+        <i class="m-icon-swapright m-icon-white"></i>
+      </a>
+    </div>
+  </div>
+  <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+    <div class="dashboard-stat red-intense">
+      <div class="visual">
+        <i class="fa fa-bar-chart-o"></i>
+      </div>
+      <div class="details">
+        <div class="number jobReferred">
+          <%#= !@jobs_refered.nil? ? @jobs_refered.count : 0 %>0
+        </div>
+        <div class="desc">
+          Job Referred
+        </div>
+      </div>
+      <a class="more" href="#">
+        View more
+        <i class="m-icon-swapright m-icon-white"></i>
+      </a>
+    </div>
+  </div>
+  <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+    <div class="dashboard-stat green-haze">
+      <div class="visual">
+        <i class="fa fa-shopping-cart"></i>
+      </div>
+      <div class="details">
+        <div class="number referredEarned">
+          $
+          <%#= @jobs_refered_total.compact.inject(0,:+)%>0
+        </div>
+        <div class="desc">
+          Referred Earned
+        </div>
+      </div>
+      <a class="more" href="#">
+        View more
+        <i class="m-icon-swapright m-icon-white"></i>
+      </a>
+    </div>
+  </div>
+  <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+    <div class="dashboard-stat purple-plum">
+      <div class="visual">
+        <i class="fa fa-globe"></i>
+      </div>
+      <div class="details">
+        <div class="number enquiriesToday">
+          <%#= @today_jobs.count %>0
+        </div>
+        <div class="desc">
+          Enquiries
+        </div>
+      </div>
+      <a class="more" href="#">
+        View more
+        <i class="m-icon-swapright m-icon-white"></i>
+      </a>
+    </div>
+  </div>
+</div>
+<dic class="row">
+  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div class="portlet box purple">
+      <div class="portlet-title">
+        <div class="caption">
+          <i class="fa fa-gift"> Enquiry Chart</i>
+        </div>
+      </div>
+      <div class="portlet-body">
+        <div id="pie_chart_1" class="chart">
+        <%#if @today_jobs.count > 0 %>
+          <%#= area_chart @today_jobs.group("DATE(created_at)").count %> 
+        <%#else %>
+          No data available
+        <%#end %>
+        </div>
+      </div>
+    </div>
+  </div>  
+</dic>

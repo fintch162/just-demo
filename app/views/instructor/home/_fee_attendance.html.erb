@@ -1,0 +1,36 @@
+<% @fee = student.fees.where(:course_type=>"per month") %>
+<% @mon.to_a.each do |m|%>
+  <% cnt = 0 %>
+  <% if @fee.length > 0 %>
+    <% @fee.each do |fee| %>
+      <% if !fee.monthly_detail.blank? %>
+        <% if fee.monthly_detail.strftime("%b-%y").to_s == m.to_s %>
+          <% @precnt = fee.payment_date ? fee.payment_date.strftime("%e %b") : nil %>
+          <td class="<%= m %> <%#= table_name %>t_col_10">
+            <%#= link_to @precnt ,instructor_remove_fee_path(fee.id)+"?student=#{instructor_student.id}&group_class=#{group_class.id}", remote: :true, :"data-str" => "#{instructor_student.id}-#{m}", :class => "updateFee" %>
+
+            <span class="clr-green"><%= @precnt %></span><br>  <%= render "/instructor/instructor_students/student_attendance_day_vise",:group_class=> @group_class,:m=>m,:instructor_student=>student%>
+          </td>
+          <% cnt = 1 %>
+          <% break %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <% if cnt != 1 %>
+      <td id="previous" class="<%= m %> <%#= table_name %>t_col_10">
+        <!-- <a  data-toggle="modal" data-fees_for="<%#= m %>" href="#basic-<%#= instructor_student.id %>" id="basic1" data-str="<%#= instructor_student.id %>-<%#= m %>" data-group-class="<%#= group_class.id %>">
+          <i class="fa fa-plus"></i>Fee
+        </a> -->
+        <span class="clr-red">Unpaid</span><br>  <%= render "/instructor/instructor_students/student_attendance_day_vise",:group_class=> @group_class,:m=>m,:instructor_student=>student%>
+      </td>
+    <% end %>
+  <% else %>
+    <% if cnt != 1 %>
+      <td id="previous" class="<%= m %> <%#= table_name %>t_col_10">
+       <!--  <a  data-toggle="modal" data-fees_for="<%#= m %>" href="#basic-<%#= instructor_student.id %>" id="basic1" data-str="<%#= instructor_student.id %>-<%#= m %>" data-group-class="<%#= group_class.id %>">
+          <i class="fa fa-plus"></i>Fee
+        </a> --><span class="clr-red">Unpaid</span><br>  <%= render "/instructor/instructor_students/student_attendance_day_vise",:group_class=> @group_class,:m=>m,:instructor_student=>student%>
+      </td>
+    <% end %>
+  <% end %>
+<% end %>

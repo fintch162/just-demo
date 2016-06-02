@@ -1,0 +1,241 @@
+<%= title "Settings"  %>
+<% if @api_settings.nil? %>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="tab-content">
+        <div class="portlet box blue ">
+          <div class="portlet-title">
+            <div class="caption">
+              <i class="fa fa-gift"></i>Telerevet Api 
+            </div>
+          </div>
+          <div class="portlet-body form">
+            <%= form_tag manage_update_api_path, :class => "form-horizontal form-bordered form-row-stripped" do %>
+              <div class="form-body">
+                <div class="form-group">
+                  <label class="control-label col-md-3">Telerivet API key</label>
+                  <div class="col-md-9">
+                    <input type="text" placeholder="Telerivet api key" class="form-control" value= "" name="apikey">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-md-3">Project Id</label>
+                  <div class="col-md-9">
+                    <input type="text" placeholder="Telerivet project id" class="form-control" value= "" name="projectId">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-md-3">Phone Id</label>
+                  <div class="col-md-9">
+                    <input type="text" class="form-control" value= "" name="phoneId">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-md-3">Webhook Api</label>
+                  <div class="col-md-9">
+                    <input type="text" class="form-control" value= "" name="webhookApi">
+                  </div>
+                </div>
+              </div>
+              <a class="btn blue margin-top-20" data-toggle="modal" href="#small" style="float: right; margin-left: 20px;">Import Messages</a>
+              <%= submit_tag "Update" ,:class=>"btn green margin-top-20", :style => "float: right;" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% else %>
+  <% if current_admin_user.is_account_activated? %>
+    <div class="alert alert-block alert-success fade in">
+      <p>Connected</p>
+      Telerivet connected successfully and is running on mobile number <strong><%= @api_settings.telerivet_phone_number if !@api_settings.telerivet_phone_number.blank? %></strong>
+      <p>
+        <%= link_to "Disconnect", manage_disconnect_telerivet_account_path, data: { confirm: 'Are you sure?' }, :class => "btn red" %>
+      </p>
+    </div>
+  <% end %>
+  <% if alert %>
+    <div class="alert alert-block alert-danger fade in">
+      <button type="button" class="close" data-dismiss="alert"></button>
+      <h4 class="alert-heading">Error!</h4>
+      <p><%= flash[:alert] %></p>  
+    </div>
+  <% elsif notice%>
+    <div class="alert alert-block alert-success fade in">
+      <button type="button" class="close" data-dismiss="alert"></button>
+      <%= flash[:notice].html_safe %>
+    </div>
+  <% end %>
+
+<div class="col-md-12">
+  <div class="tabbable tabbable-custom tabbable-full-width">
+    <ul class="nav nav-tabs">
+      <li class="active">
+        <a href="#profile" data-toggle="tab">
+        Profile </a>
+      </li>
+      <li>
+        <a href="#tab_1_2" data-toggle="tab">
+        Password </a>
+      </li>
+      <li>
+        <a href="#Telerevet_Api" data-toggle="tab">
+        Telerevet Api </a>
+      </li>
+    </ul>
+    <div class="tab-content">
+      <div class="tab-pane active" id="profile">
+        <%= render 'profile' %>
+      </div>
+      <div class="tab-pane" id="tab_1_2">
+        <%= render 'password' %> 
+      </div>
+      <!--  id="Telerevet_Api" -->
+      <div class="tab-pane" id="Telerevet_Api">
+        <div class="row">          
+          <div class="col-md-12">
+            <div class="tab-content">
+              <div class="portlet blue-hoki box" style="border:1px solid #869ab3;float:left;width:100%;">
+                <div class="portlet-title">
+                  <div class="caption">
+                    <i class="fa fa-gift"></i>Telerevet Api
+                  </div>
+                </div>
+                <div class="portlet-body form" style="float:left;width:100%;">
+                    <%= form_tag manage_update_api_path, :class => "form-horizontal form-bordered form-row-stripped" do %>
+                        <% if current_admin_user.is_account_activated? %>
+                          <div class="form-body">
+                            <div class="form-group">
+                              <label class="control-label col-md-3">Telerivet API key</label>
+                              <div class="col-md-9">
+                                <input type="text" placeholder="Telerivet api key" class="form-control" value= "<%= @api_settings.telerivet_api_key if @api_settings.telerivet_api_key.present? %>" name="apikey" disabled>
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="control-label col-md-3">Project Id</label>
+                              <div class="col-md-9">
+                                <input type="text" placeholder="Telerivet project id" class="form-control" value= "<%= @api_settings.telerivet_project_id if @api_settings.telerivet_project_id.present? %>" name="projectId" disabled>
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="control-label col-md-3">Phone Id</label>
+                              <div class="col-md-9">
+                                <input type="text" class="form-control" value= "<%= @api_settings.telerivet_phone_id if @api_settings.telerivet_phone_id.present? %>" name="phoneId" disabled>
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="control-label col-md-3">Webhook Api</label>
+                              <div class="col-md-9">
+                                <input type="text" class="form-control" value= "<%= @api_settings.webhook_api_secret if @api_settings.webhook_api_secret.present? %>" name="webhookApi" disabled>
+                              </div>
+                            </div>
+                          </div>
+                        <% else %>
+                          <div class="form-body">
+                            <div class="form-group">
+                              <label class="control-label col-md-3">Telerivet API key</label>
+                              <div class="col-md-9">
+                                <input type="text" placeholder="Telerivet api key" class="form-control" value= "<%= @api_settings.telerivet_api_key if @api_settings.telerivet_api_key.present? %>" name="apikey">
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="control-label col-md-3">Project Id</label>
+                              <div class="col-md-9">
+                                <input type="text" placeholder="Telerivet project id" class="form-control" value= "<%= @api_settings.telerivet_project_id if @api_settings.telerivet_project_id.present? %>" name="projectId">
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="control-label col-md-3">Phone Id</label>
+                              <div class="col-md-9">
+                                <input type="text" class="form-control" value= "<%= @api_settings.telerivet_phone_id if @api_settings.telerivet_phone_id.present? %>" name="phoneId">
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="control-label col-md-3">Webhook Api</label>
+                              <div class="col-md-9">
+                                <input type="text" class="form-control" value= "<%= @api_settings.webhook_api_secret if @api_settings.webhook_api_secret.present? %>" name="webhookApi">
+                              </div>
+                            </div>
+                          </div>
+                        <% end %>
+                        <%#= link_to "Delete All Messages", remove_all_manage_messages_path, :method => :delete, data: { confirm: 'Are you sure?' }, :class => "btn red margin-top-20", :style => "float: right; margin-left: 20px;" %>
+                        <a class="btn blue margin-top-20" data-toggle="modal" href="#small" style="float: right; margin-left: 20px;">Import Messages</a>
+                        <!-- <a href="<%#= sync_messages_manage_messages_path %>" class="btn blue margin-top-20 sync_messages" style="float: right; margin-left: 20px;" data-remote="true"> Activate</a> -->
+                          <%= submit_tag "Update" ,:class=>"btn green margin-top-20", :style => "float: right;" unless current_admin_user.is_account_activated? %>
+                          <%= link_to "Activated" ,"javascript:;", :class=>"btn green margin-top-20", :style => "float: right;" unless !current_admin_user.is_account_activated? %>
+                    <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>        
+    </div>
+  </div> 
+</div>  
+  <style type="text/css">
+    
+    #overlay {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      background: #000;
+      opacity: 0.8;
+      filter: alpha(opacity=80);
+    }
+    #loading {
+      width: 50px;
+      height: 57px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin: -28px 0 0 -25px;
+    }
+
+  form {
+    float:left !important ;
+    width:100% !important;
+  }
+  </style>
+
+  <script type="text/javascript">
+    
+    jQuery(document).on("ajax:beforeSend", function() {
+      var over =  '<div id="overlay">' +
+                    '<img id="loading" src="/assets/pMtW1K.gif">' +
+                  '</div>';
+      $(over).appendTo('body');
+    });
+  </script>
+
+  <div class="modal fade bs-modal-sm" id="small" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <%= form_tag import_manage_messages_path, :remote => true, multipart: true do %>
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            <h4 class="modal-title">Modal Title</h4>
+          </div>
+          <div class="modal-body">
+            <%= file_field_tag :file %>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn default" data-dismiss="modal">Close</button>
+            <%= submit_tag "Import",:class => "btn blue import_button" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $('.import_button').click(function(){
+        $('.import_button').val('Importing..');
+      });
+    });
+  </script>
+
+<% end %>

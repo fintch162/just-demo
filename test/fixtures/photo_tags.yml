@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  InstructorStudent_id: 
+  phototaggable_id: 1
+  phototaggable_type: MyString
+  student_name: MyString
+  Instructor_id: 
+
+two:
+  InstructorStudent_id: 
+  phototaggable_id: 1
+  phototaggable_type: MyString
+  student_name: MyString
+  Instructor_id: 

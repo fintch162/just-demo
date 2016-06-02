@@ -1,0 +1,45 @@
+<div class="table-responsive">
+	<table class="table table-hover">
+		<thead>
+		<tr>
+			<th>
+				 #
+			</th>
+			<th>
+				 Name
+			</th>
+			<th>
+				 Reason/Note
+			</th>
+			<th>
+				Status
+			</th>
+		</tr>
+		</thead>
+		<tbody>
+			<% @transfer_out.each_with_index do |transfer, index| %>
+				<% if !transfer.instructor_student.blank? && !transfer.instructor_student.is_deleted? %>
+					<tr>
+						<td>
+							<%= index += 1 %>
+						</td>
+						<td>
+							<%= link_to transfer.instructor_student.student_name, instructor_instructor_student_path(transfer.instructor_student_id) if !transfer.instructor_student.blank? %>
+						</td>
+						<td>
+							<%= transfer.reason %>
+						</td>
+						<td colspan="2">
+							<%= transfer.transfer_status %>
+							<% if transfer.transfer_status == "Transferring" %>
+								<small>
+									(<%= link_to "Cancel", instructor_reject_transfer_student_path(transfer) %>)
+								</small>
+							<% end %>
+						</td>
+					</tr>
+				<% end %>
+			<% end %>
+		</tbody>
+	</table>
+</div>

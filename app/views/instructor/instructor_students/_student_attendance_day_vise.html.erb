@@ -1,0 +1,15 @@
+<%#displayDays = [group_class.day] %>
+<%#@result = (@start_date_att..@end_date_att).to_a.select {|k| displayDays.include?(k.wday)} %>
+<% @result.each do |all_month| %>
+  <% if all_month.to_date.strftime("%b")== m.to_date.strftime("%b")%>
+    <%extract_day = all_month.strftime("%d-%b").to_s %>
+    <%@studentAttendance = StudentAttendance.where(group_class_id: group_class.id, instructor_student_id: instructor_student.id, attendance_date: extract_day).first %>
+    <%if @studentAttendance.nil? %>
+      <span><small class="clr-red"><%=extract_day.split('-')[0] %></small></span>
+    <%elsif @studentAttendance.attendance_status=="present" %>
+        <small><span id="pre" class="clr-green"><%=extract_day.split('-')[0] %></small></span>
+    <%elsif @studentAttendance.attendance_status=="absent"%>
+         <span id="abs"><small class="clr-red"><%=extract_day.split('-')[0] %></small></span>
+    <%end %>
+  <%end %>
+<%end %>

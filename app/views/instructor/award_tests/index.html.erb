@@ -1,0 +1,241 @@
+<%= title "Award Tests" %>
+<% if !admin_user_signed_in? %>
+  <%= render "instructor/shared/login" %>
+<% else %>
+  <div class="main">
+    <div class="container">
+      <ul class="breadcrumb">
+        <li><a href="/instructor">Home</a></li>
+        <li class="active">Award Tests</li>
+      </ul>
+      <div class="row margin-bottom-40">
+        <%#= render :partial => "ac_side_bar" %>
+        <div class="col-sm-12">
+          <h1>Award Tests</h1>
+          <div class="content-page">
+            <div class="col-sm-12 margin-bottom-20">
+              <%= form_tag instructor_award_tests_path, :method => :get, :class => "form-horizontal" do %>
+                <div class="row" style="margin-top: 10px;">
+                  <div class="col-sm-6">
+                    <div><label class="control-label col-md-3">Date Range</label>
+                      <div class="input-group input-large date-picker input-daterange col-md-9" style="padding-left: 15px;" data-date="10/11/2012" data-date-format="mm/dd/yyyy">
+                        <input type="text" class="form-control start_date" name="from" value= "<%= params[:from] ? params[:from] : Date.today.strftime('%d %B %Y') %>" id="start_date">
+                        <span class="input-group-addon">
+                        to </span>
+                        <input type="text" class="form-control end_date" name="to" value= "<%= params[:to].present? && params[:to] != "" ? params[:to] : '' %>" id="end_date">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <div><label class="control-label col-md-3">Award </label>
+                      <div class="col-md-9">
+                        <select class="form-control advance_status" style="width: 100%;" name="award">
+                          <option></option>
+                          <% Award.all.each do |award| %>
+                            <% if params[:award].present? && params[:award] != "" %>
+                              <option value="<%= award.id %>"  <%= params[:award].to_i == award.id ? 'selected' : '' %>><%= award.name %></option>
+                            <% else %>
+                              <option value="<%= award.id %>"><%= award.name %></option>
+                            <% end %>
+                          <% end %>
+                        </select>
+                      </div>
+                    </div>  
+                  </div>
+                </div>
+                <div class="row" style="margin-top: 10px;">
+                  <div class="col-sm-6">
+                    <div><label class="control-label col-md-3">Venue</label>
+                      <div class="col-md-9">
+                        <select class="form-control advance_venue" style="width: 100%;" name="venue">
+                          <option></option>
+                          <% Venue.all.each do |venue| %>
+                            <% if params[:venue].present? && params[:venue] != "" %>
+                              <option value="<%= venue.id %>" <%= params[:venue].to_i == venue.id ? 'selected' : '' %>><%= venue.name %></option>
+                            <% else %>
+                              <option value="<%= venue.id %>" ><%= venue.name %></option>
+                            <% end %>
+                          <% end %>
+                        </select>
+                      </div>
+                    </div> 
+                  </div>
+                  <div class="col-sm-6">
+                    <div><label class="control-label col-md-3">Organiser</label>
+                      <div class="col-md-9">
+                        <select class="form-control advance_venue" style="width: 100%;" name="organiser">
+                          <option></option>
+                          <% Instructor.all.each do |instructor| %>
+                            <% if params[:organiser].present? && params[:organiser] != "" %>
+                              <option value="<%= instructor.id %>" <%= params[:organiser].to_i == instructor.id ? 'selected' : '' %>><%= instructor.name %></option>
+                            <% else %>
+                              <option value="<%= instructor.id %>"><%= instructor.name %></option>
+                            <% end %>
+                          <% end %>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div><label class="control-label col-md-3">My students</label>
+                      <div class="col-md-9">
+                        <input type="checkbox" name="my_student" value="true" style="margin-top: 10px;" <%= params[:my_student].present? ? 'checked' : ''%>>
+                      </div>
+                    </div> 
+                  </div>
+                </div>
+                <p class="text-center" style="margin-top: 10px;">
+                  <%= submit_tag "Search", class: "btn btn-default"%>
+                  <a href="<%= instructor_award_tests_path %>" class="btn btn-default resetAdvanceSearch">Reset </a>
+                </p>
+              <% end %>
+            </div>
+            <div class="col-md-12" style="padding-left: 0px;">
+              <div class="portlet">
+                <div class="portlet-body">
+                  <!-- <div id="navbar-example2" class="navbar navbar-default navbar-static" role="navigation">
+                    <div class="navbar-header">
+                      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-js-navbar-scrollspy">
+                        <span class="sr-only">
+                        Toggle navigation </span>
+                        <span class="icon-bar">
+                        </span>
+                        <span class="icon-bar">
+                        </span>
+                        <span class="icon-bar">
+                        </span>
+                        </button>
+                        
+                        <a class="navbar-brand" href="javascript:;">
+                          Award Tests
+                        </a>
+                    </div>
+                    <div class="collapse navbar-collapse bs-js-navbar-scrollspy">
+                      <ul class="nav navbar-nav">
+                        <li class="classView">
+                          <a href="#all-award-tests" data-toggle="tab">
+                            Award Tests
+                          </a>
+                        </li>
+                        <li class="">
+                          <a href="#comming-award-tests" data-toggle="tab">
+                            Comming Test
+                          </a>
+                        </li>
+                        <li class="">
+                          <a href="#past-award-tests" data-toggle="tab">
+                             Past Tests
+                          </a>
+                        </li>
+                    </div>
+                  </div> -->
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="col-md-6">
+                        <h4>Summary</h4>
+                        <table class="table table-hover">
+                          <thead>
+                            <tr>
+                              <th>Award</th>
+                              <th>Registered</th>
+                              <th>Unregistered</th>
+                              <th>Vacancy</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <% @award.order(:position).each do |award| %>
+                              <tr>
+                                <td><%= award.name %></td>
+                                  <% @cnt_reg_students = InstructorStudentAward.where(:instructor_student_id => @ins_student_id).where(award_test_id: @test_id).where(:award_id => award.id) %>
+                                 
+                                <td><%= @cnt_reg_students.uniq.count %></td>
+                                  <% @inst_stdnt_awds = InstructorStudentAward.where(:instructor_student_id => @ins_student_id).where("award_progress = 'ready_for'  and is_registered = false").where(:award_id => award.id) %>
+                                    <% @cnt1=0 %>
+                                  <% @inst_stdnt_awds.each do |inst_stdnt_awd| %>
+                                    <% if inst_stdnt_awd.instructor_student.group_classes.count != 0 %>
+                                      <% @cnt1 += 1 %>
+                                    <% end %>
+                                  <% end %>
+                                <td>
+                                  <% if @cnt1 > 0 %>
+                                    <%#=  link_to @cnt1, instructor_instructor_student_path("?award_id="+award.id.to_s )%>
+                                    <%=  link_to @cnt1, instructor_unregistered_students_path(award_id: award.id )%>
+                                  <% else %><%= @cnt1  %>
+                                  <% end %>
+                                </td>
+                                <td>
+
+                                  <% if award.award_tests.count > 0%>
+                                    <% cnt = 0 %>
+                                    <%# if params[:from].present? %>
+                                      <% @award_test = award.award_tests.where(id: @test_id) %>
+                                    <%# else %>
+                                      <%# @award_test = award.award_tests %>
+                                    <%# end %>
+                                    <% @award_test.each do |awrd_test| %>
+                                      <% @n =  awrd_test.total_slot - (awrd_test.instructor_student_awards.count)  %>
+                                      <% cnt = cnt + @n %>
+                                    <% end %>
+                                    <%= cnt%>
+                                  <% else %>
+                                  0
+                                  <% end %>
+                                </td>
+                              </tr>
+                            <% end %>
+                          </tbody>
+                        </table> 
+                      </div>
+                    </div>
+                  </div>
+                  <div data-spy="scroll" data-target="#navbar-example2" data-offset="0" class="scrollspy-example" style="height: 100%; overflow: hidden;">
+                    <div class="tab-content" style="border:0px; background: #fff; padding-left: 0px;">
+                      <div class="tab-pane active" id="all-award-tests">
+                        <%= render "/instructor/award_tests/all_award_tests" %>
+                      </div>
+                      <!-- <div class="tab-pane" id="comming-award-tests">
+                        <%#= render "/instructor/award_tests/comming_award_tests" %>
+                      </div>
+                      <div class="tab-pane" id="past-award-tests">
+                        <%#= render "/instructor/award_tests/past_award_tests" %>
+                      </div> -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>  
+  </div>
+<% end %>
+<style type="text/css">
+.label{
+  color: #000 !important;
+}
+</style>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('#start_date').datepicker({
+      format: 'd MM yyyy',
+      autoclose: true
+    }).on('changeDate', function(selected){
+        startDate = new Date(selected.date.valueOf());
+        startDate.setDate(startDate.getDate(new Date(selected.date.valueOf())));
+        $('#end_date').datepicker('setStartDate', startDate);
+    }); 
+    $('#end_date').datepicker({
+      format: 'd MM yyyy',
+      startDate: "<%= params[:from].present? && params[:from] != "" ? params[:from] : Date.today.strftime('%d %B %Y') %>",
+      autoclose: true
+    }).on('changeDate', function(selected){
+        FromEndDate = new Date(selected.date.valueOf());
+        FromEndDate.setDate(FromEndDate.getDate(new Date(selected.date.valueOf())));
+        $('#start_date').datepicker('setEndDate', FromEndDate);
+    });
+    $('.resetAdvanceSearch').click(function(){
+      $('.form-horizontal ').find('input[type="text"], select').val('');
+    });
+    
+  });
+</script>

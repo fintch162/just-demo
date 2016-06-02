@@ -1,0 +1,45 @@
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <h4 class="modal-title">Tag</h4>
+    </div>
+    <div class="modal-body">
+      <%= form_for(PhotoTag.new, url: instructor_add_tags_path) do |f| %>
+        <input type="hidden" name="instructor_id" value='<%= current_admin_user.id %>'></input>
+        <input type="hidden" name="photo_id" value='<%= @p.id %>'></input>
+        <input type="hidden" name="type" value='InstructorStudentPhoto'></input>
+        <select id="select2_sample2_inst<%= @p.id %>" class="form-control select2 select2_sample2" multiple name="student_ids[]">
+          <% @students.each do |stdnt| %>
+            <option value="<%= stdnt.id %>"><%= stdnt.student_name %></option>
+          <% end %>
+        </select>
+        <%= f.submit 'Save' %>
+      <% end %>
+    </div>
+    <div class="modal-footer">
+    </div>
+  </div>
+</div>
+
+<style type="text/css">
+  .modal-dialog{
+    z-index: 9999;
+  }
+</style>
+
+
+
+ <div class="tag-edit-inst<%= p.id %>" style="display: none;">
+        <%= form_for(PhotoTag.new, url: instructor_add_tags_path) do |f| %>
+          <input type="hidden" name="instructor_id" value='<%= current_admin_user.id %>'></input>
+          <input type="hidden" name="photo_id" value='<%= p.id %>'></input>
+          <input type="hidden" name="type" value='InstructorStudentPhoto'></input>
+          <select id="select2_sample2_inst<%= p.id %>" class="form-control select2 select2_sample2" multiple name="student_ids[]">
+            <% @students.each do |stdnt| %>
+              <option value="<%= stdnt.id %>"><%= stdnt.student_name %></option>
+            <% end %>
+          </select>
+          <%= f.submit 'Save' %>
+        <% end %>
+      </div>

@@ -1,0 +1,166 @@
+<script src="http://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+<script type="text/javascript" src="/assets/jquery.ui.touch-punch.js"></script>
+  <h2>
+    Award List
+    <!-- <small> <%#= link_to "New Award", new_manage_award_path %></small> -->
+  </h2>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="portlet box blue">
+        <div class="portlet-title">
+          <div class="caption">
+            Award Positions
+          </div>
+          <div class="tools">
+            <%= link_to new_manage_award_path, :style => "color: white; font-size: 15px;"  do %>
+              <i class='fa fa-plus'></i> Award
+            <% end %>
+          </div>
+        </div>
+        <div class="portlet-body" style="border-bottom: 1px solid #67809F;">
+          <div class="dd" id="nestable_list_3">
+            <div class="">
+              <ul id="awards" data-update-url="<%= sort_manage_awards_path %>">
+                <% @awards.each do |award| %>
+                  <%= content_tag_for :li, award do %>
+                    <i class="fa fa-bars handle"></i>
+                    <%= award.name + " "%><small><%= link_to "(edit)", edit_manage_award_path(award) %></small>
+                  <% end %>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <%= form_for [ :manage, @award ], :html => {:multipart => true} do |f| %>
+        <div class="email input required stringish form-group">
+          <label class=" control-label">Award Name</label>
+          <span class="form-wrapper">
+            <div class="input-group col-md-12">
+              <%= f.text_field :name, :class=>"form-control" %>
+            </div>
+          </span>  
+        </div>
+
+        <div class="email input required stringish form-group">
+          <label class=" control-label">Award Short Name</label>
+          <span class="form-wrapper">
+            <div class="input-group col-md-12">
+              <%= f.text_field :short_name, :class=>"form-control" %>
+            </div>
+          </span>  
+        </div>
+        
+        <label class="control-label" for="award_name">Award Logo</label>
+        <div class="string input required stringish form-group">
+          <div class="fileinput fileinput-new" data-provides="fileinput">
+            <div class="fileinput-new thumbnail" style="width: 200px; height: 150px;">
+              <% if @award.image? %>
+                <%= image_tag(@award.image) %>
+              <% else %>
+                <img src="/assets/missing-logo.gif" alt="", class="img-responsive" style="width:200px; height:150px;" />
+              <% end %>
+            </div>
+            <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 150px;">
+            </div>
+            <div>
+              <span class="btn default btn-file">
+              <span class="fileinput-new">
+                Select image 
+              </span>
+              <span class="fileinput-exists">
+                Change 
+              </span>
+              <input type="file" id="award_image" name="award[image]">
+              </span>
+              <a href="#" class="btn red fileinput-exists" data-dismiss="fileinput"> Remove </a>
+            </div>
+          </div>
+        </div>
+        
+        <%= f.submit "Save", :class=>"btn green" %>
+        <%= link_to "Cancel",  manage_award_tests_path, :class=> "btn default" %>
+        
+      <% end %>
+    </div>
+  </div>
+<!-- <div class="col-md-12">
+    <h2 class="pull-left">Award List
+      <small>  <%#= link_to "New Award", new_manage_award_path %></small>
+    </h2>
+  <div class="portlet-body">
+    <div class="table-responsive">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>
+              No
+            </th>
+            <th>
+              Award Name
+            </th>
+            <th>
+              Award Logo
+            </th>
+            <th>
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <%# cnt = 1 %>
+          <%# @awards.order("created_at DESC").each do |award| %>
+            <tr>
+              <td><%#= cnt %></td>
+              <td>
+                <%#= award.name %>
+              </td>
+              <td>
+                <%#= image_tag(award.image(:thumb)) %>
+              </td>
+              <td>
+                <%#= link_to "Edit", edit_manage_award_path(award) %>
+              </td>
+              <%# cnt += 1 %>
+            </tr>
+          <%# end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div> -->
+
+
+<script>
+  $(function() {
+    $("#awards").sortable({
+      axis: "y",
+      update: function() {
+        $.post($(this).data("update-url"), $(this).sortable("serialize"));
+      }
+    });
+  });
+</script>
+<style>
+  #awards { list-style-type: none; margin: 0; padding: 0; width: 100%; }
+  #awards li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
+  #awards li span { position: absolute; margin-left: -1.3em; }
+  #awards li {
+    margin: 0 3px 3px 3px;
+    padding: 0.4em;
+    font-size: 1.4em;
+    height: 40px;
+    border: 1px solid #d3d3d3;
+    background: #e6e6e6;
+    font-weight: normal;
+    color: #555555;
+  }
+  .handle {
+    cursor: move;
+    width: 2.25em;
+    border: 1px solid #aaa;
+    background: #ddd;
+  }
+</style>

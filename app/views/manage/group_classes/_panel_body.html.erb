@@ -1,0 +1,33 @@
+ <div class="panel panel-default">
+  <div class="panel-heading">
+    <h4 class="panel-title">
+    <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion3" href="#<%= venue_id + gc_by_day[0].to_s %>">
+    <%= gc_by_day[0] ? Date::DAYNAMES[gc_by_day[0]] : '' %> </a>
+    </h4>
+  </div>
+  <div id="<%= venue_id + gc_by_day[0].to_s %>" class="panel-collapse collapse">
+    <div class="panel-body" style="overflow-y:auto;">
+      <div class="col-xs-8">
+        <p>
+          <% gc_by_day[1].each do |group_class| %>
+            <% btnClass = '' %>
+            <% if group_class.booking_status.nil? %>
+              <% btnClass = 'blue' %>
+            <% elsif group_class.booking_status %>
+              <% btnClass = 'green' %>
+            <% else %>
+              <% btnClass = 'red' %>
+            <% end %>
+            <% if params[:action]=='booking_schedule_search' %>
+              <%= link_to group_class.time.strftime("%I:%M %P"), manage_group_class_info_path(group_class,from_booking: true),data: {disable_with: "<img src='/assets/input-spinner.gif' alt='loading' class='spin'>".html_safe},remote: true, class: 'btn btn-gc ' + btnClass,id: 'gc-'+group_class.id.to_s if group_class.time %> 
+            <% else %>
+              <%= link_to group_class.time.strftime("%I:%M %P"), manage_group_class_info_path(group_class),data: {disable_with: "<img src='/assets/input-spinner.gif' alt='loading' class='spin'>".html_safe},remote: true, class: 'btn btn-gc ' + btnClass,id: 'gc-'+group_class.id.to_s if group_class.time %>
+            <% end %>
+          <% end %>
+        </p>
+      </div>
+      <div class="col-xs-4 gc-info-<%= venue_id + gc_by_day[0].to_s%>">
+      </div>
+    </div>
+  </div>
+</div>

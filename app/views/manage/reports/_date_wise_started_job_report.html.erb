@@ -1,0 +1,50 @@
+<% count = 0 %>
+<% @jobs_start_date.each do |job| %>
+  <tr>
+    <% count = count + 1 %>
+    <td>
+      <%= count %>
+    </td>
+    <td>
+      <%= job.start_date ? job.start_date.strftime("%e %b %Y") : nil %>
+    </td>
+    <td>
+      <%= job.id %>
+    </td>
+    <td>
+      <%=  ClassType.find(job.class_type.to_i).title if job.class_type? %>
+    </td>
+    <td>
+      <%=  AgeGroup.find(job.age_group.to_i).title if job.age_group? %>
+    </td>
+    <td>
+      <%=  job.students.count %>
+    </td>
+    <td>
+      <%=  job.fee_total %>
+    </td>
+    <td>
+      <%= job.referral %>
+    </td>
+  </tr>
+<% end %>
+<tr>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td>Total Fee:</td>
+  <td><%= @jobs_start_date_fee_total %></td>
+</tr>
+<tr>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td>Total Referral:</td>
+  <td><%= @jobs_start_date_refered_total %></td>
+</tr>

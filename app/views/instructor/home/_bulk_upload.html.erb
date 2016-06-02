@@ -1,0 +1,109 @@
+<div class="content-page">
+  <div class="note note-info">
+    <h4 class="blook">
+      <strong>Date Format</strong>
+    </h4>
+    <p>
+      Please note about the date format you need to enter!
+      <br>
+      dd-mm-yyyy
+      <br>
+      e.g. 31-06-2011
+    </p>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-12 col-md-12" id="hot">
+      <br/><br/><button name="save" id="save", clas="btn deafult green">Save</button>
+    </div>
+  </div>
+</div>
+<script>
+  $(document).ready(function () {
+    var flag = 0
+    dateValidator = function (value, callback) {
+
+      setTimeout(function(){
+        var dateRegExpression = /(((0[1-9]|[12][0-9]|3[01])([-])(0[13578]|10|12)([-])(\d{4}))|(([0][1-9]|[12][0-9]|30)([-])(0[469]|11)([-])(\d{4}))|((0[1-9]|1[0-9]|2[0-8])([-])(02)([-])(\d{4}))|((29)(\.|-|\/)(02)([-])([02468][048]00))|((29)([-])(02)([-])([13579][26]00))|((29)([-])(02)([-])([0-9][0-9][0][48]))|((29)([-])(02)([-])([0-9][0-9][2468][048]))|((29)([-])(02)([-])([0-9][0-9][13579][26])))$/;
+          if(value != "") {
+            if(dateRegExpression.test(value)) {
+              callback(true);  
+            }
+            else {
+              alert("Please enter valid date!");
+              callback(false);  
+            }
+          }
+          else {
+            callback(true);
+          }
+      }, 100);
+    };
+
+    var dateRegExpression = /(((0[1-9]|[12][0-9]|3[01])([-])(0[13578]|10|12)([-])(\d{4}))|(([0][1-9]|[12][0-9]|30)([-])(0[469]|11)([-])(\d{4}))|((0[1-9]|1[0-9]|2[0-8])([-])(02)([-])(\d{4}))|((29)(\.|-|\/)(02)([-])([02468][048]00))|((29)([-])(02)([-])([13579][26]00))|((29)([-])(02)([-])([0-9][0-9][0][48]))|((29)([-])(02)([-])([0-9][0-9][2468][048]))|((29)([-])(02)([-])([0-9][0-9][13579][26])))$/
+    var container = document.getElementById("hot"),
+    save = document.getElementById('save'),
+    autosaveNotification,
+    student_name = function(value, callback){
+        if(value.length == 0)
+          callback(false)
+        else
+          callback(true)
+    },
+    hot1 = new Handsontable(container,{
+      startRows: 1,
+      startCols: 7,
+      rowHeaders: true,
+      colHeaders: true,
+      colHeaders: ['Student name','IC Number', 'Date of birth', 'Join date', 'Contact number', 'Fee', 'Description'],
+      colWidths: [180, 140, 120, 120, 140, 70,300], 
+      columns: [
+        {
+          validator: student_name, allowInvalid: false 
+        },{},
+        {
+          validator: dateValidator, allowInvalid: false
+        },
+        {
+          validator: dateValidator, allowInvalid: false
+        },
+        {},{},{}
+      ],
+      minSpareRows: 1,
+      contextMenu: true,
+      afterChange: function (change, source) {
+      }
+    });
+
+    Handsontable.Dom.addEvent(save,'click', function (){
+      flag = 0;
+      // console.log(hot1.getData().length);
+      var rcount = hot1.getData().length;
+      for(var i = 0; i < rcount; i++){
+        var cnt = 0;
+        for(var j = 0; j <= 6; j++)
+        {
+          if(hot1.getData()[i][j] == null || hot1.getData()[i][j] == "")
+            cnt = cnt + 1;
+        }
+        if (hot1.getData()[i][0] == null && cnt != 7)
+          flag = 1;
+      }
+      if (flag == 0){
+        console.log(flag);
+        $.ajax({
+          url: '<%= instructor_add_student_from_dashboard_path %>',
+          type: 'post',
+          data: {total_param: JSON.stringify(hot1.getData()), group_class_id: "<%= @group_class.id %>"},
+          success: function (data) {   
+            if(data == "done")
+              window.location.reload();
+          }
+        });
+      }
+      else{
+        alert("Student name can't be blank")
+      }
+    });
+  });
+</script>

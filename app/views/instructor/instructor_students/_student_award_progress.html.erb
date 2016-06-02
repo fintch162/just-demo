@@ -1,0 +1,92 @@
+<% items = [["",""],["Training", "training_for"],["Ready", "ready_for"], ["Achieved","achieved"]] %>
+<div class="col-xs-3"><%= a.name %></div>
+<%@instructor_student.instructor_student_awards.where(:award_id=>a.id).each do |award| %>
+  <%= form_for  award,  :url => instructor_change_award_details_path(@instructor_student), :remote => true do |f| %>
+    <%= f.hidden_field :award_id, :value => a.id ,:class=>"award_progress_id"%>
+    <%= f.hidden_field :instructor_student_award_id, :value => award.id ,:class=>"instructor_student_award_id"%>
+    <div class="col-xs-3">
+      <%if award.is_registered? && award.award_progress == "ready_for" && award.status != "Pass" %>
+        <label class="label_margin">Booked</label>
+      <% elsif award.status == "Pass"%>
+        <%#= f.text_field :award_progress ,:value=>"Achieved",:class => "form-control award_progress", :readonly => true%>
+        <label class="label_margin">Achieved</label>
+      <%else %>
+        <%= f.select :award_progress, items.map { |e| e },{} ,:class => "form-control award_progress" %>
+      <%end %>
+    </div>
+    <div class="col-xs-3">
+      <%if award.is_registered? && award.award_progress == "ready_for" && award.status != "Pass" %>
+        <label><%= award.award_test.test_date.strftime("%e %B %Y")%></label>
+      <% elsif award.achieved_date.blank? && award.status != "Pass" %>
+        <div class="input-group date date-picker">
+          <% if award.award_progress == 'achieved' %>
+            <%= f.text_field :achieved_date, :class => "form-control form-control-inline achieved_date"%>
+            <span class="input-group-btn">
+              <button class="btn default" type="button" style="height: 34px;"><i class="fa fa-calendar"></i></button>
+            </span>
+          <% else %>
+            <%= f.text_field :achieved_date, :class => "form-control form-control-inline achieved_date",disabled: true, value:"" %>
+            <span class="input-group-btn">
+              <button class="btn default" type="button" style="height: 34px;" disabled><i class="fa fa-calendar"></i></button>
+            </span>
+          <% end %>
+        </div>
+        <%#= f.text_field :achieved_date, :class => "form-control form-control-inline achieved_date date-picker",:style=> "display: none !important; background-color: #eee !important;" %>
+      <% else %>
+        <% if award.status == "Pass"%>
+          <%if award.award_test && award.award_test !=nil %>
+            <label><%= award.award_test.test_date.strftime("%e %B %Y")%></label>
+          <%end %>
+        <% else %>
+          <div class="input-group date date-picker">
+            <% if award.award_progress == 'achieved' %>
+              <%= f.text_field :achieved_date, :class => "form-control form-control-inline achieved_date", :value => award.achieved_date.strftime("%e %B %Y")%>
+              <span class="input-group-btn">
+                <button class="btn default" type="button" style="height: 34px;"><i class="fa fa-calendar"></i></button>
+              </span>
+            <% else %>
+              <%= f.text_field :achieved_date, :class => "form-control form-control-inline achieved_date",disabled: true,value: ""%>
+              <span class="input-group-btn">
+                <button class="btn default" type="button" style="height: 34px;" disabled ><i class="fa fa-calendar"></i></button>
+              </span>
+            <% end %>
+          </div>
+
+              <%#= f.text_field :achieved_date, :class => "form-control form-control-inline achieved_date date-picker", :value => award.achieved_date.strftime("%e %B %Y"),:style=> "display: none !important; background-color: #eee !important;" %>
+        <% end %>
+      <%end %>
+    </div>
+    <div class="col-xs-3 pull-right save_enable">
+      <%if award.status == "Pass" || (award.is_registered? && award.award_progress == "ready_for" && award.award_test_id.present? ) %>
+        <%= link_to "View Test", instructor_award_test_path(award.award_test_id) %>
+      <%else %>
+        <span class="pull-right"> | <a href="javascript:;" id="cancel3" class="cancel disabled">Cancel</a></span> <%= f.submit "Save", :class=>"btn default disabled green pull-right", data: { disable_with: "Saving.." }%>
+      <% end %>
+    </div>
+  <%end %>
+<%end %>
+
+
+
+<style>
+.achieved_date{
+  width: 145px !important;
+}
+.save_enable{
+  padding-left: 0px !important;
+}
+.hide_achiever_date{
+  display: none !important;
+}
+a.disabled {
+   pointer-events: none;
+   cursor: default;
+}
+.row_margin{
+  margin-bottom: 20px;
+}
+.label_margin{
+  margin-left: 5px;
+}
+</style>
+

@@ -1,0 +1,850 @@
+/ %h3.page-title
+/   Job Ref #{@job.id}
+/ .row
+/   .col-md-12{style: "padding-bottom: 5px;"}
+/     .invoice
+/       %button#create_invoice.btn.blue{type: "submit"} Create Invoice
+/       - if @job.invoices.count != 0
+/         - @job.invoices.each do |inv|
+/           = link_to "Invoice #{inv.invoice_number}" ,manage_invoice_path(inv),:class=>"btn blue"
+/ .row
+/   .col-md-7
+/     / <a href="#" class="pull-right btn blue">Edit Lead</a>
+/     .row
+/       .col-md-12{style: "margin-bottom: 5px;"}
+/         %a.pull-right.btn.blue{href: manage_edit_lead_path(@job.id)} Edit Lead
+/       .col-md-6
+/         %table#user.table.table-bordered.table-striped
+/           %tbody
+/             %tr
+/               %td{style: "width:30%"} Name
+/               %td{style: "width:70%"}
+/                 = @job.lead_name
+/             %tr
+/               %td{style: "width:30%"} Contact
+/               %td{style: "width:70%"}
+/                 = @job.lead_contact
+/             %tr
+/               %td{style: "width:30%"} Email
+/               %td{style: "width:70%"}
+/                 = @job.lead_email
+/             %tr
+/               %td{style: "width:30%"} Student(s)
+/               %td{style: "width:70%"}
+/                 - @job.students.each do |student|
+/                   = student.name
+/                   = "-" if student.age?
+/                   = student.age
+/                   = "(" if student.sex?
+/                   = student.sex
+/                   = ")" if student.sex?
+/                   %br/
+/             %tr
+/               %td{style: "width:30%"} Referred From
+/               %td{style: "width:70%"}
+/       .col-md-6
+/         %table#user.table.table-bordered.table-striped
+/           %tbody
+/             %tr
+/               %td
+/                 %strong Class Type :
+/                 = ClassType.find(@job.class_type).title if @job.class_type?
+/                 %br/
+/                 %strong Info :
+/                 = simple_format(@job.lead_info).html_safe
+/     %br/
+/     .clearfix
+/     .row
+/       .col-md-6.col-sm-6
+/         /
+/           BEGIN PORTLET
+/         .portlet
+/           .portlet-title.line
+/             .caption
+/               %i.fa.fa-comments
+/               Customer
+/           .row
+/             .col-md-7
+/               .form-group
+/                 %label.control-label Name
+/                 %input#firstName.form-control.input-sm{placeholder: "Willian", type: "text"}/
+/             /
+/               \/span
+/             .col-md-5
+/               .form-group
+/                 %label.control-label Mobile
+/                 %input#lastName.form-control.input-sm{placeholder: "98757732", type: "text"}/
+/             /
+/               \/span
+/           #chats.portlet-body
+/             .slimScrollDiv{style: "position: relative; overflow: hidden; width: auto; height: 435px;"}
+/               .scroller{"data-always-visible" => "1", "data-initialized" => "true", "data-rail-visible1" => "1", style: "overflow: hidden; width: auto; height: 435px;"}
+/                 %ul.chats
+/                   %li.in
+/                     %img.avatar.img-responsive{src: "/assets/avatar1.jpg"}/
+/                     .message
+/                       %span.arrow
+/                       %a.name{href: "#"}
+/                         Bob Nilson
+/                       %span.datetime
+/                         at Jul 25, 2012 11:09
+/                       %span.body
+/                         Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+/                   %li.out
+/                     %img.avatar.img-responsive{src: "/assets/avatar2.jpg"}/
+/                     .message
+/                       %span.arrow
+/                       %a.name{href: "#"}
+/                         Lisa Wong
+/                       %span.datetime
+/                         at Jul 25, 2012 11:09
+/                       %span.body
+/                         Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+/                   %li.in
+/                     %img.avatar.img-responsive{src: "/assets/avatar1.jpg"}/
+/                     .message
+/                       %span.arrow
+/                       %a.name{href: "#"}
+/                         Bob Nilson
+/                       %span.datetime
+/                         at Jul 25, 2012 11:09
+/                       %span.body
+/                         Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+/                   %li.out
+/                     %img.avatar.img-responsive{src: "/assets/avatar3.jpg"}/
+/                     .message
+/                       %span.arrow
+/                       %a.name{href: "#"}
+/                         Richard Doe
+/                       %span.datetime
+/                         at Jul 25, 2012 11:09
+/                       %span.body
+/                         Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+/                   %li.in
+/                     %img.avatar.img-responsive{src: "/assets/avatar3.jpg"}/
+/                     .message
+/                       %span.arrow
+/                       %a.name{href: "#"}
+/                         Richard Doe
+/                       %span.datetime
+/                         at Jul 25, 2012 11:09
+/                       %span.body
+/                         Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+/                   %li.out
+/                     %img.avatar.img-responsive{src: "/assets/avatar1.jpg"}/
+/                     .message
+/                       %span.arrow
+/                       %a.name{href: "#"}
+/                         Bob Nilson
+/                       %span.datetime
+/                         at Jul 25, 2012 11:09
+/                       %span.body
+/                         Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+/                   %li.in
+/                     %img.avatar.img-responsive{src: "/assets/avatar3.jpg"}/
+/                     .message
+/                       %span.arrow
+/                       %a.name{href: "#"}
+/                         Richard Doe
+/                       %span.datetime
+/                         at Jul 25, 2012 11:09
+/                       %span.body
+/                         Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+/                   %li.out
+/                     %img.avatar.img-responsive{src: "/assets/avatar1.jpg"}/
+/                     .message
+/                       %span.arrow
+/                       %a.name{href: "#"}
+/                         Bob Nilson
+/                       %span.datetime
+/                         at Jul 25, 2012 11:09
+/                       %span.body
+/                         Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. sed diam nonummy nibh euismod tincidunt ut laoreet.
+/               .slimScrollBar{style: "background: none repeat scroll 0% 0% rgb(187, 187, 187); width: 7px; position: absolute; opacity: 0.4; border-radius: 7px; z-index: 99; right: 1px; top: 202px; height: 233.036px; display: block;"}
+/               .slimScrollRail{style: "width: 7px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: none repeat scroll 0% 0% rgb(234, 234, 234); opacity: 0.2; z-index: 90; right: 1px;"}
+/             .chat-form
+/               .input-cont{style: "margin-right: 0px !important;"}
+/                 %textarea#customer_message_template.form-control{placeholder: "Type a message here...", rows: "20"}
+/               %a.btn.blue.pull-right{href: "#", style: "margin-top: 10px;"} Send
+/         /
+/           END PORTLET
+/       .col-md-6.col-sm-6
+/         /
+/           BEGIN PORTLET
+/         .portlet
+/           .portlet-title.line
+/             .caption
+/               %i.fa.fa-comments
+/               Instructor
+/           .row
+/             .col-md-7
+/               .form-group
+/                 %label.control-label Name
+/                 %input#firstName.form-control.input-sm{placeholder: "Willian", type: "text"}/
+/             /
+/               \/span
+/             .col-md-5
+/               .form-group
+/                 %label.control-label Mobile
+/                 %input#lastName.form-control.input-sm{placeholder: "98757732", type: "text"}/
+/             /
+/               \/span
+/           #chats.portlet-body
+/             .slimScrollDiv{style: "position: relative; overflow: hidden; width: auto; height: 435px;"}
+/               .scroller{"data-always-visible" => "1", "data-initialized" => "true", "data-rail-visible1" => "1", style: "overflow: hidden; width: auto; height: 435px;"}
+/                 %ul.chats
+/                   %li.in
+/                     %img.avatar.img-responsive{src: "/assets/avatar1.jpg"}/
+/                     .message
+/                       %span.arrow
+/                       %a.name{href: "#"}
+/                         Bob Nilson
+/                       %span.datetime
+/                         at Jul 25, 2012 11:09
+/                       %span.body
+/                         Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+/                   %li.out
+/                     %img.avatar.img-responsive{src: "/assets/avatar2.jpg"}/
+/                     .message
+/                       %span.arrow
+/                       %a.name{href: "#"}
+/                         Lisa Wong
+/                       %span.datetime
+/                         at Jul 25, 2012 11:09
+/                       %span.body
+/                         Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+/                   %li.in
+/                     %img.avatar.img-responsive{src: "/assets/avatar1.jpg"}/
+/                     .message
+/                       %span.arrow
+/                       %a.name{href: "#"}
+/                         Bob Nilson
+/                       %span.datetime
+/                         at Jul 25, 2012 11:09
+/                       %span.body
+/                         Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+/                   %li.out
+/                     %img.avatar.img-responsive{src: "/assets/avatar3.jpg"}/
+/                     .message
+/                       %span.arrow
+/                       %a.name{href: "#"}
+/                         Richard Doe
+/                       %span.datetime
+/                         at Jul 25, 2012 11:09
+/                       %span.body
+/                         Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+/                   %li.in
+/                     %img.avatar.img-responsive{src: "/assets/avatar3.jpg"}/
+/                     .message
+/                       %span.arrow
+/                       %a.name{href: "#"}
+/                         Richard Doe
+/                       %span.datetime
+/                         at Jul 25, 2012 11:09
+/                       %span.body
+/                         Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+/                   %li.out
+/                     %img.avatar.img-responsive{src: "/assets/avatar1.jpg"}/
+/                     .message
+/                       %span.arrow
+/                       %a.name{href: "#"}
+/                         Bob Nilson
+/                       %span.datetime
+/                         at Jul 25, 2012 11:09
+/                       %span.body
+/                         Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+/                   %li.in
+/                     %img.avatar.img-responsive{src: "/assets/avatar3.jpg"}/
+/                     .message
+/                       %span.arrow
+/                       %a.name{href: "#"}
+/                         Richard Doe
+/                       %span.datetime
+/                         at Jul 25, 2012 11:09
+/                       %span.body
+/                         Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+/                   %li.out
+/                     %img.avatar.img-responsive{src: "/assets/avatar1.jpg"}/
+/                     .message
+/                       %span.arrow
+/                       %a.name{href: "#"}
+/                         Bob Nilson
+/                       %span.datetime
+/                         at Jul 25, 2012 11:09
+/                       %span.body
+/                         Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. sed diam nonummy nibh euismod tincidunt ut laoreet.
+/               .slimScrollBar{style: "background: none repeat scroll 0% 0% rgb(187, 187, 187); width: 7px; position: absolute; opacity: 0.4; border-radius: 7px; z-index: 99; right: 1px; top: 202px; height: 233.036px; display: block;"}
+/               .slimScrollRail{style: "width: 7px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: none repeat scroll 0% 0% rgb(234, 234, 234); opacity: 0.2; z-index: 90; right: 1px;"}
+/             .chat-form
+/               .input-cont{style: "margin-right: 0px !important;"}
+/                 %textarea#instructor_message_template.form-control{placeholder: "Type a message here...", rows: "20"}
+/               %a.btn.blue.pull-right{href: "#", style: "margin-top: 10px;"} Send
+/         /
+/           END PORTLET
+/     /
+/       BEGIN SAMPLE FORM PORTLET
+/     /
+/       END SAMPLE FORM PORTLET
+/     /
+/       BEGIN SAMPLE FORM PORTLET
+/     /
+/       END SAMPLE FORM PORTLET
+/     /
+/       BEGIN SAMPLE FORM PORTLET
+/     /
+/       END SAMPLE FORM PORTLET
+/   .col-md-5
+/     /
+/       BEGIN SAMPLE FORM PORTLET
+/     .portlet.box.green
+/       .portlet-title
+/         .caption
+/           %i.fa.fa-gift
+/           Edit Job
+/       .portlet-body.form
+/         = semantic_form_for [:manage, @job] do |f|
+/           .form-body
+/             .clearfix
+/               %span.help-inline
+/                 .btn-group{"data-toggle" => "buttons"}
+/                   - ["New", "Post", "Suggest", "Invoice", "Receipt"].each do |item|
+/                     - if @job.job_status == item
+/                       %label.btn.blue.active
+/                         = f.radio_button :job_status, item, :class=>"toggle" ,:required => true
+/                         = item
+/                     - else
+/                       %label.btn.blue
+/                         = f.radio_button :job_status, item, :class=>"toggle" ,:required => true
+/                         = item
+/             .row
+/               .col-md-6
+/                 .form-group
+/                   = f.input :venue_id, :as => :select , :collection => Venue.all, :include_blank => true
+/               .col-md-6
+/                 .form-group
+/                   = f.input :class_type, :collection => ClassType.all, :include_blank => true, :required => true
+/             #group_only.row
+/               .col-md-6
+/                 .form-group
+/                   = f.input :age_group, :collection => AgeGroup.all, :include_blank => true
+/               / /span
+/               .col-md-6
+/                 .form-group
+/                   = f.input :class_level, :collection => Level.all, :include_blank => true
+/               / /span
+/             .form-group
+/               #job_preferred_time_input.text.input.optional.form-group
+/                 %label.control-label{for: "job_preferred_time"} Preferred Time
+/                 %span.form-.wrapper
+/                   = f.text_area :preferred_time, :rows => 3, :class => "form-control", :placeholder => 'Preferred Time.'
+/             #other_venue_block.form-group
+/               #job_other_venue_input.text.input.optional.form-group
+/                 %span.form-.wrapper
+/                   = f.input :other_venue, :class => "form-control", :placeholder => 'Other Venue.'
+/             .row
+/               .col-md-6
+/                 .form-group
+/                   = f.input :day_of_week, :as => :select,:collection => ([["Monday", 1], ["Tuesday",2], ["Wednesday", 3], ["Thursday", 4], ["Friday", 5], ["Saturday" , 6], ["Sunday" , 0]])
+/               .col-md-6
+/                 .form-group
+/                   %label.control-label{for: "job_class_time"} Class Time
+/                   %input#job_class_time.form-control{"data-date-format" => "hh:mm A/PM", name: "job[class_time]", type: "text"}/
+/             .row
+/               .col-md-6
+/                 = f.label :start_date
+/                 %br/
+/                 - if @job.start_date?
+/                   = f.text_field :start_date, :class => "form-control date-picker", :value => "#{@job.start_date.strftime('%e %B %Y')}"
+/                 - else
+/                   = f.text_field :start_date, :class => "form-control date-picker"
+/               .col-md-6
+/                 .form-group
+/                   = f.input :fee_type_id,:as => :select ,:collection => FeeType.all, :include_blank => true
+/                   %br/
+/             #fee_structure_wise.row
+/               .col-md-6
+/                 .form-group
+/                   = f.label :completed_by
+/                   %br/
+/                   - if @job.completed_by?
+/                     = f.text_field :completed_by, :class => "form-control date-picker", :value => "#{@job.completed_by.strftime('%e %B %Y')}"
+/                   - else
+/                     = f.text_field :completed_by, :class => "form-control date-picker"
+/               .col-md-6
+/                 .form-group
+/                   %label{for: "lesson_count"} Lesson Count
+/                   .input-group
+/                     = f.text_field :lesson_count, :placeholder => "e.g. 10", :class => "form-control"
+/                     %span#count_lesson.input-group-addon.btn.blue
+/                       Count
+/             .row
+/               .col-md-4
+/                 .form-group
+/                   = f.input :par_pax, :placeholder => "e.g. 60"
+/               .col-md-4
+/                 .form-group
+/                   = f.input :fee_total, :placeholder => "e.g. $30"
+/               .col-md-4
+/                 .form-group
+/                   = f.input :referral, :placeholder => "e.g. 120"
+/             .row
+/               .col-md-8
+/                 .form-group
+/                   = f.input :instructor
+/             .form-group
+/               #job_coordinator_notes.text.input.optional.form-group
+/                 %label.control-label{for: "coordinator_notes"} Coordinator Notes
+/                 %span.form-.wrapper
+/                   = f.text_area :coordinator_notes, :rows => 3, :class => "form-control", :placeholder => 'Coordinator Notes.'
+/             .row
+/               .col-md-8
+/                 .form-group
+/                   = f.input :show_names
+/                   = f.input :free_goggles
+/                   = f.input :lady_instructor
+/           .form-actions.fluid
+/             .col-md-offset-3.col-md-9
+/               = link_to "Generate SMS", "javascript:void(0);", :class => "btn blue", :id => "generate_sms"
+/               = f.submit 'Save', :class => "btn green"
+/ :javascript
+/   // Job Preferred Time Hide/Show according to job status
+/     var job_status = $("input:radio[name='job[job_status]']").filter(":checked").val();
+/     if(job_status == "New" || job_status == "Post")
+/     {
+/       $("#job_preferred_time_input").slideDown('medium');
+/     } else {
+/       $("#job_preferred_time_input").slideUp('medium');
+/     }
+/     var job_status_on_change_val = "";
+/     $("input:radio[name='job[job_status]']").change(
+/       function(){
+/         job_status_on_change_val = $(this).val();
+/         if(job_status_on_change_val == "New" || job_status_on_change_val == "Post")
+/         {
+/           $("#job_preferred_time_input").slideDown('medium');
+/         } else {
+/           $("#job_preferred_time_input").slideUp('medium');
+/         }
+/       }
+/     );
+  
+  
+/     var instructor_name_val = $("#job_instructor_id").find('option:selected').text();
+  
+/     var template_identifier = ["< id >", "< venue_name >", "< class_level >"  , "< age_group >", "< class_type >", "< start_date >", "< completed_by >", "< fee_type >", "< student_count >", "< list_students >", "< preferred_time >", "< class_time >", "< day_of_week >", "< per_pax >", "< fee_total >", "< referral >", "< fee_remainder >", "< lead_name >", "< lead_contact >", "< instructor_name >", "< instructor_contact >", "< lesson_count >", "< show_names >", "< lady_instructor >", "< free_goggles >"];
+  
+/     jQuery(document).ready(function() {
+/       Metronic.init();
+/       // ComponentsPickers.init();
+/       $('#job_class_time').timepicker({
+/         defaultTime: '#{@job.class_time.strftime("%I:%M %p") if @job.class_time?}'
+/       });
+/       var selected_option = $("#job_class_type").find('option:selected').text();
+/       if(selected_option == "Private")
+/       {
+/         $("#group_only").hide();
+/       }
+/       var fee_structure_type = $('#job_fee_type_id').find("option:selected").text();
+/       if(fee_structure_type == "Per Month" || fee_structure_type == "per month")
+/       {
+/         $("#fee_structure_wise").hide();
+/       }
+/       var venue_name = $("#job_venue_id").find("option:selected").text();
+/       if(venue_name != "Condo") {
+/         $("#other_venue_block").hide();
+/       }
+/     });
+  
+/     function toLower(p_str) {
+/       if(p_str){
+  
+/         return String(p_str).toLowerCase();
+/       }
+/       else
+/       {
+/         return "";
+/       }
+/     }
+  
+/     //Generate Sms click
+/     $("#generate_sms").click(function(){
+/       var job_status_new = '#{@job.job_status}';
+/       if(job_status_new == "New") {
+/         alert("Please save data first.")
+/       } else {
+/         var url = "/manage/get_template_on_generate_sms";
+/         var job_status = $("input:radio[name='job[job_status]']").filter(":checked").val();
+/         $.ajax({
+/           url: url,
+/           type: 'GET',
+/           dataType: 'js',
+/           data: {job_status: job_status },
+/         })
+/         .done(function(data) {
+/           console.log("success");
+/         })
+/         .fail(function(e) {
+/           console.log(e);
+/         })
+/         .always(function(data) {
+/           // Based On Conditions
+/           var arr = (data.responseText).split("*^*");
+  
+/           //Data.response tax is the result of the customer and instructor's message. Split to get 2 data
+/           var arr = (data.responseText).split("*^*");
+  
+/           // var template_value = ['#{@job.id}', '#{@venue}', '#{@class_level}', '#{@age_group}', '#{@class_type}', '#{@job.start_date}'];
+  
+/           week_days_id = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+/           var day_of_week_val = $("#job_day_of_week").val();
+/           day_of_week_val = week_days_id[day_of_week_val]
+  
+/           //Javascript get for objecta
+/           var venue_val = $("job_venue_id option:selected").text();
+/           var class_val = $("job_class_level option:selected").text();
+/           var age_val =  $("job_age_group option:selected").text();
+/           var classtype_val = $("job_class_type option:selected").text();
+/           var start_date_val = $("#job_start_date").val();
+/           var completed_by_val = $("#job_completed_by").val();
+/           var fee_structure_val = $("#job_fee_type_id option:selected").text();
+/           var preferred_time_val = $("#job_preferred_time").val();
+/           var student_count_val = '#{@job.students.count}';
+/           var list_students_val = '#{@list_students.join("")}';
+  
+/           var class_time_val = $("#job_class_time").val();
+/           var day_of_week_val = day_of_week_val
+/           var par_pax_val = $("#job_par_pax").val();
+/           var fee_total_val = $("#job_fee_total").val();
+/           var referral_val = $("#job_referral").val();
+/           var fee_remainder_val = fee_total_val - referral_val;
+  
+/           var lead_name_val = '#{@job.lead_name}';
+/           var lead_contact_val = '#{@job.lead_contact}';
+/           var instructor_contact_val = '#{@job.instructor_contact}';
+/           var lesson_count_val = $("#job_lesson_count").val();
+         
+  
+/           var show_names_val = $('input:checkbox[name="job[show_names]"]').is(":checked");
+/           var lady_instructor_val = $('input:checkbox[name="job[lady_instructor]"]').is(":checked");
+/           var free_goggles_val = $('input:checkbox[name="job[free_goggles]"]').is(":checked");
+  
+/           var template_value = ['#{@job.id}', venue_val, class_val, age_val, classtype_val, start_date_val, completed_by_val, fee_structure_val, student_count_val, list_students_val, preferred_time_val, class_time_val, day_of_week_val, par_pax_val, fee_total_val, referral_val, fee_remainder_val, lead_name_val, lead_contact_val, instructor_name_val, instructor_contact_val, lesson_count_val, show_names_val, lady_instructor_val, free_goggles_val];
+/           var customer_message = String(arr[0]);
+/           var instructor_message = String(arr[1]);
+  
+/           for(var i=0; i<template_identifier.length; i++)
+/           {
+/             var j = 0;
+  
+  
+/             for(j=0; toLower(customer_message).indexOf(toLower(template_identifier[i])) != -1; j++)
+/               customer_message = customer_message.replace( template_identifier[i], template_value[i]);
+/             for(j=0; toLower(instructor_message).indexOf(toLower(template_identifier[i])) != -1; j++)
+/               instructor_message = instructor_message.replace( template_identifier[i], template_value[i]);
+/           }
+/           $("#customer_message_template").val(templateDecoder(customer_message));
+/           $("#instructor_message_template").val(templateDecoder(instructor_message));
+/         });
+/       }
+/     });
+/     $("#job_class_type").change(function(){
+/       var selected_option = $(this).find('option:selected').text();
+/       if(selected_option == "Private")
+/       {
+/         $("#group_only").slideUp( "medium");
+/       }
+/       else {
+/         $("#group_only").slideDown("medium");
+/       }
+/     });
+/     $('#job_fee_type_id').change(function(e) {
+/       var fee_structure_type = $(this).find("option:selected").text();
+/       if(fee_structure_type == "Per Month" || fee_structure_type == "per month")
+/       {
+/         $("#fee_structure_wise").slideUp("medium");
+/       } else {
+/         $("#fee_structure_wise").slideDown("medium");
+/       }
+/     });
+/     $("#job_venue_id").change(function() {
+/       var venue_name = $(this).find("option:selected").text();
+/       if(venue_name == "Condo") {
+/         $("#other_venue_block").slideDown('medium');
+/       } else {
+/         $("#other_venue_block").slideUp('medium');
+/       }
+/     });
+  
+/     $('#create_invoice').click(function(e){
+/       $this = $(this);
+/       e.preventDefault();
+/       var job_id = "#{@job.id}"
+/       $.ajax({
+/         url: '/manage/create_invoice/'+job_id,
+/         type: 'GET',
+/         beforeSend: function() {
+/           $this.html("Creating Invoice..");
+/         }
+/       })
+/       .done(function(data) {
+/         var url = 'https://mike342.freshbooks.com/updateInvoice?invoiceid='+data[1]
+/         console.log(data);
+/         window.open(url, '_blank');
+/         $this.html("Create Invoice");
+/         $('.invoice').append('<span>'+'<a href=/manage/invoices/'+data[0]+' class="btn green"> Invoice'+ data[2]+'</a>'+'</span>')
+/       })
+/       .fail(function(data) {
+/         alert(data.responseText);
+/         $this.html("Creating Invoice");
+/       })
+/     });
+    
+/     function br2nl(p_str) {
+/       return p_str.replace(/<br\s*\/?>/mg,"\n");
+/     }
+    
+/     function removenl(p_str) {
+/       return p_str.replace(/(\r\n|\n|\r)/gm,"");
+/     }
+    
+/     function templateDecoder(p_str)
+/     {
+/       str = p_str;
+  
+  
+/       start = false;
+/       extrastr = "";
+/       newstring = "";
+/       conditions = [];
+  
+/       str = solidReplace(str,"if(","^(");
+/       str = solidReplace(str,"else{","^^{");
+/       str = solidReplace(str,""","");
+/       str = solidReplace(str,"<","<");
+/       str = solidReplace(str,">",">");
+/       str = removenl(str);
+/       str = br2nl(str);
+  
+/       for(var i=0;i<str.length;i++)
+/       {
+/         char = String(str.charAt(i));
+/         if(char.indexOf("(")!=-1)
+/           start = true;
+/         if(start==true)
+/           newstring+=char;
+/         if(char.indexOf(")")!=-1)
+/         {
+/           start = false;
+/           conditions.push(newstring);
+/           newstring = "";
+/         } 
+/       }
+     
+/       for(i=0;i<conditions.length;i++)
+/       {
+/         var d = conditions[i];
+/         var res = getRes(d);
+/           str = solidReplace(str,d,res);
+/       }
+        
+/       for(i=0;str.lastIndexOf("^^{")!=-1;i++)
+/       {
+/         var sp = str.substr(0, str.lastIndexOf("^^{"));
+/         if(sp.lastIndexOf("^true{") > sp.lastIndexOf("^false{"))
+/           str =sp +"^false{"+ str.substr(sp.length+3);
+/         else
+/            str =sp +"^true{"+ str.substr(sp.length+3);
+/       }
+/         var vstr = "";
+/         var st =false;
+/         var cnt = 0;
+/         str = solidReplace(str,"^false","`");
+/          for(var i=0;i<str.length;i++)
+/          {
+/               char = String(str.charAt(i));
+/              if(char.indexOf("{")!=-1)
+/              {
+                 
+/                  if(st==true)
+/                  {
+/                      cnt+=1;
+/                      vstr += "`"; 
+/                  }
+/                 else
+/                  vstr += "{";
+/              }
+/              else if(char.indexOf("}")!=-1)
+/              {
+                 
+/                  if(st==true)
+/                  {
+/                      cnt-=1;
+/                      vstr += "`"; 
+/                  }
+/                 else
+/                      vstr += "}";
+/                  if(cnt<=0)
+/                      st = false;
+                    
+/              }
+/              else if(char.indexOf("`")!=-1)
+/              {
+/                  vstr += "`";
+/                  st = true;
+/              }
+/              else 
+/              {
+/                  if(st==true)
+/                     vstr += "`"; 
+/                  else
+/                      vstr += char;
+/              }
+                  
+/          }
+/         str = solidReplace(vstr,"`","");
+/         nstr1 = solidReplace(str,"^true{","");
+/         nstr1 = solidReplace(nstr1,"}","");
+             
+/         return nstr1;
+       
+/     }
+  
+/     // $("#as").html(str + "<br><br>" + templateDecoder(str) + "<br><br>"+ extrastr);
+/     //--------------------------------------------------------
+/     function getCount(p_list,p_str)
+/     {
+/        return  p_list.split(p_str).length;
+/     }
+/     function getRes(p_str)
+/     {
+/         var splitterlist = ["==","!=",">","<",">=","<="];
+/           var asr = [];
+/         p_str = p_str.substr(1,p_str.length-2);
+        
+/         for(var i=0;i<splitterlist.length;i++)
+/         {
+/               if(p_str.indexOf(splitterlist[i])!=-1)
+/               {
+  
+/                   asr = p_str.split(splitterlist[i]);
+/                   return isMatched(asr[0],asr[1],splitterlist[i]);
+/               }
+/         }
+/         return "("+p_str+")";
+        
+/     }
+/     function isMatched(p_left,p_right,p_splitter)
+/     {
+/         // p_left = solidReplace(p_left," ","");
+/         // p_right = solidReplace(p_right," ","");
+/         p_left = p_left.trim();
+/         p_right = p_right.trim();
+  
+/         p_left = toLower(p_left)
+/         p_right = toLower(p_right)
+  
+/         if(p_splitter == "==")
+/         {
+/             if(p_left == p_right)
+/             return true;
+          
+/         }
+/         if(p_splitter == "!=")
+/         {
+/           if(p_left != p_right)
+/           return true;
+/         }
+/      if(p_splitter == ">")
+/         {
+/           if(p_left > p_right)
+/           return true;
+/         }
+/          if(p_splitter == "<")
+/         {
+/           if(p_left < p_right)
+/           return true;
+/         }
+/           if(p_splitter == "<=")
+/         {
+/           if(p_left <= p_right)
+/             return true;
+/         }
+/         if(p_splitter == ">=")
+/         {
+/                     if(p_left >= p_right)
+/             return true;
+/         }
+/         return false;
+      
+/     }
+  
+/     function solidReplace(p_str,p_find,p_replace)
+/     {
+/         var arr = p_str.split(p_find);
+/         return arr.join(p_replace);
+/     }
+/     var month_arr = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  
+/     // Count total weeks between start_date and completed_date
+/     $("#count_lesson").click(function(){
+/       var start_date_val = $("#job_start_date").val();
+/       var arr = start_date_val.split(" ")
+/       if(isNaN($("#job_lesson_count").val()) == true || $("#job_lesson_count").val() == "")
+/         {
+/           $("#job_lesson_count").val("")
+/           return;
+/         }
+/       var job_lesson_count = $("#job_lesson_count").val() - 1;
+/       var count_days_from_week = job_lesson_count * 7; 
+/       for(var i=0; i < month_arr.length;i++)
+/       {
+/         if(month_arr[i] == arr[1])
+/         {
+/           arr[1] = i + 1;
+/           break;
+/         }
+/       }
+      
+/       dt = new Date(arr[2], parseInt( arr[1], 10 ) - 1, arr[0]), // months are 0 based, so need to add 1
+/       inFourWeeks = new Date( dt.getTime() + count_days_from_week * 24 * 60 * 60 * 1000 );
+  
+/       $(function(){
+  
+/         $('#job_completed_by').val( inFourWeeks.getDate() + " " + month_arr[inFourWeeks.getMonth()] + " " + inFourWeeks.getFullYear());
+/       });
+  
+/       // var weeks = "";
+/       // var start_date_val = $("#job_start_date").val();
+/       // var completed_by_val = $("#job_completed_by").val();
+  
+/       // var date1 = new Date(start_date_val);
+/       // var date2 = new Date(completed_by_val);
+  
+/       // var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+/       // var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+/       // weeks = Math.round(diffDays / 7);
+/       // if(isNaN(weeks))
+/       //   $("#job_lesson_count").val("");
+/       // else
+/       //   $("#job_lesson_count").val(weeks);
+/     });
+  
+/     // Bootstrap Datepickers
+/     $(document).ready(function () {
+/       $('#job_start_date').datepicker({
+/           format: 'd MM yyyy'
+/       });  
+/       $('#job_completed_by').datepicker({
+/           format: 'd MM yyyy'
+/       });  
+/     });
+/ :css
+/   input[name="job[fee_structure]"]{
+/     margin-left: 0 !important;
+/   }
+/   .datepicker .datepicker-dropdown .dropdown-menu .datepicker-orient-left .datepicker-orient-bottom {
+/     width: 230px !important;
+/   }
+/   .datepicker.datepicker-dropdown.dropdown-menu{
+/     min-width: 240px !important;
+/   }

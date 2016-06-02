@@ -1,0 +1,96 @@
+<%= title "Transactions" %>
+<div class="main">
+  <div class="container">
+  	<ul class="breadcrumb">
+      <li><a href="/instructor">Home</a></li>
+      <li class="active">Fee Transactions</li>
+    </ul>
+    <div class="row">
+	    <div class="col-sm-12">
+	    	<h1>Fee Transactions</h1>
+	    </div>
+	  	<div class="col-sm-12">
+		    <table class="table sample_editable_2 fee_transaction_table">
+		      <thead>
+		        <tr>
+		          <th style="width:30px;"></th>
+		          <th>Payment Date</th>
+		          <th>Name</th>
+		          <th>Class</th>
+		          <!-- <th>Fee</th> -->
+		          <th>Fee For</th>
+		          <th>Amount</th>
+		          <th>Status</th>
+		          <th>Pay By</th>
+		        </tr>
+		      </thead>
+		      <tbody>
+		        <% @fee_payment_notifications.order("created_at DESC").each_with_index do |fee_payment_notification,index| %>
+		          <% group_class = fee_payment_notification.try(:fee).try(:instructor_student).try(:group_classes).try(:last) %>
+		          <tr>
+		            <td style="width:30px;">
+		            	<%= index+1 %>
+		            </td>
+		            <td>
+		              <%= fee_payment_notification.created_at.strftime("%Y-%-m-%d") %>
+		            </td>
+
+		            <td>
+		            <% student = fee_payment_notification.fee.instructor_student %>
+		            <%= link_to instructor_instructor_student_path(student, :gp => group_class.id) do %>
+		            	<%= student.student_name if fee_payment_notification.fee_id? && fee_payment_notification.fee.instructor_student_id? %>
+		            <% end %>
+		            </td>
+
+		            <td>
+                	<%= link_to instructor_group_class_view_add_more_months_path(group_class) do %>
+		            		<%= Date::ABBR_DAYNAMES[group_class.day] %>
+		            		<% if group_class.time? %>
+		            			<%= group_class.time.strftime("%I:%M%P").to_s %>
+                  	<% end %>
+                  <% end %>
+		            </td>
+		            <!-- <td>
+		              <%#= link_to 'Fee'+fee_payment_notification.fee_id.to_s, edit_instructor_instructor_student_fee_path(fee_payment_notification.fee.instructor_student, fee_payment_notification.fee) %>
+		            </td> -->
+		            <td>
+		            	<%= fee_payment_notification.fee.monthly_detail.strftime("%b-%Y") if fee_payment_notification.fee_id?%>
+		            </td>
+
+		            <td>
+		              <%= fee_payment_notification.amount.to_i %>
+		            </td>
+		            <td>
+		              <%= fee_payment_notification.status %>
+		            </td>
+		            <td>
+		              <%= fee_payment_notification.paid_by %>
+		            </td>
+		          </tr>
+		        <% end %>
+		      </tbody>
+		    </table>
+			</div>
+		</div>
+  </div>
+</div>
+<style type="text/css">
+ .sample_editable_2{
+    width: 100% !important;
+  }
+  .fee_transaction_table a {
+  	color: #3e4d5c;
+  }
+  .fee_transaction_table a:hover {
+  	color: #E02222;
+  }
+
+</style>
+<script type="text/javascript">
+ $('.sample_editable_2').DataTable( {
+    responsive: true,
+    "bPaginate": false,
+    "info":     false,
+    'filter': false
+   });
+</script>

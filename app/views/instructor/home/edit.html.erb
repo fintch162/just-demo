@@ -1,0 +1,189 @@
+<%= title "Edit Group Class" %>
+<% if !admin_user_signed_in? %>
+  <%= render "instructor/shared/login" %>
+<% else %>
+  <div class="main">
+    <div class="container">
+      <ul class="breadcrumb">
+        <li>
+          <a href="/instructor">Home</a>
+        </li>
+        <li>
+          <a href="/instructor/home">Group Classes</a>
+        </li>
+        <li class="active">Edit</li>
+        <% #%li %>
+        <% #  %a{:href => "/instructor"} Home %>
+        <% #%li.active Group Classes %>
+      </ul>
+      <div class="row margin-bottom-40">
+        <!-- = render :partial => 'ac_side_bar'
+        -->
+        <div class="col-md-9 col-sm-9">
+          <div class="row">
+            <h1>Edit Group Class </h1>
+            <div class="content-page">
+              <!--
+                BEGIN SAMPLE FORM PORTLET
+              -->
+              <%= form_for @group_class , :url => instructor_home_path(@group_class), :method => :put, :html => {:class=> "form-horizontal", :id=> "group_class_edit_form"} do |f| %>
+                <div class="form-body">
+                  <% if current_admin_user.coordinator? %>
+                    <div class="form-group">
+                      <label class="col-md-3 control-label">Instructor</label>
+                      <div class="col-md-4">
+                        <%= f.collection_select  :instructor_id,  Instructor.all, :id, :name ,{:prompt => 'Please Select' },{ :class=>"form-control" ,:required => true } %>
+                      </div>
+                    </div>
+                  <% end %>
+                  <div class="form-group">
+                    <label class="col-md-3 control-label">Veune</label>
+                    <div class="col-md-4">
+                      <%= f.collection_select :venue_id , Venue.all, :id, :name ,{ :prompt => 'Please Select'},{:class=>"form-control" ,:required => true } %>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-md-3 control-label">Day</label>
+                    <div class="col-md-4">
+                      <%= f.select :day, options_for_select([["Monday", 1], ["Tuesday", 2], ["Wednesday", 3], ["Thursday", 4], ["Friday",  5], ["Saturday" , 6], ["Sunday" , 0]]),{:prompt => "-Select Day-"},{:class=>"form-control"} %>
+                    </div>
+                  </div>  
+                  <div class="form-group">
+                    <label class="col-md-3 control-label">Time</label>
+                    <div class="col-md-4">
+                      <div class="input-group "  >
+                        <input type="text" class="form-control timepicker timepicker-no-seconds " id="group_class_time" name="group_class[time]" required="required" readonly="true" style="background-color: #eeeeee !important;" data-date-format="hh:mm A/PM">
+                        <span class="input-group-btn">
+                        <button class="btn default" type="button"><i class="fa fa-clock-o"></i></button>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-md-3 control-label">Age Group</label>
+                    <div class="col-md-4">
+                      <%= f.collection_select :age_group_id , AgeGroup.all , :id , :title ,{ :prompt => 'Please Select',:required => true},{:class=>"form-control"} %>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-md-3 control-label">Level</label>
+                    <div class="col-md-4">
+                      <%= f.collection_select :level_id , Level.all , :id , :title ,{ :prompt => 'Please Select',:required => true},{:class=>"form-control"} %>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-md-3 control-label">Fee Type</label>
+                    <div class="col-md-4">
+                      <%= f.collection_select :fee_type_id , FeeType.all, :id, :name ,{ :prompt => 'Please Select',:required => true},{:class=>"form-control"} %>
+                    </div>
+                  </div>
+                  <div class="form-group" id="lesson_count" style="display:none;">
+                    <label class="col-md-3 control-label">No of Lessons</label>
+                    <div class="col-md-4">
+                      <%= f.text_field :lesson_count ,:class=>"form-control", :placeholder=>"Enter No of Lessons",:required => true %>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-md-3 control-label">Duration</label>
+                    <div class="col-md-4">
+                      <%= f.text_field :duration, :placeholder=>"e.g. 60(60 minutes)", :class=>"form-control",  maxlength: "2", number: true, :required => true %>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-md-3 control-label">Fee</label>
+                    <div class="col-md-4">
+                      <%= f.text_field :fee, :placeholder=>"e.g. 60(60$)", :class=>"form-control", maxlength: "3", number: true ,:required => true %>
+                    </div>
+                  </div>
+                
+                </div>
+                <div class="form-actions fluid">
+                  <div class="col-md-offset-3 col-md-9">
+                    <%= f.submit "Save", :class=>"btn green" %>
+                    <%= link_to "Cancel",  instructor_group_classes_index_path, :class=> "btn default" %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+<script>
+$(document).ready(function() {
+  $("#group_class_edit_form").validate({
+    rules: {
+      instructor_id: {
+        required: true
+      }
+    }
+  });
+  
+  Metronic.init(); 
+  Layout.init();
+
+  $('.timepicker-no-seconds').timepicker({
+    minuteStep: 5,
+    autoclose: true,
+    defaultTime: '<%= @group_class.time.strftime("%I:%M %p") if @group_class.time? %>'
+  });
+  $('.timepicker').parent('.input-group').on('click', '.input-group-btn', function(e){
+      e.preventDefault();
+      $(this).parent('.input-group').find('.timepicker').timepicker('showWidget');
+  });
+});
+  
+  
+  $('#group_class_fee_type_id').change(function() {
+    var category = $(this).find("option:selected").text();
+    if (category == "per course" )
+    {
+      $("#lesson_count").show();
+    }
+    else
+    {
+      $("#lesson_count").hide();
+    }
+  });
+  $('#group_class_fee_type_id').change(function() {
+    if ($("#group_class_fee_type_id").val()=="1"){
+      $(".course_length_for_group_class").show()
+    }else{
+      $(".course_length_for_group_class").hide()
+    }
+  });
+   $('input[name="group_class[day]"]').change(function() {
+    $('label:has(input:radio:checked)').addClass('blue-madison');
+    $('label:has(input:radio:not(:checked))').removeClass('blue-madison').addClass('btn-default');
+
+  });
+
+   $('input[name="group_class[age_group_id]"]').change(function() {
+    $('label:has(input:radio:checked)').addClass('blue-madison');
+    $('label:has(input:radio:not(:checked))').removeClass('blue-madison').addClass('btn-default');
+  });
+  $('input[name="group_class[level_id]"]').change(function() {
+    $('label:has(input:radio:checked)').addClass('blue-madison');
+    $('label:has(input:radio:not(:checked))').removeClass('blue-madison').addClass('btn-default');
+  });
+  
+</script>
+<style>
+  .error {
+    color: red;
+  }
+  .bootstrap-timepicker-hour, .bootstrap-timepicker-minute, .bootstrap-timepicker-meridian{
+    border: none;
+  }
+</style>
+<% if params[:action] == "edit" %>
+<script>
+  $(document).ready(function(){
+    // $('#group_class_day').add
+    $("#group_class_day option[value='<%= @group_class.day %>']").attr("selected", "selected");
+  });
+</script>
+
+<% end %>

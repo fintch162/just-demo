@@ -1,0 +1,95 @@
+<div class="row">
+  <div class="col-md-12">
+    <% weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] %>
+    <div class="portlet box red">
+      <div class="portlet-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <tbody>
+              <tr>
+                <td>
+                  Instructor
+                </td>
+                <td>
+                  <%= @group_class.instructor.name if @group_class.instructor.present? %>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Venue
+                </td>
+                <td>
+                  <%= @group_class.venue.name %>          
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Day
+                </td>
+                <td>
+                  <%= weekdays[@group_class.day.to_i] %>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Time
+                </td>
+                <td>
+                  <%= @group_class.time.strftime("%I:%M %p") %>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Age Group
+                </td>
+                <td>
+                  <%= @group_class.age_group.title %>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Level
+                </td>
+                <td>
+                  <%= @group_class.level.title %>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Duration
+                </td>
+                <td>
+                  <%= @group_class.duration %>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Fee
+                </td>
+                <td>
+                  <%= @group_class.fee %>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Fee Type
+                </td>
+                <td>
+                  <%= FeeType.find(@group_class.fee_type_id).name if @group_class.fee_type_id? %>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="row">
+            <div class="col-md-7 col-sm-12 pull-right">
+              <div class="dataTables_paginate paging_bootstrap">
+                <button type="button" class="btn default pull-right" data-dismiss="modal">Close</button>
+                <a href="/manage/group_classes/<%= @group_class.id %>" data-method="delete" rel="nofollow" class="btn default red pull-right" data-confirm="Action cannot be undone.Confirm delete class?" data-remote="true" style="margin-right: 5px;">Delete Class</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

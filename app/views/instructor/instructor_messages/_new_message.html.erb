@@ -1,0 +1,41 @@
+<div aria-hidden="true" class="modal fade" id="send_message" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button aria-hidden="true" class="close" data-dismiss="modal" type="button"></button>
+        <h4 class="modal-title">Send a new SMS</h4>
+      </div>
+      <%= semantic_form_for InstructorMessage.new, url: instructor_send_sms_path do |f| %>
+        <div class="modal-body">
+          <div class="scroller" data-always-visible="1" data-rail-visible1="1" style="height:300px">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label>
+                    <%= f.label :to_number, "To" %>
+                  </label>
+                  <div class="input-group">
+                    <%#= f.text_field :to_number, :class => "form-control", :placeholder => "Enter Number" %>
+                    <input class="form-control" name="to_number" placeholder="Enter Number" type="text" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>
+                    <%= f.label :msg_des, "Enter message to send" %>
+                  </label>
+                  <%#= f.text_area :msg_des, :class => "form-control", :rows => 5, :placeholder => "Enter message here.." %>
+                  <textarea class="form-control" name="message_body" placeholder="Enter message here.." rows="5">
+                  </textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn default" data-dismiss="modal" type="button">Close</button>
+          <%= f.submit "Send SMS", :class => "btn green" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

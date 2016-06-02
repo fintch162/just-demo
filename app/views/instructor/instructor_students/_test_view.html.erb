@@ -1,0 +1,170 @@
+<!-- <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.js"></script> -->
+<%= title "Instructor" %>
+<% if !admin_user_signed_in? %>
+  <%= render "instructor/shared/login" %>
+<% else %>
+
+  <% @day_array = [{"Sunday" => 0}, {"Monday" => 1}, {"Tueday" =>2}, {"wednesday" => 3}, {"Thursday" => 4}, {"Friday" => 5}, {"Saturday" => 6}] %>
+  <% days_arry = [] %>
+  <% all_days_arr = [] %>
+  <% @group_classes.each do |group_class| %>
+    <% if group_class.day.to_i == 0 %>
+      <% days_arry << group_class %>
+    <% else %>
+       <% all_days_arr << group_class %>
+    <% end %>
+  <% end %>
+  <% all_days_arr = all_days_arr + days_arry %>
+  
+  <div id="tab_5_1">
+    <div>
+      <% all_days_arr.each do |group_class|%>
+        <% if group_class.instructor_students.count > 0%>
+          
+          <h2 class="pull-left">
+            <%= @day_array[group_class.day].first[0] + ' ' +group_class.time.strftime("%I:%M %p").to_s%>
+            <!-- <small style="font-size: 50%;"><%#= link_to "Mange fee", instructor_group_class_view_path(group_class) %></small> -->
+          </h2>
+          <a href="<%= new_instructor_instructor_student_path + '?gp='+group_class.id.to_s %>" class="btn default pull-right"><i class="fa fa-plus"></i>Student</a>
+          <div class="clearfix"></div>
+          <table class="table custTable">
+            <thead>
+              <tr class="heading">
+                <th>&nbsp;</th>
+                <th><input type="checkbox" name="checkedAll" id="checkedAll" value="" class="checkedAll"></input></th>
+                <th class="col-sm-3">Name </th>
+                <th class="col-sm-1">Contact</th>
+                <th class="col-sm-1">Fee</th>
+                <th class="col-sm-4">Test Level</th>
+                <th class="col-sm-1">Test date</th>
+                <th class="col-sm-2">Test Time </th>
+                <% count = 0 %>
+              </tr>
+            </thead>
+            <tbody>
+            <% count = 0 %>
+              <% group_class.instructor_students.each do |instructor_student| %>
+                <% if instructor_student.group_id == nil %>
+                  <% count = count + 1 %>
+                  <tr class="text-left">
+                    <td><%= count %></td>
+                    <td><%= link_to instructor_student.student_name, instructor_instructor_student_path(instructor_student) %></td>
+                    <% @primary_contacts = instructor_student.student_contacts.where(:primary_contact => true).first%> 
+                    <td>
+                      <% if !@primary_contacts.blank? %><%= @primary_contacts.contact %>
+                      <% else %>-<% end %> 
+                    </td>
+                    <% course_counter = 0%>
+                    <% @pre_month = 0 %>
+                    <% @current_month = 0 %>
+                    <% instructor_student.fees.each do |fee| %>
+                      <% if fee.monthly_detail.present? %>
+                        <%if fee.monthly_detail.strftime("%b") ==  (1.month.ago).strftime("%b")%>  
+                          <% @pre_month = 1 %>
+                        <% elsif fee.monthly_detail.strftime("%b") ==  Time.now.strftime("%b") %>
+                          <% @current_month = 1 %>
+                        <% end %>
+                      <% end %>
+                    <% end %>
+                    <% if @current_month == 1 %>
+                      <td class="success"></td>
+                    <% elsif @pre_month == 1 && @current_month == 0%>
+                      <td class="warning"></td>
+                    <% elsif @pre_month == 0 && @current_month == 0 %>
+                      <td class="danger"></td>
+                    <% end %>
+                    <% instuctor_student_registration_detail = instructor_student.instructor_student_awards.where(:is_registered => true) %>
+                    <% if instuctor_student_registration_detail.count > 0 %>
+                      <% if !instuctor_student_registration_detail.first.award_test.blank?  %>
+                        <% if !instuctor_student_registration_detail.first.award_test.test_date.blank?  %>
+                          <% if instuctor_student_registration_detail.first.award_test.test_date > Date.today %>
+                            <td><%= instuctor_student_registration_detail.first.award.name %></td>
+                            <td><%= instuctor_student_registration_detail.first.award_test.test_date.strftime("%e %b %Y") %></td>
+                            <td><%= instuctor_student_registration_detail.first.award_test.test_time.strftime("%l:%M %p") %></td>
+                          <% else %>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                          <% end %>
+                        <% else %>
+                          <td>-</td>
+                          <td>-</td>
+                          <td>-</td>
+                        <% end %>
+                      <% end %>
+                    <% else %>
+                      <td>-</td>
+                      <td>-</td>
+                      <td>-</td>
+                    <% end %>
+                  </tr>
+                <% end %>
+              <% end %>
+            <% group_class.groups.each do |group| %>
+              <% if group.instructor_students.count > 0 %>
+                <tr><td colspan="5"><strong><%= group.group_name %></strong></td></tr>
+                <% count = 0 %>
+                <% group.instructor_students.each do |instructor_student| %>
+                  <% count = count + 1 %>
+                <tr class="text-left">
+                  <td><%= count %></td>
+                  <td><%= link_to instructor_student.student_name, instructor_instructor_student_path(instructor_student) %></td>
+                  <% @primary_contacts = instructor_student.student_contacts.where(:primary_contact => true).first%> 
+                  <td>
+                    <% if !@primary_contacts.blank? %><%= @primary_contacts.contact %>
+                    <% else %>-<% end %> 
+                  </td>
+                  <% course_counter = 0%>
+                  <% @pre_month = 0 %>
+                  <% @current_month = 0 %>
+                  <% instructor_student.fees.each do |fee| %>
+                    <% if !fee.monthly_detail.blank? %>
+                      <% if fee.monthly_detail.strftime("%b") ==  (1.month.ago).strftime("%b")%>  
+                        <% @pre_month = 1 %>
+                      <% elsif fee.monthly_detail.strftime("%b") ==  Time.now.strftime("%b") %>
+                        <% @current_month = 1 %>
+                      <% end %>
+                    <% end %>
+                  <% end %>
+                  <% if @current_month == 1 %>
+                    <td class="success"></td>
+                  <% elsif @pre_month == 1 && @current_month == 0%>
+                    <td class="warning"></td>
+                  <% elsif @pre_month == 0 && @current_month == 0 %>
+                    <td class="danger"></td>
+                  <% end %>
+                  <% instuctor_student_registration_detail = instructor_student.instructor_student_awards.where(:is_registered => true) %>
+                    <% if instuctor_student_registration_detail.count > 0 %>
+                      <% if !instuctor_student_registration_detail.first.award_test.blank?  %>
+                        <% if !instuctor_student_registration_detail.first.award_test.test_date.blank?  %>
+                          <% if instuctor_student_registration_detail.first.award_test.test_date > Date.today %>
+                            <td><%= instuctor_student_registration_detail.first.award.name %></td>
+                            <td><%= instuctor_student_registration_detail.first.award_test.test_date.strftime("%e %b %Y") %></td>
+                            <td><%= instuctor_student_registration_detail.first.award_test.test_time.strftime("%l:%M %p") %></td>
+                          <% else %>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                          <% end %>
+                        <% else %>
+                          <td>-</td>
+                          <td>-</td>
+                          <td>-</td>
+                        <% end %>
+                      <% end %>                    
+                    <% else %>
+                      <td>-</td>
+                      <td>-</td>
+                      <td>-</td>
+                    <% end %>
+                </tr>
+                <% end %>
+              <% end %>
+            <% end %>
+            </tbody>
+          </table>
+        <% end %>
+      <% end %>
+    </div>  
+  </div>
+<% end %>

@@ -1,0 +1,358 @@
+<%= title "Instructor" %>
+<% if !admin_user_signed_in? %>
+  <%= render "instructor/shared/login" %>
+<% else %>
+  <div class="main">
+    <div class="container">
+      <ul class="breadcrumb">
+        <li><a href="/instructor">Home</a></li>
+        <li class="active">Students</li>
+      </ul>
+      <!-- BEGIN SIDEBAR &amp; CONTENT
+      -->
+      <div class="row margin-bottom-40">
+        <%#= render :partial => "instructor/home/ac_side_bar" %>
+        <div class="col-sm-12">
+          <h1>Students</h1>
+          <div class="content-page">
+            <div class="col-md-12" style="padding-left: 0px;">
+              <div class="portlet">
+                <div class="portlet-body">
+                  <div id="navbar-example2" class="navbar navbar-default navbar-static" role="navigation">
+                    <div class="navbar-header">
+                      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-js-navbar-scrollspy">
+                      <span class="sr-only">
+                      Toggle navigation </span>
+                      <span class="icon-bar">
+                      </span>
+                      <span class="icon-bar">
+                      </span>
+                      <span class="icon-bar">
+                      </span>
+                      </button>
+                      <a class="navbar-brand" href="javascript:;">
+                        Students
+                      </a>
+                    </div>
+                    <div class="collapse navbar-collapse bs-js-navbar-scrollspy">
+                      <ul class="nav navbar-nav">
+                        <li class="">
+                          <a href="#search-student-by-award" data-toggle="tab">
+                            Search
+                          </a>
+                        </li>
+                        <li class="classView">
+                          <a href="#print-student-list" data-toggle="tab">
+                            Class view
+                            <!-- Unregistered (<%= @unregistered_student %>) -->
+                          </a>
+                        </li>
+                        <li class="">
+                          <a href="#active_students" data-toggle="tab">
+                            Active (<%= @active_students %>)
+                          </a>
+                        </li>
+                        <li class="">
+                          <a href="#inactive_students" data-toggle="tab">
+                            Inactive (<%= @inactive_students %>)
+                          </a>
+                        </li>
+                        <li class="">
+                          <a href="#test_view" data-toggle="tab">
+                            Test View
+                          </a>
+                        </li>
+                      </ul>
+                      <ul class="nav navbar-nav navbar-right border-t-xs" style="float: left;">
+                        <li class="">
+                          <a href="javascript:;" class="btn hidden-print" onclick="setPrint();" style="float:left">
+                            <i class="fa fa-print" style="float:left"></i> Print
+                          </a>
+                        </li>
+                        <li>
+                          <a href="<%= new_instructor_instructor_student_path %>" class="btn add_s" style="clear:both;float:left">
+                            <i class="fa fa-plus" style="float:left"></i>Student 
+                          </a>
+                        </li>
+                        <li class="">
+                          <a href="javascript:;" class="btn" id="viewManageIndex" style="clear:both;float:left">
+                          Manage View
+                          </a>
+                        </li>
+                        <li class="">
+                          <% if current_admin_user.is_account_activated? %> 
+                            <a href="javascript:;" class="" id="smsSend" style="clear:both;float:left"><i class="fa fa-envelope"></i> SMS</a>
+                          <% else %>
+                            <a href="<%= instructor_check_for_message_telerivet_sms_settings_path %>" class="" data-remote="true" style="clear:both;float:left"><i class="fa fa-envelope"></i> SMS</a>
+                          <% end %> 
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  
+                  <% if current_admin_user.is_account_activated? %>
+                      <div class="row newSmsSend">
+                        <div class="col-sm-12">
+                          <div class="col-sm-6 note note-info">
+                            <h4 class="block" style="text-align: left;">Sending messages to students</h4>
+                            <p style="text-align: left;">
+                              Step 1: Use the checkbox to select the many students <br />
+                              Step 2: Type your message <br />
+                              Step 3: Click Send <br />
+                              <h4 class="block" style="text-align: left;" > 
+                                <p>Add <strong>&lt;student_name&gt;</strong> to send Student name in SMS.<br/>
+                                Add <strong>&lt;student_link&gt;</strong> to send Student Link in SMS.</p>
+                              </h4>
+                            </p>
+                          </div>
+                          <%= form_tag (  instructor_send_msg_preview_path + "?isReqXhr=true"), remote: true, class: "sendMessages"  do %>
+                            <input type="hidden" id="send_message" name="stundent_ids"/>
+                            <!-- <input type="hidden" id="send_award" name="awaard_id" value="<%#= @award_test.award_id %>"/> -->
+                            <div class="col-sm-6">
+                              <label>Message to student</label>
+                              <textarea class="form-control" cols="20" id="text_msg" name="text_msg" rows="5" onkeyup="textAreaAdjust(this)" style="overflow:hidden"></textarea>
+                              <%#= text_area_tag(:text_msg, nil,{:class => "form-control", :rows => 5, :cols => 20,:autocomplete => "off"}) %>
+                              <div>
+                                <span style="float: left; margin-top: 10px; display: none; color: #E02222;" id="error_msg">You need to select at least 1 student to send your message.</span>
+                                <span style="float: left; margin-top: 10px; display: none;" id="successMsg"></span>
+                                <div class="text-right margin-top-10" style="float: right; margin-bottom: 10px;">
+                                  <%= submit_tag " Preview & Send", {:class => "btn red", :id => "send_msg"} %>
+                                </div>
+                              <br/>
+                              </div>
+                            </div>
+                          <% end %>
+                        </div>
+                      </div>
+                  <% end %> 
+                  
+                  <div data-spy="scroll" data-target="#navbar-example2" data-offset="0" class="scrollspy-example" style="height: 100%; overflow: hidden;">
+                    <div class="tab-content" style="border:0px; background: #fff; padding-left: 0px;">
+                      <div class="tab-pane" id="search-student-by-award">
+                        <%= render "/instructor/instructor_students/search_student_by_award" %> 
+                      </div>
+                      <div class="tab-pane active" id="print-student-list">
+                        <%if params[:fee_month].present? || params[:award_count].present? || params[:award_id].present? %>
+                          <%= render "/instructor/instructor_students/print_student" %>
+                        <%else %>
+                          <%= render "/instructor/instructor_students/student_fee_and_attendance" %>
+                        <%end %>
+
+                      </div>
+                      <div class="tab-pane" id="active_students">
+                        <%= render "/instructor/instructor_students/active_students" %>
+                      </div>
+                      <div class="tab-pane" id="inactive_students">
+                        <%= render "/instructor/instructor_students/inactive_students" %>
+                      </div>
+                      <div class="tab-pane" id="test_view">
+                        <%= render "/instructor/instructor_students/test_view" %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>  
+  </div>
+<% end %>
+
+
+<link rel="stylesheet" type="text/css" href="/assets/global/plugins/index_page_css/components.css" media="print">
+<link rel="stylesheet" type="text/css" href="/assets/twitter-bootstrap-static/bootstrap.css" media="print">
+<link rel="stylesheet" type="text/css" href="/assets/global/plugins/index_page_css/style.css" media="print">
+
+<div class="modal fade inst_student" tabindex="-1" style="display: none;"></div>
+
+<script>
+  function textAreaAdjust(o) {
+    o.style.height = "1px";
+    o.style.height = (25+o.scrollHeight)+"px";
+  }
+  Metronic.init(); 
+    // instructorStudentTableEditable.init();
+    SendSMSInGp.init();
+    Layout.init();    
+  
+    $("#smsSend").click(function() {
+       //document.getElementById("text_msg").value = "Please use the link below to update your child's particulars. - <student_link>";
+        $(".newSmsSend").slideToggle("500");
+         });
+          $('form.sendMessages').on('ajax:beforeSend', function(xhr, settings) {
+         //$("#send_msg").val("Sending..").prop('disabled', true);
+      });
+
+  function adjustWidth(cls,flage){
+    if( flage == true){
+      $(cls).css("min-width", "auto");
+      $(cls).css("max-width", "auto");
+    }
+    else{
+     var tmp_0 = 100;
+      $(cls).each(function(){
+        if($(this).width() > tmp_0){
+          tmp_0 = $(this).width();
+        }
+      });
+      $(cls).css("min-width", tmp_0+"px");
+      $(cls).css("max-width", tmp_0+"px");
+    }
+  }
+ 
+  function setPrint(){
+    var table_count = $('.mytable').length;
+    for(var i =1; i <= table_count; i++ ){
+      var table_name = "tbl_"+i+"_"
+      adjustWidth('.'+table_name+'t_col_0');
+      adjustWidth('.'+table_name+'t_col_1');
+      adjustWidth('.'+table_name+'t_col_2');
+      adjustWidth('.'+table_name+'t_col_3');
+      adjustWidth('.'+table_name+'t_col_4');
+      adjustWidth('.'+table_name+'t_col_5');
+      adjustWidth('.'+table_name+'t_col_6');
+      adjustWidth('.'+table_name+'t_col_7');
+      adjustWidth('.'+table_name+'t_col_8');
+      adjustWidth('.'+table_name+'t_col_9');
+      adjustWidth('.'+table_name+'t_col_10');
+      adjustWidth('.'+table_name+'t_col_11');
+      adjustWidth('.'+table_name+'t_col_12');
+    }
+    window.print();
+    for(var i =1; i <= table_count; i++ ){
+      var table_name = "tbl_"+i+"_"
+      adjustWidth('.'+table_name+'t_col_0', true);
+      adjustWidth('.'+table_name+'t_col_1', true);
+      adjustWidth('.'+table_name+'t_col_2', true);
+      adjustWidth('.'+table_name+'t_col_3', true);
+      adjustWidth('.'+table_name+'t_col_4', true);
+      adjustWidth('.'+table_name+'t_col_5', true);
+      adjustWidth('.'+table_name+'t_col_6', true);
+      adjustWidth('.'+table_name+'t_col_7', true);
+      adjustWidth('.'+table_name+'t_col_8', true);
+      adjustWidth('.'+table_name+'t_col_9', true);
+      adjustWidth('.'+table_name+'t_col_10', true);
+      adjustWidth('.'+table_name+'t_col_11', true);
+      adjustWidth('.'+table_name+'t_col_12', true);
+    }
+  }
+
+//Adding js related to Manage view      
+$('#viewManageIndex').click(function(){
+      $('.manage_view_index').slideToggle("500")
+});      
+</script>
+<style type="text/css">
+  @media print {
+    
+    body {
+      background-color: #fff !important;
+      font-size: 10px !important;
+    }
+    .breadcrumb{
+      display: none;
+    }
+    a[href]:after {
+      content: none !important;
+    }
+    .add_s{
+      display: none;
+    }
+    .hidden-xs{
+      display: block !important;
+    }
+    .nav{
+      display: none;
+    }
+    .header {
+      display: none;
+    }
+    .pre-header{
+      display: none;
+    }
+    .sidebar {
+      display: none;
+    }
+
+    .theme-panel {
+      display: none;
+    }
+
+    .hidden-print {
+      display: none;
+    }
+
+    .page-footer {
+      display: none;
+    }
+
+    .no-page-break {
+      page-break-after: avoid;
+    }
+
+    .page-container {
+      margin: 0px !important;
+      padding: 0px !important;
+    }
+    .btn{
+      display: none;
+    }
+
+    .page-content {
+      min-height: 300px !important;
+      padding: 0px 20px 20px !important;
+      margin: 0 !important;
+    }
+    .column-selector{
+     display: none; 
+    }
+    .avatar{
+      border-radius: 50% !important;
+      width: 45px !important;
+      height: 45px !important;
+    }
+    .visible_group{
+      display: block;
+    }
+    .invisible_group{
+      display: none;
+    }
+    .pb {
+      page-break-after: always;
+    }
+    .heading{
+      display: block;
+    }
+    .footer{
+      display: none;
+    }
+    .groupClassCheck{
+      display: none;
+    }
+    .groupClassCheckBox{
+      display: none;
+    }
+    .add_group_time {
+      display: block; 
+    }
+    .Profile-pic{
+      display: none;
+    }
+    .manage_view_index{
+    display: none;
+    }
+  .newSmsSend{
+      display: none !important;
+    }
+  }
+</style>
+<style type="text/css">
+  @media (max-width: 767px) {
+    .border-t-xs{
+      width: 104.5%;
+        border-top: 1px solid #ddd;
+    }
+  }
+</style>

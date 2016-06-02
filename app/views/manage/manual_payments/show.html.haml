@@ -1,0 +1,42 @@
+= form_for [:manage, @manual_payment] do |f|
+  .field.form-group
+    = f.label :payment_date, "Date"  
+    = f.text_field :payment_date, :class => "form-control date-picker", :value => "#{@manual_payment.payment_date.strftime('%e %B %Y')}", :readonly => true,:style=> "background-color: #eee !important;"
+  .field.form-group
+    = f.label :job_id, "Job REF"
+    = f.label :job_id, @manual_payment.job_id, :class => "form-control"
+  .field.form-group
+    = f.label :description, "Description"
+    = f.label :description, @manual_payment.description, :class => "form-control"
+  .field.form-group
+    = f.label :referral
+    = f.label :referral, @manual_payment.referral, :class => "form-control"
+  .field.form-group
+    = f.label :balance
+    = f.label :balance, @manual_payment.balance, :class => "form-control"
+  .field.form-group
+    = f.label :amount
+    = f.label :amount, @manual_payment.amount, :class => "form-control"
+  .field.form-group
+    = f.label :payment_method
+    = f.label :payment_method, @manual_payment.payment_method, :class => "form-control"
+  .field.form-group
+    = f.label :goggles_status
+    = f.label :goggles_status, @manual_payment.goggles_status, :class => "form-control"
+  .field.form-group
+    = f.label :invoice_number
+    = f.label :invoice_number, @manual_payment.invoice_number, :class => "form-control"
+  .field.form-group
+    = f.label :payment_id, "Payment Id"
+    = f.label :payment_id, @manual_payment.payment_id, :class => "form-control"
+  .field.form-group
+    = f.label :local_payment_id, "Local Payment Id"
+    = f.label :local_payment_id, @manual_payment.local_payment_id, :class => "form-control"
+  / .field.form-group
+  /   = f.label :manual_transaction_id, "Manual Transaction Id"
+  /   = f.label :manual_transaction_id, @manual_payment.manual_transaction_id, :class => "form-control"
+  .field.form-group
+    = f.label :committed
+    = f.label :committed, @manual_payment.committed, :class => "form-control"
+  / .actions.form-group
+  /   = link_to 'Back', manage_manual_payments_path, :class => "btn default"

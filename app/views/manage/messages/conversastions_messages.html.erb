@@ -1,0 +1,149 @@
+<%= hidden_field_tag :customer_id, :value => "#{params[:to_number]}" %>
+<h3 class="page-title">
+  SMS
+  <small>
+    from telerivet
+  </small>
+</h3>
+<div class="row inbox">
+  <div class="col-md-2">
+    <ul class="inbox-nav margin-bottom-10">
+      <li class="compose-btn">
+        <a class="btn default" data-toggle="modal" href="#responsive">
+          <i class="fa fa-edit"></i>
+          New SMS
+        </a>
+      </li>
+      <li class="inbox active">
+        <%= link_to "Conversations", manage_messages_path , :class => "btn" %>
+        <b></b>
+      </li>
+      <li class="sent">
+        <%= link_to "Incoming", manage_incoming_messages_path(:conversation => true, :c_p_id => @contact_id) , :class => "btn",  :remote => true %>
+        <b></b>
+      </li>
+      <li class="draft">
+        <%= link_to "Outgoing", manage_outgoing_messages_path(:conversation => true, :c_p_id => @contact_id) , :class => "btn", :remote => true %>
+        <b></b>
+      </li>
+      <li class="trash">
+        <%= link_to "Failed", manage_incoming_messages_path(:conversation => true, :c_p_id => @contact_id), :class => "btn", :remote => true %>
+        <b></b>
+      </li>
+    </ul>
+  </div>
+  <div class="col-md-10 parent_incomming">
+    <div class="inbox-header">
+      <h1 class="pull-left">
+        Conversations of <%= @contact_name %>
+      </h1>
+      <form action="index.html" class="form-inline pull-right">
+        <div class="input-group input-medium">
+          <input class="form-control" placeholder="Search SMS" type="text"></input>
+          <span class="input-group-btn">
+            <button class="btn green" type="submit">
+              <i class="fa fa-search"></i>
+            </button>
+          </span>
+        </div>
+      </form>
+    </div>
+    <div class="inbox-loading" style="display: none;">
+      Loading...
+    </div>
+    <div class="inbox-content conversation_tbody">
+      <table class="table table-striped table-advance table-hover" style="display: none;">
+        <thead>
+          <tr>
+            <th colspan="3">
+              <div class="checker">
+                <span>
+                  <input class="mail-checkbox mail-group-checkbox" type="checkbox">/</input>
+                </span>
+              </div>
+              <div class="btn-group">
+                <a class="btn btn-sm blue" data-toggle="dropdown" href="#">
+                  More
+                  <i class="fa fa-angle-down"></i>
+                </a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a href="#">
+                      <i class="fa fa-pencil"></i>
+                      Mark as Read
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#">
+                      <i class="fa fa-ban"></i>
+                      Spam
+                    </a>
+                  </li>
+                  <li class="divider"></li>
+                  <li>
+                    <a href="#">
+                      <i class="fa fa-trash-o"></i>
+                      Delete
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </th>
+            <th class="pagination-control" colspan="3">
+              <span class="pagination-info">
+                <!-- 1-30 of 789
+                -->
+              </span>
+              <a class="btn btn-sm blue">
+                <i class="fa fa-angle-left"></i>
+              </a>
+              <a class="btn btn-sm blue">
+                <i class="fa fa-angle-right"></i>
+              </a>
+            </th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <% init_class = Test.new %>
+      <div class="portlet">
+        <div class="portlet-body" id="chats">
+          <% if !@conversastions_messages["next_marker"].blank? %>
+            <%= link_to "Load older", manage_load_more_messages_path(:phone => @c_phone_number), :class => "load_more", :remote => true, :style => "left: 50%; bottom: 20%; font-size: 15px; position: relative; " %>
+          <% end %>
+          <ul class="chats">
+            <span id="load_more"></span>
+            <% @conversastions_messages["data"].each do |message| %>
+
+              <% if message["direction"] == "incoming" %>
+                <% direction = "in" %>
+              <% else %>
+                <% direction = "out" %>
+              <% end %>
+              <li class="<%= direction %>">
+                <img class="avatar img-responsive" src="/assets/avatar.png"/>
+                <div class="message">
+                  <span class="arrow"></span>
+                  <% name = init_class.get_name_from_number(message["from_number"], @arr_contact) %>
+                  <a class="name" href="#">
+                    <%= name %>
+                  </a>
+                  <span class="datetime">
+                    at
+                    <% md = Time.at(message["time_created"]) %>
+                    <% md = md.getlocal('+08:00') %>
+                    <%= md.strftime("%b %d,%Y %I:%M %P") %>
+                  </span>
+                  <span class="body">
+                    <%= simple_format(message["content"]).html_safe if !message["content"].blank? %>
+                  </span>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%= render :partial => "manage/messages/new_message" %>

@@ -1,0 +1,8 @@
+$modal = $('.modal'),
+$modalBody = $('.modal .modal-body'),
+$modalHeading = $('.modal .modal-heading');
+$modalHeading.html("");
+$modalBody.html('<%= escape_javascript(render template: "/manage/instructors/new.html.erb") %>');
+$modal.modal();
+$(".modal-footer").css({"display":"none"});
+$(".modal-title").html("Add Instructor");

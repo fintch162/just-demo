@@ -1,0 +1,3 @@
+= simple_show_for @group_class do |f|
+  - @group_class.attributes.keys.each do |key|
+    = f.show key

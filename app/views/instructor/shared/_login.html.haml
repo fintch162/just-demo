@@ -1,0 +1,104 @@
+!!!
+/
+  [if IE 8] <html lang="en" class="ie8 no-js">
+/
+  [if IE 9] <html lang="en" class="ie9 no-js">
+/
+  [if !IE]><!
+%html.no-js{:lang => "en"}
+  /
+    <![endif]
+  %head
+    %meta{:charset => "utf-8"}/
+    %title MatchMaker - Login Page
+    %meta{:content => "IE=edge", "http-equiv" => "X-UA-Compatible"}/
+    %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}/
+    %meta{:name => "description"}/
+    %meta{:name => "author"}/
+    %link{:href => "http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all", :rel => "stylesheet", :type => "text/css"}/
+    = stylesheet_link_tag "login_page"
+    %link{:href => "favicon.ico", :rel => "shortcut icon"}/
+  %body.login
+    .logo
+    .menu-toggler.sidebar-toggler
+    .content
+      .row{:align=>"center"}
+        %img{:alt => "Metronic Shop UI", :src => "/assets/index_page_images/img/SSA-Logo-Raw-Black.png"}/
+      = form_for AdminUser.new, :url => admin_user_session_path, :html => { :class => "login-form" } do |f|
+        %h3.form-title Login to your account
+        - if flash[:login_failure]
+          #invalid
+            .alert.alert-danger
+              %button.close{"data-close" => "alert"}
+              %span
+                = flash[:login_failure]
+        .alert.alert-danger.display-hide
+          %button.close{"data-close" => "alert"}
+          %span
+            Enter any email and password.
+        - if !cookies[:remember_me_id].blank?
+          - if ( AdminUser.find(cookies[:remember_me_id]) and Digest::SHA1.hexdigest(AdminUser.find(cookies[:remember_me_id]).email)[4,18] == cookies[:remember_me_code])
+            .form-group
+              %label.control-label.visible-ie8.visible-ie9 Email
+              .input-icon
+                %i.fa.fa-user
+                = f.email_field :email , :class => "form-control placeholder-no-fix", :autocomplete=>"off", :placeholder=>"Email", :required => true , :value => AdminUser.find(cookies[:remember_me_id].to_i).email
+            .form-group
+              %label.control-label.visible-ie8.visible-ie9 Password
+              .input-icon
+                %i.fa.fa-lock
+                = f.password_field :password , :class =>"form-control placeholder-no-fix", :autocomplete=>"off" ,:placeholder=>"Password", :required => true , :value => cookies[:remember_me_pass]
+            .form-actions
+              %label.checkbox
+                = f.check_box :remember_me , :checked=> true
+                Remember Me
+              = f.submit "Login" , :class => "btn green pull-right" do
+                %i.m-icon-swapright.m-icon-white
+        - else
+          .form-group
+            %label.control-label.visible-ie8.visible-ie9 Email
+            .input-icon
+              %i.fa.fa-user
+              = f.email_field :email , :class => "form-control placeholder-no-fix", :autocomplete=>"off", :placeholder=>"Email", :required => true
+          .form-group
+            %label.control-label.visible-ie8.visible-ie9 Password
+            .input-icon
+              %i.fa.fa-lock
+              = f.password_field :password , :class =>"form-control placeholder-no-fix", :autocomplete=>"off" ,:placeholder=>"Password", :required => true
+          .form-actions
+            %label.checkbox
+              = f.check_box :remember_me, :checked=>false
+              Remember Me
+            = f.submit "Login" , :class => "btn green pull-right" do
+              %i.m-icon-swapright.m-icon-white
+        .forget-password
+          %h4 Forgot your password ?
+          %p
+            no worries, click
+            %a#forget-password{:href => "javascript:;"}
+              here
+            to reset your password.
+      %form.forget-form{:action => "index.html", :method => "post"}
+        %h3 Forget Password ?
+        %p
+          Enter your e-mail address below to reset your password.
+        .form-group
+          .input-icon
+            %i.fa.fa-envelope
+            %input.form-control.placeholder-no-fix{:autocomplete => "off", :name => "email", :placeholder => "Email", :required => "true", :type => "text"}/
+        .form-actions
+          %button#back-btn.btn{:type => "button"}
+            %i.m-icon-swapleft
+            Back
+          %button#submit.btn.green.pull-right{:type => "submit"}
+            Submit
+            %i.m-icon-swapright.m-icon-white
+    = javascript_include_tag "login_page"
+%html
+  :javascript
+    $('form').submit(function(){
+      if($('#invalid').is(":visible"))
+      {
+        $('#invalid').css("display","none");
+      }
+    });

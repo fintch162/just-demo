@@ -1,0 +1,246 @@
+<%= title "Instructors New"  %>
+<div class="portlet box green">
+  <div class="portlet-title">
+    <div class="caption">
+      <i class="fa fa-gift"></i>Add Instructor</div>
+    <div class="tools">
+      <a class="collapse" href="javascript:;" data-original-title="" title="">
+      </a>
+      <a class="config" href="javascript:;" data-original-title="" title="">
+      </a>
+      <a class="reload" href="javascript:;" data-original-title="" title="">
+      </a>
+      <a class="remove" href="javascript:;" data-original-title="" title="">
+      </a>
+    </div>
+  </div>
+  <div class="portlet-body form">
+    <%= nested_form_for [:manage, @instructor], :html => { :id => "instructor"} do |f| %>
+      <form class="form-horizontal" action="#">
+      <div class="form-body">
+        <h3 class="form-section">Coordinator use only</h3>
+        <div class="row">
+          <div class="col-sm-6">  
+            <div class="form-group">
+              <label class="control-label col-sm-3">Status</label>
+              <div class="col-sm-9">
+                <%= f.collection_select  :status,  @status, :to_s, :to_s,{:prompt => 'Please Select' },{ :class=>"form-control" ,:required => true }%>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label class="control-label col-sm-3">Note</label>
+              <div class="col-sm-9">
+              <%= f.text_field :note, :class => "form-control" %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <h3 class="form-section">Instructor information</h3>
+        <div class="row">
+          <div class="col-sm-6">  
+            <div class="form-group">
+              <label class="control-label col-sm-3">Full Name</label>
+              <div class="col-sm-9">
+              <%= f.text_field :name, :class => "form-control", :required => true %>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label class="control-label col-sm-3">Alias</label>
+              <div class="col-sm-9">
+              <%= f.text_field :short_name, :class => "form-control", :required => true %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label class="control-label col-sm-3">Gender</label>
+              <div class="col-sm-9">
+                <div id="gender" class="input-group">
+                  <% ["Male", "Female"].each do |item| %>
+                    <label>
+                      <%= f.radio_button :gender, item, :class=>"toggle" ,:required => true, :id => "#{item}" %>
+                      <%= item %>
+                    </label>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label class="control-label col-sm-3">Email</label>
+              <div class="col-sm-9">
+                <%= f.email_field :email, :class=>"form-control", :required => true %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label class="control-label col-sm-3">Mobile</label>
+              <div class="col-sm-9">
+                <%= f.text_field :mobile, :class => "form-control", :required => true %>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label class="control-label col-sm-3">Instructor Name</label>
+              <div class="col-sm-8">
+                <%= f.text_field :instructor_name, :class => "form-control", :required => true %>
+              </div>
+            </div>
+          </div>
+        </div>
+         <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label class="control-label col-sm-3">Birthday</label>
+              <div class="col-sm-9">
+                <%= f.text_field :birthday, :class => "form-control date-picker", :required => true %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <h3 class="form-section">Qualification</h3>
+        <div class="qualification_add">
+          <%= f.fields_for :instructor_identities do |instructor_identity| %> 
+            <div class="row">
+              <div class="col-sm-3">
+                <label>Card Type</label>
+                <%= instructor_identity.collection_select  :identity_card_id,      @identity_card, :id, :name,{:prompt => 'Please Select' },{ :class=>"form-control" ,:required => true }%>
+              </div>
+              <div class="col-sm-3">
+                <label>Expire Date</label>
+                <%= instructor_identity.text_field :expiry_date, :class => "form-control date-picker", :required => true %>
+              </div>
+              <script type="text/javascript">
+                $('#instructor_identity').validate({
+                  rules: {
+                    instructor_identity_identity_card_id: {
+                      required: true
+                    }
+                  }
+                });
+                $('.date-picker').datepicker({
+                  format: 'd MM yyyy',
+                  autoclose: true
+                });
+              </script>
+              <div class="col-sm-3">
+                <label>Identity Photo</label>
+                <%= instructor_identity.file_field :identity_image, :class=> "from-control" %>
+              </div>
+              <div class="col-sm-1">
+                <%= instructor_identity.link_to_remove "Remove" ,:class=>"pull-left"%>
+              </div>
+              <% if instructor_identity.object.identity_image.url != "/images/original/missing.png"%>
+                <div class="col-sm-2">
+                  <img src="<%= instructor_identity.object.identity_image.url(:medium) %>", style="width: 100%; height: 20%;">
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div><br/>  
+      <div class="row">
+        <div class="col-sm-12">
+          <%= f.link_to_add "Add", :instructor_identities ,:class=>"btn btn-primary pull-left" %>
+        </div>
+      </div>
+      <h3 class="form-section">Password</h3>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="form-group">
+            <label class="control-label col-sm-4" for="instructor_password">Password<abbr title="required">*</abbr></label>
+            <div class="col-sm-8">
+              <%= f.password_field :password, :class => "form-control", :required => true, :minlength => 8 %>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <label class="control-label col-sm-4"for="instructor_password_confirmation">Password confirmation<abbr title="required">*</abbr></label>
+              <div class="col-sm-8">
+                <%= f.password_field :password_confirmation, :class => "form-control", :required => true, :equalTo=>"#instructor_password" , :minlength => 8%>
+                <div class="error1" style="display:none;color:red;">Please enter same value again</div>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="row">
+              <div class="col-md-offset-3 col-md-9">
+                <button class="btn green" type="submit" >Create Instructor</button>
+                <button class="btn default" type="button">Cancel</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6"></div>
+        </div>
+      </div>  
+    <% end %>
+  </div>
+</div>
+
+<script type="text/javascript">
+   
+  $("#instructor").validate({
+    rules: {
+      name: {
+        required: true
+      }
+    },
+    errorPlacement: function(error, element) {
+      if ( element.attr("name") == "instructor[gender]"  )
+      {
+        error.insertAfter("#gender");
+      }
+      else
+      {
+       error.insertAfter(element);
+      }
+    }
+  });
+  function validate_password(e){
+    password = $("#instructor_password").val();
+    confirm_password = $("#instructor_password_confirmation").val();
+    if(password != "")
+    {
+      if(password != confirm_password){
+        $(".error1").show();  
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      else {
+        $(".error1").hide();  
+      }
+    }
+    else{
+      return true;
+    }
+  }
+ 
+  $("#instrutor_submit").click(function(){
+    password = $("#instructor_password").val();
+    confirm_password = $("#instructor_password_confirmation").val();
+    if(password != ""){
+      if(confirm_password == "" || password != confirm_password){
+        $(".error1").show();  
+        return false;
+      }
+      else{
+        return true;
+      }
+    }
+     
+  });
+</script>

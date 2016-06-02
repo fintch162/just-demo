@@ -1,0 +1,7 @@
+$('#customer_conversation').append('<%= j render "customer_messages" %>');
+<% if @customer_messages.next_page %>
+    console.log("<%= @customer_messages.next_page %>")
+    $('#load_more_customer_message').attr('href','/manage/customer_load_more_message?job_id=<%= @job.id %>&amp;page=<%= @customer_messages.next_page %>');
+<% else %>
+    $('#load_more_customer_message').remove();
+<% end %>

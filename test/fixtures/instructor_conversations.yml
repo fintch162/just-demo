@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  phone_number: MyString
+  msg_time: 
+  msg_des: MyText
+  unread_count: 1
+  total_count: 1
+  from_number: MyString
+  project_id: MyString
+  final_from_number: MyString
+  instructor_id: 
+
+two:
+  phone_number: MyString
+  msg_time: 
+  msg_des: MyText
+  unread_count: 1
+  total_count: 1
+  from_number: MyString
+  project_id: MyString
+  final_from_number: MyString
+  instructor_id: 

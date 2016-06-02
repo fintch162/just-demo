@@ -1,0 +1,120 @@
+<% @instructor_student_photos.order('created_at desc').each do |p| %>
+  <div class="col-xs-4 col-sm-2 gallery-item" style="padding-left: 0px ! important; padding-right: 0px ! important;">
+    <div class="text-right">
+      <%= link_to instructor_instructor_student_photo_path(p.id),method: :delete,data: {confirm: 'Confirm Delete?'},remote: true do %>
+        <i class="glyphicon glyphicon-remove"></i>
+      <% end %>
+    </div>
+    <a data-rel="fancybox-button" rel="group" href="<%= p.photo.url %>" class="fancybox-button">
+      <%= image_tag p.photo.url(:small) , :id => "img",:class =>"img img-responsive" %>
+    </a>
+    <%#= link_to instructor_tagging_form_path(p.id), remote: true do %>
+      <!-- modal -->
+    <%# end %>
+    <% tags = "" %>
+    <% p.photo_tags.each do |tag| %>
+      <% tags += tag.instructor_student.student_name %><% tags += "," unless p.photo_tags.last == tag %>
+    <% end %>
+    <div id="taggable">
+      <a class="tag-list tag-list-overflow" id="tag-edit-inst<%= p.id %>" href="javascript:;" title="<%= tags %>">
+        <%= tags %>
+        <% if  p.photo_tags.count == 0 %>
+          Tag Someone
+        <% end %>
+      </a>
+      <div class="modal fade tagging_form tag-edit-inst<%= p.id %>" id="inst_student" role="basic" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">Tag</h4>
+            </div>
+            <%= form_for(PhotoTag.new, url: instructor_add_tags_path,remote: true) do |f| %>
+              <div class="modal-body">
+                <input type="hidden" name="instructor_id" value='<%= current_admin_user.id %>'></input>
+                <input type="hidden" name="photo_id" value='<%= p.id %>'></input>
+                <input type="hidden" name="type" value='InstructorStudentPhoto'></input>
+                <select id="select2_sample2_inst<%= p.id %>" class="form-control select2 select2_sample2" multiple name="student_ids[]">
+                  <% @students.each do |stdnt| %>
+                    <% grp_class = stdnt.group_classes.last %>
+                    <option value="<%= stdnt.id %>"><%= stdnt.student_name %><%= '-' + Date::DAYNAMES[grp_class.day][0..2] + ' ' + grp_class.time.strftime("%I.%M%P") if grp_class %></option> 
+                  <% end %>
+                </select>
+              </div>
+              <div class="modal-footer">
+                <%= f.submit 'Save', class: 'btn green',:data => {disable_with: "Tagging..."} %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+   <!--  <a data-rel="fancybox-button" rel="group" href="<%#= p.photo.url %>" class="fancybox-button" data-title-id="title-<%= p.id %>">
+      <%#= image_tag p.photo.url(:small) , :id => "img",:class =>"img img-responsive" %>
+    </a>
+    <div id='title-<%= p.id %>' class="hidden col-xs-6">
+      <a href="#" class = 'tags' id="tags" data-type="select2" data-pk="<%#= p.id %>" data-original-title="Enter tags" data-name="inst"><%#= p.tag_list %> </a>
+    </div> -->
+
+  </div>
+<% end %>
+<% @students.each do |student| %>
+  <% if !student.gallery.nil? %>
+    <% if student.gallery.photos.empty? %>
+    <% else %>
+      <% student.gallery.photos.order('created_at desc').each do |p| %>
+        <div class="col-xs-4 col-sm-2 gallery-item" style="padding-left: 0px ! important; padding-right: 0px ! important;">
+          <div class="text-right">
+            <%= link_to instructor_instructor_student_photo_path(p.id,is_id: p.instructor_student_id),method: :delete,data: {confirm: 'Confirm Delete?'},remote: true do %>
+              <i class="glyphicon glyphicon-remove"></i>
+            <% end %>
+          </div>
+          <a data-rel="fancybox-button" rel="group" href="<%= p.student_photo.url %>" class="fancybox-button">
+            <%= image_tag p.student_photo.url(:small) , :id => "img",:class =>"img img-responsive" %>
+          </a>
+          <div id="taggable-student">
+            <% tags = "" %>
+            <% p.photo_tags.each do |tag| %>
+              <% tags += tag.instructor_student.student_name %><% tags += "," unless p.photo_tags.last == tag%>
+            <% end %>
+            <a class="tag-list-stdnt tag-list-overflow" id="tag-edit-stdnt<%= p.id %>" title=" <%= tags %>" href="javascript:;" >
+              <%= tags %>
+              <% if  p.photo_tags.count == 0 %>
+                Tag Someone
+              <% end %>
+            </a>
+            <div class="modal fade tagging_form tag-edit-stdnt<%= p.id %>" id="inst_student" role="basic" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Tag</h4>
+                  </div>
+                  <%= form_for(PhotoTag.new, url: instructor_add_tags_path, remote: true) do |f| %>
+                    <div class="modal-body">
+                      <input type="hidden" name="instructor_id" value='<%= current_admin_user.id %>'></input>
+                      <input type="hidden" name="photo_id" value='<%= p.id %>'></input>
+                      <input type="hidden" name="type" value='Photo'></input>
+                      <select id="select2_sample2_photo<%= p.id %>" class="form-control select2 select2_sample2" multiple name="student_ids[]">
+                        <% @students.each do |stdnt| %>
+                          <% grp_class = stdnt.group_classes.last %>
+                          <option value="<%= stdnt.id %>"><%= stdnt.student_name %><%= '-' + Date::DAYNAMES[grp_class.day][0..2] + ' ' + grp_class.time.strftime("%I.%M%P") if grp_class %></option>
+                        <% end %>
+                      </select>
+                    </div>
+                    <div class="modal-footer">
+                      <%= f.submit 'Save', class: 'btn green',:data => {disable_with: "Tagging..."} %>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="caption text-center">
+            <%#= link_to 'Remove', instructor_instructor_student_photo_path(student.id,student.gallery.id,p.id) , method: :delete, data: { confirm: 'Are you sure?' } %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

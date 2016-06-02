@@ -1,0 +1,77 @@
+<table class="table table-hover student_name_highlight">
+  <thead>
+    <tr class="text-left">
+      <th style="width:30px;"></th>
+      <th>Student Name</th>
+      <th>Day</th>
+      <th>Time</th>
+    </tr>
+  </thead>
+  <tbody>
+  	<% if @instructor_students.count == 0 %>
+  		<tr class="text-left">
+  			<td colspan="4">No records found</td>
+  		</tr>
+  	<% else %>
+	  	<% @instructor_students.each_with_index do |student,index| %> 
+		  	<tr class="text-left">
+		  		<td>
+		  			<%= index + 1 %>
+		  		</td>
+		  		<td>
+		  			<%= link_to student.student_name, instructor_instructor_student_path(student.id , :search_result =>params[:search])  %>
+		  		</td>
+		  		<td>
+		  			<% if student.group %>
+		  				<%= Date::DAYNAMES[student.group.group_class.day] if student.group.group_class %>
+		  			<% else %>
+		  				<% if student.group_classes.count > 0  %>
+		  					<%= Date::DAYNAMES[student.group_classes.last.day]%>
+		  				<% else %>
+		  					-
+		  				<% end %>
+		  			<% end %>
+		  		</td>
+		  		<td>
+		  			<% if student.group %>
+		  				<%= student.group.group_class.time.strftime("%-I:%M%P") if student.group.group_class %> - <%= (student.group.group_class.time + student.group.group_class.duration.minutes).strftime("%-I:%M%P") if student.group.group_class %>
+		  			<% else %>
+		  				<% if student.group_classes.count > 0  %>
+		  					<%= student.group_classes.last.time.strftime("%-I:%M%P")%> - <%= (student.group_classes.last.time + student.group_classes.last.duration.minutes).strftime("%-I:%M%P") if student.group_classes.last %>
+		  				<% else %>
+		  					-
+		  				<% end %>
+		  			<% end %>
+		  		</td>
+		  	</tr>
+		  <% end %>
+	  <% end %>
+  </tbody>
+</table>
+<script type="text/javascript">
+  jQuery.fn.highlight = function (str, className) {
+  var regex = new RegExp(str, "gi");
+  return this.each(function () {
+    $(this).contents().filter(function() {
+      return this.nodeType == 3 && regex.test(this.nodeValue);
+    }).replaceWith(function() {
+      return (this.nodeValue || "").replace(regex, function(match) {
+        return "<span class=\"" + className + "\">" + match + "</span>";
+      });
+    });
+  });
+};
+
+$(document).ready(function() {
+  console.log($('#search').val());
+  $('.students table tbody tr td a').highlight($('#search').val(),'highlight');
+});
+</script>
+<style type="text/css">
+  .highlight{
+    background-color: yellow;
+  }
+</style>
+
+
+

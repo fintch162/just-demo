@@ -1,0 +1,3 @@
+var amt_payable = '<%= escape_javascript(@invoice["invoice"]["amount"]) %>'
+var out_standing = '<%= escape_javascript(@invoice["invoice"]["amount_outstanding"]) %>'
+$("#invoice_details").html("<strong>Payable:</strong>"  + " " + '<%= escape_javascript(@invoice["invoice"]["amount"]) %>' + "</br>"+ "<strong>Outstanding:</strong>" + " "+'<%= escape_javascript(@invoice["invoice"]["amount_outstanding"]) %>');

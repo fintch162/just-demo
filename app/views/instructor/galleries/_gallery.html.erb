@@ -1,0 +1,286 @@
+<div class="main">
+  <div class="container">
+    <ul class="breadcrumb">
+      <li><a href="/instructor">Home</a></li>
+      <li><a href="/instructor/instructor_students">Instructor Students</a></li>
+      <li><a href="/instructor/instructor_students/<%= @instructor_student.id %>"><%= @instructor_student.student_name %></a></li>
+      <li class="active">Gallery</li>
+    </ul>
+    <div class="row margin-bottom-40">
+      <div class="col-md-12 col-sm-12">
+        <h1>Gallery</h1>
+        <div class="content-page">
+          <div class="filter-v1">
+            <ul class="mix-filter">
+
+              <li data-filter="all" type="button" class="btn btn-primary pull-right filter add_photos" data-toggle="modal" data-target="#myModal">Upload File</li>
+              <li data-filter="all" type="button" class="btn btn-primary filter add_photos" id="photos">Photos</li>
+              <!-- <li data-filter="all" type="button" class="btn btn-primary filter add_photos" id="videos">Videos</li> -->
+              <!-- <li data-filter="all" type="button" class="btn btn-primary filter add_photos" data-toggle="modal" data-target="#videoModal">videos</li> -->
+              <li data-filter="category_2" class="filter"><%= link_to 'Back', instructor_instructor_student_path(@instructor_student.id) %></li>
+            </ul>
+            <div class="row mix-grid thumbnails photos">
+              <div class="row" style="margin-top: 25px;">
+                <div class="col-lg-10 col-lg-offset-1">
+                  <div >
+                      <br>
+                      <h1>Photos</h1>
+                      <div class="row">
+                        <div id="media-contents" class="media-contents col-lg-12">
+                          <% if @instructor_student.gallery.photos.empty? %>
+                            <h5 id="no-media">No photos Found</h5>
+                          <% else %>
+                            <% @photos.each do |p| %>
+                              <div class="col-md-3 col-sm-4 gallery-item">
+                                <div class="thumbnail mix-inner img">
+                                  <a data-rel="fancybox-button" rel="group" href="<%= p.student_photo.url %>" class="fancybox-button">
+                                    <%= image_tag p.student_photo.url(:small) , :id => "img",:class =>"img img-responsive" %>
+                                    <div class="zoomix"><i class="fa fa-search"></i></div>
+                                  </a>
+                                  <div class="caption">
+                                    <%= link_to 'Remove', instructor_instructor_student_gallery_photo_path(@instructor_student.id,@instructor_student.gallery.id,p.id) , method: :delete, data: { confirm: 'Are you sure?' } %>
+                                  </div>
+                                </div>
+                              </div>
+                            <% end %>
+                          <% end %>
+                        </div>
+                      </div>
+                      <div class="pull-right">
+                        <%#= will_paginate @photos %>
+                      </div>
+                  </div>
+                </div>
+              </div>  
+            </div> 
+            <div class="row mix-grid thumbnails vid videos" style="display:none;">
+              <div class="row" style="margin-top: 25px;">
+                <div class="col-lg-10 col-lg-offset-1">
+                  <div >
+                      <br>
+                      <h1>Videos</h1>
+                      <div class="row">
+                        <div id="video-contents" class="video-contents col-lg-12">
+                          <% if @instructor_student.gallery.videos.empty? %>
+                            <h5 id="no-media">No videos Found</h5>
+                          <% else %>
+                            <% @instructor_student.gallery.videos.each do |p| %>
+                              <div class=" col-md-4 col-sm-6 gallery-item vid">
+                                <div class="mix-inner vid">
+                                  <!--  <video controls="controls" class="video-js vjs-default-skin" controls preload="auto" preload="preload" height="200" width="300">
+                                     <source src="<%#= p.video_file.url %>" type="video/mp4; codecs="avc1.42E01E, mp4a.40.2"">
+                                  </video>  -->
+                                  <!-- <video controls="controls" id="vjs_video_3_html5_api" class="vjs-tech video-js vjs-default-skin" preload="auto" preload="preload" height="200" width="300" poster="" data-setup="{}" src="<%#= p.video_file.url %>">
+                                    <source src="<%#= p.video_file.url %>" type="video/mp4">
+                                    <source src="<%#= p.video_file.url %>" type="video/webm">
+                                  </video> -->
+                                <video id="vjs_video_3_html5_api" class="video-js vjs-default-skin" controls preload="auto" width="300" height="200">
+                                   <source src="<%= p.video_file.url %>" type='video/mp4'/>
+                                   <source src="<%= p.video_file.url %>" type='video/webm'/>
+                                   <source src="<%= p.video_file.url %>" type='video/mov'/>
+                                   <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
+                                </video>
+
+
+                                   <%#= videojs_rails sources: { mp4: p.video_file.url(:mp4), webm: p.video_file.url(:webm)}, width: '300', height: '200' do %>
+                                  <!--  Please enable <b>JavaScript</b> to see this content. -->
+                                   <%# end %>
+                                  <div class="caption">
+                                    <%= link_to 'Remove', instructor_instructor_student_gallery_video_path(@instructor_student.id,@instructor_student.gallery.id,p.id) , method: :delete, data: { confirm: 'Are you sure?' } %>
+                                  </div>
+                                </div>
+                              </div>
+                            <% end %>
+                          <% end %>
+                        </div>
+                      </div>
+                      <div class="pull-right">
+                        <%#= will_paginate @videos %>
+                      </div>
+                  </div>
+                </div>
+              </div>  
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>  
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">Upload photos</h4>
+      </div>
+      <div class="modal-body">
+        <%= form_for [:instructor, @instructor_student,@instructor_student.gallery, Photo.new], html: { multipart: true, :remote => true, :class => "dropzone", :id => "media-dropzone"}  do |f| %>
+          <div class="fallback">
+            <%= f.file_field :student_photo ,as: :file ,:id => "img"%>
+            <%= f.submit "Submit" ,:id =>"file_submit" %>
+          </div>
+        <% end %>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="videoModal" tabindex="-1" role="dialog" aria-labelledby="videoModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">Upload videos</h4>
+      </div>
+      <div class="modal-body">
+        <%= form_for [:instructor, @instructor_student,@instructor_student.gallery, Video.new], html: { multipart: true, :remote => true, :class => "dropzone", :id => "video-dropzone"}  do |f| %>
+          <div class="fallback">
+            <%= f.file_field :video_file ,as: :file ,:id => "vid" %>
+            <%= f.submit "Submit" %>
+          </div>
+        <% end %>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $(document).ready(function() {
+    Layout.init();
+    $('.fancybox-button').fancybox();
+  });
+  $( "#photos" ).click(function() {
+    $(".photos").show();
+    if ($(".videos").is(':visible') == true) {
+      $(".videos").hide();
+    }
+  });
+  
+  $( "#videos" ).click(function() {
+   $(".videos").show();
+    if ($(".photos").is(':visible') == true) {
+      $(".photos").hide();
+    }
+  });
+    
+        
+
+/* for photo uplode */
+  var baseUrl1;
+  if ($('#media-dropzone').length) {
+    Dropzone.options.mediaDropzone = false;
+    // Dropzone.options.acceptedFiles: ".jpeg,.jpg,.png,.gif";
+    baseUrl1 = $('#media-dropzone').attr('action');
+    window.mediaDropzone = new Dropzone('#media-dropzone', {
+      addRemoveLinks: true,
+      acceptedFiles: ".jpeg,.jpg,.png,.gif",
+      success: function(file, responseText) {
+        var _this = this;
+        //appendContent(responseText.student_photo, responseText.student_photo_original,responseText.id);
+        // setTimeout(function(){
+        //   //$('#myModal').modal('hide');
+        //   //_this.removeAllFiles();
+        // },5000);
+        appendContent(responseText.student_photo, responseText.student_photo_original,responseText.id);
+        
+      },
+      init: function () {
+        this.on("complete", function (file) {
+          if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+            var _this = this;
+            setTimeout(function(){
+              _this.removeAllFiles();
+              $('#myModal').modal('hide');
+            },5000);
+          }
+        });
+      }
+    });
+  };
+  // var appendContent = function(image_url,original, mediaId) {
+  //   var removelink = "/instructor/instructor_students/<%= @instructor_student.id %>/galleries/<%= @instructor_student.gallery.id %>/photos/"+mediaId
+  //   $("#media-contents").append('<div class="col-md-3 col-sm-4 gallery-item">' + 
+  //     '<div class="thumbnail mix-inner img"><a data-rel="fancybox-button" rel="group" class="fancybox-button" href="' + original + '"><img src="' + image_url + '", id="img",class="img img-responsive" />'+'</a>'+ '<div class="zoomix"><i class="fa fa-search">'+'</i></div>'+'<div class="caption">' + '<a data-confirm="Are you sure?" data-method="delete" href='+removelink+' >Remove'+'</a>'+'</div>' +
+  //     '</div></div>');
+  //   $("#delete").removeAttr('disabled');
+  //   $("#no-media").html("");
+  // };
+/* for video uplode */
+var baseUrl2;
+  // if ($('#video-dropzone').length) {
+  //   // Dropzone.options.acceptedFiles: ".mp4";
+  //   Dropzone.options.mediaDropzone = false;
+  //   baseUrl2 = $('#video-dropzone').attr('action');
+  //   window.mediaDropzone = new Dropzone('#video-dropzone', {
+  //     addRemoveLinks: true,
+  //     acceptedFiles: ".mp4,.mv4,.webm,.mov,.flv,.wmv,.avi,.mpeg2",
+  //     success: function(file, responseText) {
+  //       var _this = this;
+  //       appendContent1(responseText.video_file, responseText.video_file_original,responseText.id);
+  //       console.log("success");
+  //         setTimeout(function(){
+  //           $('#myModal').modal('hide');
+  //           _this.removeAllFiles();
+  //         },5000);
+  //       //window.location.reload();
+  //     },
+  //     init: function () {
+  //       this.on("complete", function (file) {
+  //         if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+  //                  console.log("complete");
+  //          $('#videoModal').modal('hide');
+  //         }
+  //       });
+  //     },
+  //   });
+  // };
+  // var appendContent1 = function(video_file_url,original,mediaId) {
+  //   var removelink = "/instructor/instructor_students/<%= @instructor_student.id %>/galleries/<%= @instructor_student.gallery.id %>/videos/"+mediaId
+  //   $("#video-contents").append('<div class="col-md-4 col-sm-6 gallery-item vid">' + 
+  //     '<div class="mix-inner vid"><video id="vjs_video_3_html5_api" class="video-js vjs-default-skin" controls preload="auto" width="300" height="200"><source src="' + video_file_url+ '" type="video/mp4"/><source src="' + video_file_url+ '" type="video/webm"/><source src="' + video_file_url+ '" type="video/mov"/><source src="' + video_file_url+ '" type="video/mv4"/><source src="' + video_file_url+ '" type="video/flv"/><source src="' + video_file_url+ '" type="video/wmv"/><source src="' + video_file_url+ '" type="video/avi"/><source src="' + video_file_url+ '" type="video/mpeg2"/></video>'+'<div class="caption">' + '<a data-confirm="Are you sure?" data-method="delete" href='+removelink+' >Remove'+'</a>'+'</div>' +
+  //     '</div></div>');
+  //   $("#delete").removeAttr('disabled');
+  //   $("#no-media").html("");
+  // };
+
+
+</script>
+<style>
+.thumbnail{
+  width: 220px;
+  height: 250px;
+}
+.img{
+  width: 220px;
+  height: 250px; 
+}
+.video{
+  width: 220px;
+  height: 250px;
+}
+.fancybox-overlay{
+  z-index: 999 !important;
+}
+.loader{
+  border: none; 
+  width: 100%;
+  height: 100%;
+  top:1px;
+  left:1px;
+  right:1px;
+  "text-align": center;
+  padding: 15px; 
+  backgroundColor: #000; 
+  -webkit-border-radius: 10px; 
+  -moz-border-radius: 10px; 
+  opacity: .5; 
+  color: #fff ;
+  z-index: 50000
+}
+</style>

@@ -1,0 +1,25 @@
+= form_for @payment_notification do |f|
+  - if @payment_notification.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@payment_notification.errors.count, "error")} prohibited this payment_notification from being saved:"
+      %ul
+        - @payment_notification.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :params
+    = f.text_area :params
+  .field
+    = f.label :online_payment_id
+    = f.number_field :online_payment_id
+  .field
+    = f.label :status
+    = f.text_field :status
+  .field
+    = f.label :transaction_id
+    = f.text_field :transaction_id
+  .field
+    = f.label :create
+    = f.text_field :create
+  .actions
+    = f.submit 'Save'

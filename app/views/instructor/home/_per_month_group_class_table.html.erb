@@ -1,0 +1,93 @@
+<table class="table table-hover sample_editable_2" style="<%= current_admin_user.more_or_less_months.count == 0 ? "font-size: 16px;" : "font-size: #{current_admin_user.more_or_less_months.first.font_size}px" %>"> 
+  <thead>
+    <tr>
+      <% if current_admin_user.more_or_less_months.count == 0  %>
+        <% @font_size = 16 %>
+      <% else %>
+        <% if current_admin_user.more_or_less_months.first.font_size.nil? %>
+            <% @font_size = 16 %>
+        <% else %>
+            <% @font_size = current_admin_user.more_or_less_months.first.font_size * 0.8 %>
+        <% end %>
+      <% end %>
+      <%= render "common_table_header_fee_view_group_class" %>
+      <% if params[:isAttendance] || @fee_attendance == "attendance" %>
+        <% @result.to_a.each do |m|%>
+          <th class="<%= m.strftime("%d-%b") %>" style="white-space:nowrap; font-size: <%= @font_size %>px;"><%= m.strftime("%d-%b") %></th>
+        <% end %>
+      <% elsif @fee_attendance == "latestLesson" %>
+        <% m = @result.last %>
+        <th class="<%= m.strftime("%d-%b") %>" style="white-space:nowrap; font-size: <%= @font_size %>px;"><%= m.strftime("%d-%b") %></th>
+      <% elsif @fee_attendance == "fee" || @fee_attendance == "fee_attendance" %>
+        <% @mon.each do |m|%>
+          <th class="<%= m %> " style="white-space:nowrap; font-size: <%= @font_size %>px;"><%= m %></th>
+        <% end %>
+      <% end %>
+      <% count = 0 %>
+    </tr>
+  </thead>
+  <tbody>
+    <% students_list.order(:position).each do |student| %>
+      <%# @instructor_student_award = InstructorStudentAward.where(:instructor_student_id => student.id)#.where("award_progress NOT IN (?)", @award_progress) %>
+      <% @instructor_student_award = student.instructor_student_awards %>
+      <% @achieved_award = @instructor_student_award.where("award_progress IN (?)", @award_progress).order('achieved_date desc').limit(1) %>
+
+      <%# @achieved_award = InstructorStudentAward.where(:instructor_student_id => student.id).where("award_progress IN (?)", @award_progress).order('achieved_date desc').limit(1) %>
+
+      <% count = count + 1 %>
+      <tr id="<%= student.id %>">
+        <%= render "common_data_fee_view_group_class", :count => count, student: student %>
+        <% if params[:isAttendance] || @fee_attendance == "attendance" || @fee_attendance == "latestLesson" %>
+          <%= render "attendance_list_form", :student => student %>
+        <% elsif @fee_attendance == "fee" %>
+
+          <% @mon.to_a.each do |m|%>
+            <%# fee = student.fees.find_by(monthly_detail: get_beginning_of_month(m)) %>
+            <% fees = student.fees.where(monthly_detail: get_beginning_of_month(m)) %>
+            <% fee = fees.last %>
+            <td class="grp_line" style="white-space:nowrap;">
+              <% if fee.present? %>
+                <% if fee.is_paid %>
+                  <%= link_to fee.get_payment_date_paid_any_payment_mode.strftime("%e %b") ,instructor_remove_fee_path(fee.id)+"?show_amount=#{@show_amount}&student=#{student.id}&group_class=#{@group_class.id}", remote: :true, :"data-str" => "#{student.id}-#{m}", :class => "updateFee #{m}-#{student.id}" %>
+                  <br><span class="grp_small_size" id="<%= student.id %>-<%= m %>">$<%=fee.amount %></span>
+                <% else %>
+                  <% if fee.payment_status == "Due" %>
+                    <%= link_to(instructor_group_class_get_fee_data_path(@group_class,student.id,month: m, fee: fee), class: "clr-red load-modal #{m}-#{student.id}", remote: true) do %>
+                      <i class="fa fa-plus"></i>Due
+                    <% end %>
+                    <br><span class="grp_small_size" id="<%= student.id %>-<%= m %>">$<%=fee.amount %></span>
+                  <% elsif !fee.payment_status.present? && !fee.payment_mode.present? && fee.get_payment_date_paid_any_payment_mode %>
+                    <%= link_to fee.get_payment_date_paid_any_payment_mode.strftime("%e %b") ,instructor_remove_fee_path(fee.id)+"?show_amount=#{@show_amount}&student=#{student.id}&group_class=#{@group_class.id}", remote: :true, :"data-str" => "#{student.id}-#{m}", :class => "updateFee #{m}-#{student.id}" %>
+                    <br>
+                    <span class="grp_small_size" id="<%= student.id %>-<%= m %>">$<%=fee.amount %></span>
+                  <% else %>
+                    <%= link_to(instructor_group_class_get_fee_data_path(@group_class,student.id,month: m, fee: fee),id: "Add-fee", class: "clr-red load-modal #{m}-#{student.id}", remote: true) do %>
+                      <i class="fa fa-plus"></i>Fee
+                    <% end %>
+                  <% end %>
+                <% end %>
+              <% else %>
+                <%= link_to(instructor_group_class_get_fee_data_path(@group_class,student.id,month: m), id: "Add-fee",class: "clr-red load-modal #{m}-#{student.id}", remote: true) do %>
+                  <i class="fa fa-plus"></i>Fee
+                <% end %>
+              <% end %>
+            </td>
+            
+          <% end %>
+        <% elsif @fee_attendance == "fee_attendance" %>
+          <%= render 'fee_attendance', :student => student %>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+
+<style type="text/css">
+ 
+  #Add-fee{
+    opacity: 0;
+  }
+  #Add-fee:hover{ opacity: 1; }
+
+</style>

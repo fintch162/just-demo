@@ -1,0 +1,9 @@
+var style = "style='position: absolute; font-size: 20px; background: #EEEEEE; padding: 10px; left: 50%; width: 210px; margin-left: -100px; top: 250px; color: #000; z-index: 999999; border: 1px solid;'";
+// $('html,body').animate({ scrollTop: 0 }, 'slow');
+$(".page-title").css("position","relative");
+$(".page-title").fadeIn().html('<div id="job_success_message" '+style+'>Job saved successfully.</div>');
+$('html,body').animate({ scrollTop: $('#job_success_message').offset().top }, 1000).delay(3000)
+                       .queue(function() {
+                           $("#job_success_message").fadeOut('slow');
+                           $(this).dequeue();
+                       });

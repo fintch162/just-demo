@@ -1,0 +1,78 @@
+<div class="row margin-bottom-40">
+  <div class="col-sm-4">
+    <% addedAward = [] %>
+    <% @achieved_awardIds.each do |award_progress, award_filter| %>
+      <%#= award_progress.gsub("_", " ").capitalize unless award_progress == "" %>
+      <!-- <br> -->
+      <% award_filter.each do |award_f| %>
+        <% if !addedAward.include?(award_f.award_id) %>
+          <% addedAward << award_f.award_id %>
+          <% if award_f.present? %>
+            <% if !award_f.award_id.blank? %>
+               <label>
+                <input type="checkbox" id="award_filter" data-award-filter="<%= award_f.award_id %>" class="award_filter" />
+                <% award_name = Award.find(award_f.award_id) %>
+                <%= award_name.blank? ? "" : award_name.name %>
+              </label>
+            <% end %>
+          <% end %>
+          <br />
+        <% end %>
+      <% end %>
+      <!-- <br /> -->
+    <% end %>
+  </div> 
+
+  <div class="col-sm-8">
+    <div class="filter_by_award">
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  var loadedFirstAward = [];
+  var selectedAward;
+  var awardList = [];
+  var tmpAwardList = [];
+
+  $(document).ready(function() {
+    $(".award_filter").each(function() {
+      awardList.push($(this).data("award-filter"));
+      loadedFirstAward.push($(this).data("award-filter"));
+
+    });
+    getFileredAwardStudentList(awardList);
+  });
+
+  $(".award_filter").click(function () {
+    selectedAward = $(this).data("award-filter");
+    if($(this).prop("checked") == true){
+      tmpAwardList.push(selectedAward);
+      getFileredAwardStudentList(tmpAwardList);  
+    }
+    if($(this).prop("checked") == false){
+      getFileredAwardStudentList(removeA(tmpAwardList, selectedAward));
+    }
+  });
+
+  function removeA(arr) {
+    var what, a = arguments, L = a.length, ax;
+    while (L > 1 && arr.length) {
+      what = a[--L];
+      while ((ax= arr.indexOf(what)) !== -1) {
+        arr.splice(ax, 1);
+      }
+    }
+    return arr;
+  }
+
+  function getFileredAwardStudentList(awardList) {
+    if(awardList == "")
+      awardList = loadedFirstAward
+    $.ajax({
+      url: '/instructor/filter-by-selected-award',
+      type: 'GET',
+      dataType: 'script',
+      data: { selectedAward: awardList}
+    }); 
+  }
+</script>

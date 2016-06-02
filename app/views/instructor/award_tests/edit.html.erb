@@ -1,0 +1,22 @@
+<%= title "Edit Award Test" %>
+<% if !admin_user_signed_in? %>
+  <%= render "instructor/shared/login" %>
+<% else %>
+  <div class="main">
+    <div class="container">
+      <ul class="breadcrumb">
+        <li><a href="/instructor">Home</a></li>
+        <li><a href="<%= instructor_award_tests_path %>">Award Tests</a></li>
+        <li class="active"><%= @award_test.test_date.strftime("%e %b %Y") + " - " + @award_test.test_time.strftime("%I:%M %p") %></li>
+      </ul>
+      <div class="margin-bottom-40">
+        <%#= render :partial => 'instructor/home/ac_side_bar' %>
+        <div class="col-md-9 col-sm-9">
+          <div class="row">
+            <%= render "form" %>
+          </div>  
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

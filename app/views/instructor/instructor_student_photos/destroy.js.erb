@@ -1,0 +1,13 @@
+$('#thumbs').html('<%= escape_javascript(render partial: "list_photos") %>');
+$('.tags').editable({
+    inputclass: 'form-control input-medium',
+    emptytext: 'Tag Someone',
+    params: {
+      isId: 'student'
+    },
+    url:'/instructor/instructor_student_photos/add_tags',
+    select2: {
+        tags: students.split(','),
+        tokenSeparators: [",", " "]
+    }
+  });

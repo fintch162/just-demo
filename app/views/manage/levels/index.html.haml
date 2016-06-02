@@ -1,0 +1,82 @@
+= title "Settings" 
+.row
+  .col-md-6
+    / BEGIN EXAMPLE TABLE PORTLET
+    .portlet.box.blue
+      .portlet-title
+        .caption
+          %i.fa.fa-edit>
+          Manage Levels
+        .tools
+          %a.collapse{:href => "javascript:;"}
+          %a.config{"data-toggle" => "modal", :href => "#portlet-config"}
+          %a.reload{:href => "javascript:;"}
+          %a.remove{:href => "javascript:;"}
+      .portlet-body
+        .table-toolbar
+          .btn-group
+            %button#sample_editable_1_new.btn.green
+              Add New
+              %i.fa.fa-plus
+        %table#sample_editable_1.table.table-striped.table-hover.table-bordered
+          %thead
+            %tr
+              %th
+                Title
+              %th
+                Edit
+              %th
+                Delete
+          %tbody
+            - @levels.each do |level|
+              %tr{:id => level.id}
+                %td
+                  = level.title
+                %td
+                  = link_to "Edit", "#", :class => "edit" ,:id=>"#{level.id}"
+                %td
+                  = link_to "Delete", "#", :class => "delete" ,:id=>"del_#{level.id}"
+    / END EXAMPLE TABLE PORTLET
+  .col-md-6
+    / BEGIN EXAMPLE TABLE PORTLET
+    .portlet.box.green
+      .portlet-title
+        .caption
+          %i.fa.fa-edit>
+          Manage Age Group
+        .tools
+          %a.collapse{:href => "javascript:;"}
+          %a.config{"data-toggle" => "modal", :href => "#portlet-config"}
+          %a.reload{:href => "javascript:;"}
+          %a.remove{:href => "javascript:;"}
+      .portlet-body
+        .table-toolbar
+          .btn-group
+            %button#sample_editable_2_new.btn.green
+              Add New
+              %i.fa.fa-plus
+        %table#sample_editable_2.table.table-striped.table-hover.table-bordered
+          %thead
+            %tr
+              %th
+                Title
+              %th
+                Edit
+              %th
+                Delete
+          %tbody
+            - @age_groups.each do |agegroup|
+              %tr{:id => agegroup.id}
+                %td
+                  = agegroup.title
+                %td
+                  = link_to "Edit", "#", :class => "edit" ,:id=>"#{agegroup.id}"
+                %td
+                  = link_to "Delete", "#", :class => "delete" ,:id=>"del_#{agegroup.id}"
+    / END EXAMPLE TABLE PORTLET
+:javascript
+  jQuery(document).ready(function() {       
+    Metronic.init(); // init metronic core components
+    TableEditable.init();
+    ageTableEditable.init();
+  });

@@ -1,0 +1,339 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any styles
+ * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
+ * file per style scope.
+
+ *= require global/plugins/index_page_css/font-awesome.min
+ *= require bootstrap_and_overrides
+ *= require formtastic-bootstrap
+ *= require jquery.fancybox-buttons
+ *= require checknet
+ *= require manage/inbox
+ *= require manage/login/bootstrap-timepicker.min
+ *= require bootstrap-fileinput
+ *= require jquery.tagsinput
+ *= require typeahead
+ *= require manage/datepicker
+ *= require manage/DT_bootstrap
+ *= require manage/daterangepicker-bs3
+ *= require manage/style-metronic
+ *= require global/plugins/index_page_css/owl.carousel
+ *= require select2
+ *= require global/plugins/index_page_css/components
+ *= require plugins
+ *= require global/plugins/index_page_css/style
+ *= require global/plugins/index_page_css/style-responsive
+ *= require global/plugins/index_page_css/red
+ *= require global/plugins/index_page_css/custom
+ *= require global/plugins/index_page_css/gallery
+ *= require global/plugins/index_page_css/portfolio
+ *= require fineuploader
+ *= require handsontable.full
+ *= require bootstrap-select
+ *= require dropzone/dropzone
+ *= require manage/dataTables.responsive
+ *= require global/plugins/index_page_css/portfolio
+ *= require video-js
+ *= require star-rating
+ *= require jquery.fancybox
+ */
+ 
+  .error{
+    color: #a94442;
+  }
+  .datepicker .datepicker-dropdown .dropdown-menu .datepicker-orient-left .datepicker-orient-bottom {
+    width: 230px !important;
+  }
+  .datepicker.datepicker-dropdown.dropdown-menu{
+    min-width: 240px !important;
+  }
+	.profile_thumb_mask{
+	  color: #fff; 
+	  width: 160px; 
+	  height: 30px; 
+	  padding-top: 4px;
+	}
+	.profile_thumb{
+	  position: relative;
+	}
+	.profile_thumb div{
+	  position: absolute;
+	  bottom: 0px;
+	  background-color: rgba(0, 0, 0, 0.5);
+	}
+	.profile_thumb div i{
+	  margin: 5px 5px 0 5px;
+	}
+  .main {
+    margin-bottom: 0px !important;
+  }
+  .newSmsSend {
+    display: none;
+  }
+
+  .nav-tabs > li.active > a {
+    background: #fff;
+    background-color: #fff;
+    color: #647484;
+  }
+  .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+   background: #fff;
+    color: #647484; 
+  }
+  .tabbable-custom > .tab-content {
+		background-color: #fff;
+		border: 1px solid #ddd;
+	}
+  .dashboard-stat .visual {
+    padding-left: 28px;
+    height: 100px; 
+  }
+    #croppic{
+      width: 250px;  
+      height: 250px;
+      position: relative;      
+      margin: 50px 70px 20px;
+      border: 3px  solid #FFF;
+      box-sizing: content-box;
+      -moz-box-sizing: content-box;
+      border-radius: 2px;
+      background-image: url("/assets/no_image.gif");
+      background-repeat: no-repeat;
+      background-position: center;
+    
+      box-shadow: 8px 8px 0px rgba(0,0,0,0.1);
+    
+    }
+    
+    /* DO NOT CHANGE FROM HERE ( unless u know what u are doing) */
+    .cropImgWrapper{
+      cursor: -webkit-grab;
+      cursor: grab;
+    }
+    .cropImgWrapper:active{
+      cursor: -webkit-grabbing;
+      cursor: grabbing;
+    }
+    
+    .cropImgUpload{
+      z-index:2;
+      position:absolute;
+      height:28px;
+      display:block;
+      top: -30px;
+      right: -2px;
+      font-family:sans-serif;
+      width:20px;
+      height:20px;
+      text-align:center;
+      line-height:20px;
+      color:#FFF;
+    }
+    
+    .cropControls{
+      z-index:2;
+      position:absolute;
+      height:30px;
+      display:block;
+      /* top: -31px; */
+      top: -1px;
+      right: -1px;
+      font-family:sans-serif;
+      background-color:rgba(0,0,0,0.35); 
+    }
+    
+    .cropControls i{
+      display:block;
+      float:left;
+      margin:0;
+      cursor:pointer;
+      background-image:url("/assets/cropperIcons.png"); 
+      width:30px;
+      height:30px;
+      text-align:center;
+      line-height:20px;
+      color:#FFF;
+      font-size:13px;
+      font-weight: bold;
+      font-style: normal;
+      
+    }
+    
+    .cropControls i:hover{ background-color:rgba(0,0,0,0.7);  }
+    
+    .cropControls i.cropControlZoomMuchIn{ background-position:0px 0px;}
+    .cropControls i.cropControlZoomIn{ background-position:-30px 0px; }
+    .cropControls i.cropControlZoomOut{ background-position:-60px 0px; }
+    .cropControls i.cropControlZoomMuchOut{ background-position:-90px 0px; }
+    .cropControls i.cropControlRotateLeft{ background-position:-210px 0px; }
+    .cropControls i.cropControlRotateRight{ background-position:-240px 0px; }
+    .cropControls i.cropControlCrop{ background-position:-120px 0px;}
+    .cropControls i.cropControlUpload{ background-position:-150px 0px;}
+    .cropControls i.cropControlReset{ background-position:-180px 0px;}
+    .cropControls i.cropControlRemoveCroppedImage{ background-position:-180px 0px;}
+    
+    .cropControls i:last-child{
+      margin-right:none;
+    }
+    
+    #croppicModal{
+      position:fixed;
+      width:100%;
+      height:100%;
+      top: 0;
+      left: 0;
+      display:block;
+      background:rgba(0,0,0,0.8);
+      z-index: 10000;
+    }
+        
+    .bubblingG {
+      text-align: center;
+      width:80px;
+      height:50px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin: -18px auto auto -40px;
+      z-index:2;
+    }
+
+    .bubblingG span {
+      display: inline-block;
+      vertical-align: middle;
+      width: 10px;
+      height: 10px;
+      margin: 25px auto;
+      background: #FFF;
+      box-shadow: 5px 5px 0px rgba(0,0,0,0.2);
+      -moz-border-radius: 50px;
+      -moz-animation: bubblingG 1s infinite alternate;
+      -webkit-border-radius: 50px;
+      -webkit-animation: bubblingG 1s infinite alternate;
+      -ms-border-radius: 50px;
+      -ms-animation: bubblingG 1s infinite alternate;
+      -o-border-radius: 50px;
+      -o-animation: bubblingG 1s infinite alternate;
+      border-radius: 50px;
+      animation: bubblingG 1s infinite alternate;
+      
+    }
+    .checker{
+      float: left;
+    }
+
+    #bubblingG_1 {
+      -moz-animation-delay: 0s;
+      -webkit-animation-delay: 0s;
+      -ms-animation-delay: 0s;
+      -o-animation-delay: 0s;
+      animation-delay: 0s;
+    }
+
+    #bubblingG_2 {
+      -moz-animation-delay: 0.3s;
+      -webkit-animation-delay: 0.3s;
+      -ms-animation-delay: 0.3s;
+      -o-animation-delay: 0.3s;
+      animation-delay: 0.3s;
+    }
+
+    #bubblingG_3 {
+      -moz-animation-delay: 0.6s;
+      -webkit-animation-delay: 0.6s;
+      -ms-animation-delay: 0.6s;
+      -o-animation-delay: 0.6s;
+      animation-delay: 0.6s;
+    }
+
+    @-moz-keyframes bubblingG {
+      0% {
+        width: 10px;
+        height: 10px;
+        background-color:#FFF;
+        -moz-transform: translateY(0);
+      }
+
+      100% {
+        width: 24px;
+        height: 24px;
+        background-color:#FFF;
+        -moz-transform: translateY(-21px);
+      }
+
+    }
+
+    @-webkit-keyframes bubblingG {
+      0% {
+        width: 10px;
+        height: 10px;
+        background-color:#FFF;
+        -webkit-transform: translateY(0);
+      }
+
+      100% {
+        width: 24px;
+        height: 24px;
+        background-color:#FFF;
+        -webkit-transform: translateY(-21px);
+      }
+
+    }
+
+    @-ms-keyframes bubblingG {
+      0% {
+        width: 10px;
+        height: 10px;
+        background-color:#FFF;
+        -ms-transform: translateY(0);
+      }
+
+      100% {
+        width: 24px;
+        height: 24px;
+        background-color:#FFF;
+        -ms-transform: translateY(-21px);
+      }
+
+    }
+
+    @-o-keyframes bubblingG {
+      0% {
+        width: 10px;
+        height: 10px;
+        background-color:#FFF;
+        -o-transform: translateY(0);
+      }
+
+      100% {
+        width: 24px;
+        height: 24px;
+        background-color:#FFF;
+        -o-transform: translateY(-21px);
+      }
+
+    }
+
+    @keyframes bubblingG {
+      0% {
+        width: 10px;
+        height: 10px;
+        background-color:#FFF;
+        transform: translateY(0);
+      }
+
+      100% {
+        width: 24px;
+        height: 24px;
+        background-color:#FFF;
+        transform: translateY(-21px);
+      }
+
+    }

@@ -1,0 +1,43 @@
+<div class="modal-dialog modal-sm">
+  <div class="modal-content">
+    <%= form_tag(instructor_bulk_invoice_detail_path,remote: true) do |f| %>
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss = "modal" aria-hidden="true"></button>
+        <h4 class="modal-title">Invoice</h4>
+      </div>
+      <%= hidden_field_tag :student_ids, @student_ids %>
+      <%= hidden_field_tag :group_class,@group_class_id  %>
+      <div class="modal-body">
+        <div class="portlet-body form">
+          <div class="form-body">
+            <div class="form-group">
+              <%= label_tag :monthly_detail, "Month" %>
+              <div class="input-group input-medium date date-picker1" data-date-format="dd-mm-yyyy" disabled="disabled">
+                <%= text_field_tag :monthly_detail,@monthly_detail ? @monthly_detail : '', :class => "form-control", :id=> "payment_date",:readonly => true, :style=> "background-color: #eee !important;" %>
+                <span class="input-group-btn">
+                  <button class="btn default" type="button" style="height: 34px;"><i class="fa fa-calendar"></i></button>
+                </span>
+              </div>
+            </div>
+            <%#= hidden_field_tag :show_amount, params[:show_amount] %>
+
+            <div class="form-group" style="margin-bottom: 0px;">
+              <%= label_tag :due_date, "Due Date",id: 'lbl-due-date' %>
+              <div class="input-group input-medium date date-picker due-date" data-date-format="dd-mm-yyyy" disabled="disabled">
+                <%= text_field_tag :due_date,@due_date ? @due_date : '', :class => "form-control", :id=> "due_date",:readonly => true, :style=> "background-color: #eee !important;" %>
+                <span class="input-group-btn">
+                  <button class="btn default" type="button" style="height: 34px;"><i class="fa fa-calendar"></i></button>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="margin-top: 0px;">
+        <!-- <button type="submit" class="btn green" >Save</button> -->
+        <%= submit_tag "Next" ,:class=>"btn green save_payment bulk_invoice_next"%>
+        <button type="button" class="btn default" data-dismiss="modal">Cancel</button>
+      </div>
+    <% end %>  
+  </div>
+</div>

@@ -1,0 +1,6 @@
+$modal = $('.modal'),
+$modalBody = $('.modal .modal-body'),
+$modalHeading = $('.modal .modal-heading');
+$modalHeading.html("<%= params[:id] %>");
+$modalBody.html('<%= escape_javascript(render template: "/instructor/group_classes/add_to_gp_form.html.erb") %>');
+$modal.modal();

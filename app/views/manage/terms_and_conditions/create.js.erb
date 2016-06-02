@@ -1,0 +1,3 @@
+$('.title_content').html('<%= sanitize(@term_and_conditon.title).gsub(/(\r)?\n/, "<br/>").html_safe %>');
+$('.term_content').html('<%= sanitize(@term_and_conditon.content).gsub(/(\r)?\n/, "<br/>").html_safe %>');
+$('#term_and_condition')[0].reset();

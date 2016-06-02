@@ -1,0 +1,165 @@
+<% title "Instructors Index" %>
+  <div class="row">
+  <%#= PaymentNotification.find(1092).inspect %>
+  <%#= @payment_notifications.find(1092).inspect %>
+
+  <br/>
+  <div class="col-md-12"> 
+    <h3 class="page-title">
+      Transactions
+    </h3>
+    <% if !@breadcrumbs.nil? %>
+      <ul class="page-breadcrumb breadcrumb">
+        <% @breadcrumbs.each do |breadcrumb| %>
+          <li class="btn-group">
+            <a class="btn btn-fit-height grey pull-right" href="<%= new_manage_online_payment_path %>"><i class="fa fa-plus"></i> Add</a>
+          </li>
+          <li>
+            <%= link_to(breadcrumb[:name], breadcrumb[:url]) %>
+            <% if @breadcrumbs.last != breadcrumb %>
+              <i class="fa fa-angle-right"></i>
+            <% end %>
+          </li>
+
+        <% end %>        
+      </ul>
+    <% end %>
+  </div>
+</div>
+
+  <div>
+    <table class="table table-striped table-bordered table-hover table-full-width" id="sample_2" data-source="<%= manage_online_payments_path(format: :json) %>">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <!-- <th>Transaction Id</th> -->
+          <th class="hidden-xs">Payment_date</th>
+          <th>Invoice Number</th>
+          <th>Job Ref</th>
+          <th class="hidden-xs">Status</th>
+         <!--  <th class="hidden-xs">Payment id</th>
+          <th class="hidden-xs">Local Payment id</th> -->
+          <th class="hidden-xs">Amount</th>
+          <th class="hidden-xs">Pay by</th>
+          <th class="hidden-xs">Add Payment</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+  var table;
+  $(document).ready(function() {
+
+    table = $('#sample_2').dataTable({
+      sPaginationType: "bootstrap",
+      aaSorting: [[ 0, "desc" ]],
+      aLengthMenu: [
+                    [20, 50, 100, -1],
+                    [20, 50, 100, "All"]
+                   ],
+      iDisplayLength: 20,
+      bProcessing: true,
+      bServerSide: true,
+      sAjaxSource: $('#sample_2').data('source'),
+      "fnServerParams": function ( aoData ) {
+                aoData.push( { "name": "status", "value": $('select.myselect').val() } );
+            },
+    });
+    $('#sample_2_wrapper .dataTables_filter input').addClass("form-control input-xmedium input-inline");
+    $('#sample_2_wrapper .dataTables_length select').addClass("form-control input-xmedium input-inline");
+    $("#sample_2_wrapper").find(".table-scrollable").removeClass("table-scrollable");
+    setTimeout(function(){
+      var selectedCompleted;
+      var selectedAdded;
+      var selectedRejected;
+      var selectedAll;
+      var selectedPaid;
+      var selectedNew;
+
+      if(localStorage.filterBy == "Completed") {
+        selectedCompleted = 'selected';
+        selectedAdded = '';
+        selectedRejected = '';
+        selectedPaid = '';
+        selectedNew = '';
+      }
+      else if(localStorage.filterBy == "Added") {
+        selectedCompleted = '';
+        selectedRejected = '';
+        selectedPaid = '';
+        selectedAdded = 'selected';
+        selectedNew = '';
+      }
+      else if(localStorage.filterBy == "Rejected")
+      {
+        selectedCompleted = '';
+        selectedRejected = 'selected';
+        selectedPaid = '';
+        selectedAdded = '';
+        selectedNew = '';
+      }
+      else if(localStorage.filterBy == "Paid")
+      {
+        selectedCompleted = '';
+        selectedRejected = '';
+        selectedPaid = 'selected';
+        selectedAdded = '';
+        selectedNew = '';
+      }
+      else if(localStorage.filterBy == "New"){
+        selectedCompleted = '';
+        selectedRejected = '';
+        selectedPaid = '';
+        selectedAdded = '';
+        selectedNew = 'selected';
+      }
+      else{
+        selectedCompleted = '';
+        selectedRejected = '';
+        selectedPaid = '';
+        selectedAdded = '';
+        selectedNew = '';
+        selectedAll = 'selected';
+      }
+      if(localStorage.filterBy != "All") {
+        $('#sample_2_filter').find('input').val();
+        table.fnFilter("")
+      }
+      else {
+        localStorage.setItem("filterBy", "");
+        $('#sample_2_filter').find('input').val('');
+      }
+
+      $("#sample_2_filter")
+        .append(
+            '<label class="margin-right-10"><select aria-controls="sample_2" class="form-control input-xmedium input-inline myselect">'+
+              '<option '+selectedAll+'>All</option>'+
+              '<option '+selectedAdded+'>Added</option>'+'<option '+selectedCompleted+'>Completed</option>'+'<option '+selectedRejected+'>Rejected</option>'+'<option>Paid</option>'+
+              '<option selected '+selectedNew+'>New</option>'+
+            '</select></label>'
+            );
+      
+
+      $('select.myselect').change( function() {
+        if ($(this).val() == "All")
+          table.fnFilter( '' );
+        else
+          table.fnFilter( $(this).val() );
+        $('#sample_2_filter').find('input').val('');
+        if($(this).val() == "All")
+          localStorage.setItem("filterBy", "");
+        else
+          localStorage.setItem("filterBy", $(this).val());
+      });
+    }, 300);
+  });
+
+  $(document).ajaxStart(function() {
+    $(".dataTables_processing").css("visibility","visible");
+  }).ajaxComplete(function() {
+    $(".dataTables_processing").css("visibility","hidden");
+  });
+</script>

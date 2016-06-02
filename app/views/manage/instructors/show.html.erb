@@ -1,0 +1,450 @@
+<%= title @instructor.name if @instructor.name?  %>
+<% if @instructor.is_enable_edit? %>
+  <% isEnable = "none"  %>
+<% end %>
+
+<div class="row">
+  <div class="col-md-12">
+    <h3 class="page-title">
+      <%= page_title %>
+      <small>>
+        <%= page_description %>
+      </small>
+    </h3>
+    <% if !@breadcrumbs.nil? %>
+      <ul class="page-breadcrumb breadcrumb">
+        <li class="btn-group">
+          <a class="btn btn-fit-height grey pull-right" href="<%= edit_manage_instructor_path(@instructor) %>">
+            <i class="fa fa-edit"></i>
+            Edit
+          </a>
+        </li>
+        <% @breadcrumbs.each do |breadcrumb| %>
+          <li>
+            <%= link_to(breadcrumb[:name], breadcrumb[:url]) %>
+            <% if @breadcrumbs.last != breadcrumb %>
+              <i class="fa fa-angle-right"></i>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+    <div class="dashboard-stat blue-madison">
+      <div class="visual">
+        <i class="fa fa-comments"></i>
+      </div>
+      <div class="details">
+        <div class="number">
+          <%= @jobs_taken.blank? ? "0" : @jobs_taken %>
+        </div>
+        <div class="desc">
+          Jobs Taken
+        </div>
+      </div>
+      <a class="more" href="<%= manage_instructor_job_taken_path(@instructor) %>">
+        View more
+        <i class="m-icon-swapright m-icon-white"></i>
+      </a>
+    </div>
+  </div>
+  <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+    <div class="dashboard-stat red-intense">
+      <div class="visual">
+        <i class="fa fa-bar-chart-o"></i>
+      </div>
+      <div class="details">
+        <div class="number">
+          <%= @students_taken.blank? ? "0" : @students_taken %>
+        </div>
+        <div class="desc">
+          Students Taken
+        </div>
+      </div>
+      <a class="more" href="#">
+        View more
+        <i class="m-icon-swapright m-icon-white"></i>
+      </a>
+    </div>
+  </div>
+  <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+    <div class="dashboard-stat green-haze">
+      <div class="visual">
+        <i class="fa fa-shopping-cart"></i>
+      </div>
+      <div class="details">
+        <div class="number">
+          $
+          <%= @jobs_refered_total.blank? ? "0" : @jobs_refered_total %>
+        </div>
+        <div class="desc">
+          Referral Paid
+        </div>
+      </div>
+      <a class="more" href="#">
+        View more
+        <i class="m-icon-swapright m-icon-white"></i>
+      </a>
+    </div>
+  </div>
+  <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+    <div class="dashboard-stat purple-plum">
+      <div class="visual">
+        <i class="fa fa-globe"></i>
+      </div>
+      <div class="details">
+        <div class="number">
+          <%= @active_students %>
+        </div>
+        <div class="desc">
+          Students
+        </div>
+      </div>
+      <a class="more" href="#">
+        View more
+        <i class="m-icon-swapright m-icon-white"></i>
+      </a>
+    </div>
+  </div>
+</div>
+<div class="pull-right">
+  <% if @instructor.is_enable_edit? %>
+    <a href="<%= lock_edit_mode_manage_instructor_path(params[:id]) %>" class="btn red" id="lockUnlockBtn" data-remote="true">Lock</a>
+  <% else %>
+    <a href="<%= unlock_edit_mode_manage_instructor_path(params[:id]) %>" class="btn red" id="lockUnlockBtn" data-remote="true">Unlock</a>
+  <% end %>
+  <a href="#add_group_class" data-toggle="modal" class="btn btn-default" >Add Class</a>
+              </a>
+  <!-- <a href="<%#= group_classes_add_new_class_manage_group_classes_path %>" class="btn btn-default" id="addClass" data-remote="true">
+    Add Class
+  </a> -->
+</div>
+
+<div class="clearfix"></div>
+<div class="portlet-body">
+  <table class="table table-striped table-hover table-full-width" id="group_classes" >
+    <thead>
+      <tr class="heading">
+        <th>Day</th>
+        <th>Time</th>
+        <th>Duration</th>
+        <th>Venue</th>
+        <th>Age group</th>
+        <th>Fee($)</th>
+        <th>Vacancy</th>
+        <th>Max</th>
+        <th>Fee type</th>
+        <th>Lesson Count</th>
+        <th></th>
+        <th style="width: 10px;"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% days_arry = [] %>
+        <% all_days_arr = [] %>
+        <% @group_classes.each do |group_class| %>
+          <% if group_class.day.to_i == 0 %>
+            <% days_arry << group_class %>
+          <% else %>
+             <% all_days_arr << group_class %>
+          <% end %>
+        <% end %>
+        <% all_days_arr = all_days_arr + days_arry %>
+      <% all_days_arr.each do |group_class| %>
+        <tr class="remove_group_class_from_instructor_<%= group_class.id %>">
+          <td>
+            <a href="javascript:;" id="editDay_<%= group_class.id %>" class="inplaceEditingActivator" style="display: <%= @instructor.is_enable_edit? ? "" : 'none;' %>"><i class="fa fa-pencil"></i></a>
+            <%= best_in_place group_class, :day, :type => :select, :collection => [[0, "Sunday"], [1, "Monday"], [2, "Tuesday"], [3, "Wednesday"], [4, "Thursday"], [5, "Friday"], [6, "Saturday"]], :path => [:manage, group_class], :activator => "#editDay_#{group_class.id}" %>
+          </td>
+
+
+          <td>
+            <p style="display: <%= @instructor.is_enable_edit? ? "none;" : "inherit;" %>" class="classTimeLabel"><%= group_class.time.strftime("%I:%M %p") unless group_class.time.nil? %></p>
+
+            <a href="javascript:;" id="editTime_<%= group_class.id %>" class="inplaceEditingActivator" style="display: <%= @instructor.is_enable_edit? ? "" : 'none;' %>"><i class="fa fa-pencil"></i> <%= group_class.time.strftime("%I:%M %p") unless group_class.time.nil? %></a>
+            <%= form_for [:manage, group_class] , :html => {:class => "edit_group_from_instructor_show", :id => "edit_time_gp_#{group_class.id}", :remote => true } do |f| %>
+              <input class="form-control valid classTime" data-date-format="hh:mm A/PM" id="group_class_time_<%= group_class.id %>" name="group_class[time]" type="text" aria-invalid="false" value="<%= group_class.time.strftime("%I:%M %p") if group_class.time? %>" style="width: 80% !important;">
+            <% end %>
+            <script type="text/javascript">
+              $(document).ready(function(){
+                $('#editTime_<%= group_class.id %>').click(function() {
+                  if($(".edit_group_from_instructor_show").is(":visible") == true) {
+                    $(".edit_group_from_instructor_show").hide();
+                    $(".inplaceEditingActivator").show();  
+                  }
+                  $('tbody').find('input.classTime').removeAttr('autofocus');
+                  $("#edit_time_gp_<%= group_class.id %>").show();
+                  $('#group_class_time_<%= group_class.id %>').css("width", "100%");
+                  $(this).hide();
+                  $(this).parents('td').find('#group_class_time_<%= group_class.id %>').attr('autofocus', true)  
+                    $('#group_class_time_<%= group_class.id %>').timepicker({
+                      minuteStep: 5,
+                      defaultTime: '<%= group_class.time.strftime("%I:%M %p") if group_class.time? %>'
+                    }).on('hide.timepicker', function(e){
+                      $("#edit_time_gp_<%= group_class.id %>").submit();
+                      // $(this).hide();
+                      // $('#editTime_<%= group_class.id %>').show();
+                    }).focus();
+                });
+              });              
+            </script>
+          </td>
+
+
+          <td>
+            <a href="javascript:;" id="editDuration_<%= group_class.id %>" class="editDuration inplaceEditingActivator" style="display: <%= @instructor.is_enable_edit? ? "" : 'none;' %>"><i class="fa fa-pencil"></i></a>
+            <%= best_in_place group_class, :duration, :path => [:manage, group_class], :activator => "#editDuration_#{group_class.id}", :inner_class => "bestinplaceInputDuration classTime", :html_attrs => { maxlength: 2 } %>
+          </td>
+          
+
+          <td>
+            <a href="javascript:;" id="editVenue_<%= group_class.id %>" class="inplaceEditingActivator" style="display: <%= @instructor.is_enable_edit? ? "" : 'none;' %>"><i class="fa fa-pencil"></i></a>
+            <%= best_in_place group_class, :venue_id, :type => :select, :collection => Venue.all.map { |e| [e.id, e.name]  }, :path => [:manage, group_class], :activator => "#editVenue_#{group_class.id}" %>
+          </td>
+
+
+          <td>
+            <a href="javascript:;" id="editAgegroup_<%= group_class.id %>" class="inplaceEditingActivator" style="display: <%= @instructor.is_enable_edit? ? "" : 'none;' %>"><i class="fa fa-pencil"></i></a>
+            <%= best_in_place group_class, :age_group_id, :type => :select,:collection => AgeGroup.all.map { |e| [e.id, e.title]  }, :path => [:manage, group_class], :activator => "#editAgegroup_#{group_class.id}" %>
+          </td>
+
+
+          <td>
+            <a href="javascript:;" id="editFee_<%= group_class.id %>" class="inplaceEditingActivator" style="display: <%= @instructor.is_enable_edit? ? "" : 'none;' %>"><i class="fa fa-pencil"></i></a>
+            <%= best_in_place group_class, :fee, :path => [:manage, group_class], :activator => "#editFee_#{group_class.id}", inner_class: "bestinplaceInputTime" %>
+          </td>
+
+          <td>
+            <a href="javascript:;" id="editVacancy_<%= group_class.id %>" class="inplaceEditingActivator" style="display: <%= @instructor.is_enable_edit? ? "" : 'none;' %>"><i class="fa fa-pencil"></i></a>
+            <%= best_in_place group_class, :slot_vacancy, :path => [:manage, group_class], :activator => "#editVacancy_#{group_class.id}", inner_class: "bestinplaceVacancy input-xsmall" %>
+          </td>
+
+          <td>
+            <a href="javascript:;" id="editMax_<%= group_class.id %>" class="inplaceEditingActivator" style="display: <%= @instructor.is_enable_edit? ? "" : 'none;' %>"><i class="fa fa-pencil"></i></a>
+            <%= best_in_place group_class, :slot_maximum, :path => [:manage, group_class], :activator => "#editMax_#{group_class.id}", inner_class: "bestinplaceMax input-xsmall" %>
+          </td>
+
+          <td>
+            <a href="javascript:;" id="editFeetype_<%= group_class.id %>" class="inplaceEditingActivator" style="display: <%= @instructor.is_enable_edit? ? "" : 'none;' %>"><i class="fa fa-pencil"></i></a>
+            <%= best_in_place group_class, :fee_type_id, :type => :select, :collection => FeeType.all.map {|e| [e.id, e.name]}, :path => [:manage, group_class], :activator => "#editFeetype_#{group_class.id}" %>
+          </td>
+
+
+          <td>
+            <% if !group_class.fee_type_id.blank? %>
+              <% if FeeType.find(group_class.fee_type_id).name.downcase == "per month" %>
+                -
+              <% else %>
+                <a href="javascript:;" id="editLessoncount_<%= group_class.id %>" class="editLessonCount inplaceEditingActivator" style="display: <%= @instructor.is_enable_edit? ? "" : 'none;' %>"><i class="fa fa-pencil"></i></a>
+                <%= best_in_place group_class, :lesson_count, :path =>[:manage, group_class], :activator => "#editLessoncount_#{group_class.id}", :inner_class => "bestinplaceInputLessionCnt", :html_attrs => { maxlength: 2 } %>
+              <% end %>
+            <% end %>
+          </td>
+
+          <td>
+            <p style="display: <%= @instructor.is_enable_edit? ? "none;" : "inherit;" %>" class="classUpdatedAt">
+              <%= time_ago_in_words(group_class.updated_at).gsub("about ","") %> ago
+            </p>
+
+            <a href="javascript:;" id="updated_at_now_<%= group_class.id %>" class="inplaceEditingActivator" style="display: <%= @instructor.is_enable_edit? ? "" : 'none;' %>"><i class="fa fa-pencil"></i> <%= time_ago_in_words(group_class.updated_at).gsub("about ","") %> ago</a>
+            <%= form_for [:manage, group_class] , :html => {:class => "edit_group_from_instructor_show", :remote => true } do |f| %>
+              <%= f.hidden_field :updated_at, :value => Time.now %>
+              <%= f.submit "Update Now"  %>
+            <% end %>
+            
+            <script type="text/javascript">
+              $(document).ready(function(){
+                $('#updated_at_now_<%= group_class.id %>').click(function(){
+                  $("#edit_group_class_<%= group_class.id %>").show();
+                  $('.delete_button_<%= group_class.id %>').show();
+                  $(this).hide();
+                });
+                $('#delete_group_<%= group_class.id %>').on('hidden.bs.modal', function(){
+                  $('.delete_button_<%= group_class.id %>').hide();
+                  $("#edit_group_class_<%= group_class.id %>").hide();
+                  $('#updated_at_now_<%= group_class.id %>').show();
+                });
+              });
+            </script>
+          
+          </td>
+          <td style="width: 10px;">
+            <% if group_class.instructor_students.count == 0 %>
+              <a href="#removeIns" data-toggle="modal" class="btn btn-xs red removeInstructor" data-href="<%= manage_group_class_path(group_class) %>?returnInstructorPage=<%= @instructor.id %>">
+                  <i class="fa fa-times"></i>
+              </a>
+            <% else %>
+              <a href="#removeInsActiveGp" data-toggle="modal" class="btn btn-xs red">
+                <i class="fa fa-times"></i>
+              </a>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  $(document).ready(function() {
+    // $('#group_classes').DataTable();
+    $('.best_in_place').best_in_place();
+
+    $(".editDuration").click(function(event) {
+      $(document).on('keydown', '.bestinplaceInputDuration', function (e) {
+        checkNumberOnly(e);
+      });
+    });
+
+    $(".editLessonCount").click(function(event) {
+      $(document).on('keydown', '.bestinplaceInputLessionCnt', function (e) {
+        checkNumberOnly(e);
+      });
+    });
+  });
+</script>
+<style type="text/css">
+  .classTime {
+    height: 27px !important;
+  }
+</style>
+<div class="modal fade" id="removeIns" tabindex="-1" role="basic" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+        <h4 class="modal-title">Permanently delete</h4>
+      </div>
+      <div class="modal-body">
+         You will not be able to reverse this action
+      </div>
+      <div class="modal-footer">
+        <%= link_to "Permanent Delete", 'javascript:;', :method => :delete, :class => "btn red permanentDelete" %>
+        <button type="button" class="btn default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="removeInsActiveGp" tabindex="-1" role="basic" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+        <h4 class="modal-title">Permanently delete</h4>
+      </div>
+      <div class="modal-body">
+         Sorry, this Group Class has active students, you can't remove right now
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="add_group_class" tabindex="-1" role="basic" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <span class="addNewClassT">
+          <%= form_for [ :manage, GroupClass.new ] , :html => { :class => "addNewClass", :remote => true } do |f| %>
+            <div class="form-body">
+              <%= f.hidden_field :instructor_id, :value => session[:instructor_id].to_i %>
+              <%= hidden_field_tag :fromInstAjax, "true" %>
+
+              <div class="form-group">
+                <label class="control-label">Day</label>
+                <%= f.select :day, [ ["Monday", 1], ["Tuesday",2], ["Wednesday", 3], ["Thursday", 4], ["Friday", 5], ["Saturday" , 6], ["Sunday" , 0]] ,{ :include_blank => 'Please Select' } , :class => "form-control"%>
+              </div>    
+
+              <div class="col-md-12" style="padding: 0;">
+                <div class="col-md-4" style="padding-left: 0;">
+                  <div class="form-group">
+                    <label class="control-label">Class Time</label>
+                    <input class="form-control" data-date-format="hh:mm A/PM" id="group_class_time" name="group_class[time]" type="text">
+                  </div>
+                </div>
+                <div class="col-md-4" style="padding: 0;">
+                  <div class="form-group">
+                    <label class="control-label">Duration</label>
+                    <%= f.text_field :duration , :class=>"form-control bestinplaceInputDuration", :placeholder => "Enter Duration", :required => true, :style => "width: 100%;",:maxlength => 2 %>
+                  </div>
+                </div>
+                <div class="col-md-4" style="padding-right: 0;">
+                  <div class="form-group">
+                    <label class="control-label">Fee</label>
+                    <%= f.text_field :fee , :class => "form-control", :placeholder => "e.g 60(for $60)", :required => true %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="control-label">Venue</label>
+                <%= f.collection_select :venue_id , Venue.all, :id, :name ,{ :include_blank => 'Please Select'},{:class=>"form-control" ,:required => true } %>
+              </div>
+
+              <div class="form-group">
+                <label class="control-label">Age Group</label>
+                <%= f.collection_select :age_group_id , AgeGroup.all, :id, :title , { :include_blank => 'Please Select'}, {:class=>"form-control" ,:required => true } %>
+              </div>
+
+              
+
+              <div class="form-group">
+                <label class="control-label">Fee Type</label>
+                <%= f.collection_select :fee_type_id , FeeType.all, :id, :name ,{ :prompt => 'Please Select'},{:class=>"form-control" ,:required => true } %>
+              </div>
+
+              <div class="form-group">
+                <label class="control-label">Lesson Count</label>
+                <%= f.text_field :lesson_count ,:class=>"form-control bestinplaceInputLessionCnt", :placeholder=>"Lessons", :required => true, :style=>"width: 100%;",:maxlength => 2, :disabled => "true" %>
+              </div>
+              <div class="">
+                <div class="">
+                  <%= f.submit "Save", class: "btn btn-primary" %>
+                  <button class="btn red" data-dismiss = "modal" type = "button"> Close</button>
+                </div>
+              </div>
+
+            </div>
+          <% end %>
+          <script type="text/javascript">
+            $(document).ready(function(){
+              $('#group_class_time').timepicker({
+                minuteStep: 5,
+                autoclose: true
+              });
+            });
+            $(document).on('keydown', '.bestinplaceInputDuration', function (e) {
+              checkNumberOnly(e)
+            });
+            $(document).on('keydown', '.bestinplaceInputLessionCnt', function (e) {
+              checkNumberOnly(e);
+            });
+
+            $(document).on('change', '#group_class_fee_type_id', function (e) {
+              var feeType = $("option:selected", this).text();
+              if(feeType == "per month"){
+                $(".bestinplaceInputLessionCnt").val('').attr('disabled', true);
+                console.log(feeType);
+              }
+              else{
+                $(".bestinplaceInputLessionCnt").val('').attr('disabled', false);
+                console.log(feeType);
+              }
+            });
+          </script>
+
+        </span>
+
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $(".removeInstructor").click(function(event) {
+    $(".permanentDelete").attr('href', $(this).data('href'));
+  });
+</script>

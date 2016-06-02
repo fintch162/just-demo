@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  response_params: MyText
+  status: MyString
+  transaction_id: MyString
+  paid_by: MyString
+  amount: MyString
+  merchant_reference: MyString
+  award_test_id: 
+  instructor_student_id: 
+
+two:
+  response_params: MyText
+  status: MyString
+  transaction_id: MyString
+  paid_by: MyString
+  amount: MyString
+  merchant_reference: MyString
+  award_test_id: 
+  instructor_student_id: 

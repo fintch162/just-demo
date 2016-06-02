@@ -1,0 +1,4 @@
+$('.inbox-content').html('<%= escape_javascript(render partial: "inst_conversation_incoming_outgoing") %>');
+$('.sms-heading').html('Incoming');
+$('ul.inbox-nav li.active').removeClass('active');
+$('ul.inbox-nav li.inbox').addClass('active');

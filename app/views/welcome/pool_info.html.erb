@@ -1,0 +1,10 @@
+<div style="font-family: verdana;">
+<% if !@lightning_risk.nil? %>
+  <% if @lightning_risk.time != '-' %>
+  Lightning risk from <%= @lightning_risk.time[0..3].insert(2,':').to_time.strftime("%l:%M%P")+' - ' +@lightning_risk.time[5..8].insert(2,':').to_time.strftime("%l:%M%P") %>
+  <% else %>
+    No Lightning risk
+  <% end %>
+<% end %>
+</div>
+

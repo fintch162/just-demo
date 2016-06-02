@@ -1,0 +1,164 @@
+.row
+  .col-md-12
+    .box.green
+      .portlet-body.form
+        = form_for [:manage, @group_class] , :html => { :class=> "form-horizontal", :id=> "group_class_form" , :remote => true } do |f|
+          .form-body
+            - if !current_admin_user.instructor?
+              .form-group
+                %label.col-md-3.control-label Instructor
+                .col-md-4
+                  = f.collection_select  :instructor_id,  Instructor.all.order('name'), :id, :name ,{:prompt => 'Please Select' },{ :class=>"form-control" ,:required => true, disabled: @group_class.is_deleted }
+
+            .form-group
+              %label.col-md-3.control-label Veune
+              .col-md-4
+                = f.collection_select :venue_id , Venue.all.order('name'), :id, :name ,{ :prompt => 'Please Select'},{:class=>"form-control" ,:required => true, disabled: @group_class.is_deleted }
+            .form-group
+              %label.col-md-3.control-label Day
+              .col-md-9
+                .clearfix
+                  .btn-group{"data-toggle" => "buttons"}
+                    - ([["Monday", 1], ["Tuesday",2], ["Wednesday", 3], ["Thursday", 4], ["Friday", 5], ["Saturday" , 6], ["Sunday" , 0]]).each do |i,k|
+                      - if @group_class.day == k
+                        %label.btn.blue-default.blue-madison.active{disabled: @group_class.is_deleted}
+                          = f.radio_button :day , k, :class => "toggle",:required => true
+                          - @day = i
+                          = @day[0..2]
+                      - else
+                        %label.btn.btn-default{disabled: @group_class.is_deleted}
+                          = f.radio_button :day , k, :class => "toggle",:required => true
+                          - @day = i
+                          = @day[0..2]
+            .form-group
+              %label.col-md-3.control-label Time
+              .col-md-3
+                .input-group
+                  = f.text_field :time, :class=>"form-control timepicker-no-seconds", :id => "group_class_time",:required => true, disabled: @group_class.is_deleted, :value => @group_class.time? ? @group_class.time.strftime("%-I:%M %p") : '' do
+                    %span.input-group-btn
+                      %button.btn.default{type: "button"}
+                        %i.fa.fa-clock-o
+            .form-group
+              %label.col-md-3.control-label Age Group
+              .col-md-9
+                .clearfix
+                  .btn-group{"data-toggle" => "buttons"}
+                    - AgeGroup.all.each do |rt|
+                      - if @group_class.age_group_id == rt.id  
+                        %label.btn.btn-default.blue-madison.active{disabled: @group_class.is_deleted}
+                          = f.radio_button :age_group_id, rt.id ,:class=>"toggle",:required => true
+                          = rt.title
+                      - else
+                        %label.btn.btn-default{disabled: @group_class.is_deleted}
+                          = f.radio_button :age_group_id, rt.id ,:class=>"toggle",:required => true
+                          = rt.title
+            .form-group
+              %label.col-md-3.control-label Level
+              .col-md-9
+                .clearfix
+                  .btn-group{"data-toggle" => "buttons"}
+                    - Level.all.each do |rt|
+                      - if @group_class.level_id == rt.id  
+                        %label.btn.btn-default.blue-madison.active{disabled: @group_class.is_deleted}
+                          = f.radio_button :level_id, rt.id ,:class=>"toggle",:required => true
+                          = rt.title
+                      - else
+                        %label.btn.btn-default{disabled: @group_class.is_deleted}
+                          = f.radio_button :level_id, rt.id ,:class=>"toggle",:required => true
+                          = rt.title
+
+
+            .form-group
+              %label.col-md-3.control-label Duration
+              .col-md-6
+                = f.text_field :duration , :class=>"form-control", :placeholder=>"Enter Duration",:required => true, disabled: @group_class.is_deleted
+            .form-group
+              %label.col-md-3.control-label Fee
+              .col-md-6
+                = f.text_field :fee , :class=>"form-control", :placeholder=>"e.g 60(for $60)",:required => true, disabled: @group_class.is_deleted
+                / = f.collection_select :fee_type_id , FeeType.all, :id, :name ,{ :prompt => 'Please Select'},{:class=>"form-control" ,:required => true }
+            .form-group
+              %label.col-md-3.control-label Fee Type
+              .col-md-6
+                = f.collection_select :fee_type_id , FeeType.all, :id, :name ,{ :prompt => 'Please Select'},{:class=>"form-control" ,:required => true, disabled: @group_class.is_deleted }
+                - if params[:job_id].present?
+                  %input{type: 'hidden', value: params[:job_id], name: 'job_id'}
+            #lesson_count.form-group{style: "display:none;"}
+              %label.col-md-3.control-label No of Lessons
+              .col-md-6
+                = f.text_field :lesson_count, disabled: @group_class.is_deleted ,:class=>"form-control", :placeholder=>"Enter No of Lessons",:required => true
+          .form-actions.fluid
+            .col-md-offset-3.col-md-9
+              = f.submit "Save", :class=>"btn green save-gp", disabled: @group_class.is_deleted
+              %button.btn.default{"aria-hidden" => "true", "data-dismiss" => "modal", type: "submit"} Cancel
+-if params[:action] == 'edit'
+  .row
+    .col-md-offset-3.col-md-9
+      - if @group_class.instructor_students.count > 0
+        = link_to 'Delete class', 'javascript:;', class: 'btn red delete-gc', method: :delete
+      -else
+        = link_to 'Delete class', manage_destroy_from_edit_path(@group_class), class: 'btn red'
+    .col-md-offset-3.col-md-9
+      .msg{style: 'display:none; color: red;'}='Class can not be deleted because there are students.'
+      .flash{style: 'color: red;'}
+        = flash[:notice]
+:javascript
+  $("#group_class_form").validate({
+    rules: {
+      instructor_id: {
+        required: true
+      }
+    }
+  });
+  $('.delete-gc').click(function(event) {
+      $('.msg').show();
+    })
+  jQuery(document).ready(function() {       
+    Metronic.init(); // init metronic core components
+    ComponentsPickers.init();
+    var m = $('#group_class_fee_type_id').find("option:selected").text();
+    if (m == "per course" )
+    {
+      $("#lesson_count").show();
+    }
+  });  
+  $('#group_class_fee_type_id').change(function() {
+    var category = $(this).find("option:selected").text();
+    if (category == "per course" )
+    {
+      $("#lesson_count").show();
+    }
+    else
+    {
+      $("#lesson_count").hide();
+    }
+  });
+  $('input[name="group_class[day]"]').change(function() {
+    $('label:has(input:radio:checked)').addClass('blue-madison');
+    $('label:has(input:radio:not(:checked))').removeClass('blue-madison').addClass('btn-default');
+  });
+  $('input[name="group_class[age_group_id]"]').change(function() {
+    $('label:has(input:radio:checked)').addClass('blue-madison');
+    $('label:has(input:radio:not(:checked))').removeClass('blue-madison').addClass('btn-default');
+  });
+  $('input[name="group_class[level_id]"]').change(function() {
+    $('label:has(input:radio:checked)').addClass('blue-madison');
+    $('label:has(input:radio:not(:checked))').removeClass('blue-madison').addClass('btn-default');
+  });
+  $(".save-gp").click(function(){
+    var flg = false;
+    var timeVal = $("#group_class_time").val()
+    if(timeVal == "12:00 AM") {
+      $('#group_class_time').next('p').remove();
+      $("#group_class_time").after("<p>Please update time.</p>");
+      $("#group_class_time").next('p').attr('class','error');
+      return false;
+    } else {
+      $('#group_class_time').next('p').remove();
+    }
+    return true;
+  });
+:css
+  .error {
+    color: red;
+  }

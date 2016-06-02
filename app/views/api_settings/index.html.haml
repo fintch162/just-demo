@@ -1,0 +1,27 @@
+%h1 Listing api_settings
+
+%table
+  %tr
+    %th Telerivet project
+    %th Telerivet phone
+    %th Telerivet api key
+    %th Fb api url
+    %th Fb authentication token
+    %th
+    %th
+    %th
+
+  - @api_settings.each do |api_setting|
+    %tr
+      %td= api_setting.telerivet_project_id
+      %td= api_setting.telerivet_phone_id
+      %td= api_setting.telerivet_api_key
+      %td= api_setting.fb_api_url
+      %td= api_setting.fb_authentication_token
+      %td= link_to 'Show', api_setting
+      %td= link_to 'Edit', edit_api_setting_path(api_setting)
+      %td= link_to 'Destroy', api_setting, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Api setting', new_api_setting_path

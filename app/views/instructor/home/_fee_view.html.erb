@@ -1,0 +1,670 @@
+<div class="content-page">
+  <div class="row">
+    <% @previous =  (1.month.ago).strftime("%B %Y")  %>
+    <% @current = Date.today.strftime("%B %Y") %>
+    <% @next = (Date.today + 1.months).strftime("%B %Y") %>
+  
+    <input type="hidden" id="previous_date"  value="<%= @previous %>"></input>
+    <input type="hidden" id="current_date" value="<%= @current %>"></input>
+    <input type="hidden" id="next_date"  value="<%= @next %>"></input>
+  </div>
+   <% show_cnt = 0 %>
+  <div class="row">
+    <div class="col-sm-12">
+      <!-- Unallocated student -->
+        <% if @students_list.count != 0 || @group_class.instructor_students.count == 0 %>
+          <% if (FeeType.find(@group_class.fee_type_id).name.downcase == "per month") %>
+            <div class="col-sm-12 column-selector">
+              <% show_cnt = 1 %>
+              <% @data_column = ["profile-picture","Name", "Contact",'ic-number','date-of-birth','joined-date','description','ready-for','training-for','registered-for',(1.month.ago).strftime("%b-%Y"), Date.today.strftime("%b-%Y"), (Date.today + 1.months).strftime("%b-%Y") ] %>
+
+              <div class="form-group ">
+                <div class="col-md-4">
+                  <select class="bs-select form-control selectpicker" multiple >
+                    <option <%= @hide_show_columns.profile_pic? ? "selected" : "" %>>Profile-pic</option>
+                    <option <%= @hide_show_columns.name? ? "selected" : "" %>>Name</option>
+                    <option <%= @hide_show_columns.contact? ? "selected" : "" %>>Contact</option>
+                    <option <%= @hide_show_columns.ic_number? ? "selected" : "" %>>IC Number</option>
+                    <option <%= @hide_show_columns.date_of_birth? ? "selected" : "" %>>Date of birth</option>
+                    <option <%= @hide_show_columns.join_date? ? "selected" : "" %>>Joined date</option>
+                    <option <%= @hide_show_columns.description? ? "selected" : "" %>>Description</option>
+                    <option <%= @hide_show_columns.ready_for? ? "selected" : "" %>>Ready for</option>
+                    <option <%= @hide_show_columns.training_for? ? "selected" : "" %>>Training for</option>
+                    <option <%= @hide_show_columns.registered_for? ? "selected" : "" %>>Registered for</option>
+                    <option selected><%= (1.month.ago).strftime("%b-%Y") %></option>
+                    <option selected><%= Date.today.strftime("%b-%Y") %></option>
+                    <option selected><%= (Date.today + 1.months).strftime("%b-%Y") %></option>
+                  </select>
+                  
+                </div>
+                <div class="col-md-6">
+                  <%= form_tag instructor_group_class_view_add_more_months_path, :method => 'post', :class=> "form-horizontal columnForm", :style => "display: inline-flex !important;" do %>
+
+                      <%= select_tag(:start_month, options_for_select(@previousMonths.reverse, selected: (1.month.ago).strftime("%b-%y") ), class: "form-control input-xsmall startMon") %>
+                      <%= select_tag(:end_month, options_for_select(@nextMonths.reverse, selected: (Date.today + 1.months).strftime("%b-%y") ), class: "form-control input-xsmall endMon") %>
+                      <%= hidden_field_tag :group_class, @group_class.id %>
+                      <button class="btn btn-success btnGo" name="commit" type="submit" value="GO">
+                        <i class="fa fa-arrow-left fa-fw"></i> Go
+                      </button>
+                    <% end %>
+                </div>
+                <div class="col-md-2">
+                  <span class="pull-right">
+                    <a href="javascript:;" class="font-button plus">A+</a>
+                    &nbsp;&nbsp;
+                    <a href="javascript:;" class="font-button minus">A-</a>
+                  </span>
+                </div>
+              </div>
+
+              <input type="hidden" name="<%=  (1.month.ago).strftime("%b-%Y") %>" class="a_1" />
+              <input type="hidden" name="<%=  Date.today.strftime("%b-%Y") %>" class="a_2" />
+              <input type="hidden" name="<%=  (Date.today + 1.months).strftime("%b-%Y") %>" class="a_3" />
+            </div>
+            <br />
+            <h2><%= @day_array[@group_class.day] +' '+ @group_class.time.strftime("%I:%M %p").to_s%> - Unallocated</h2>
+            
+            <table class="table table-hover sample_editable_2" > 
+              <thead>
+                <tr>
+                  <%= render "common_table_header_fee_view_group_class" %>
+
+                  <th class="<%=  (1.month.ago).strftime("%b-%Y") %>"><%=  (1.month.ago).strftime("%b'%y") %></th>
+                  <th class="<%=  Date.today.strftime("%b-%Y") %>"><%=  Date.today.strftime("%b'%y") %></th>
+                  <th class="<%=  (Date.today + 1.months).strftime("%b-%Y") %>"><%=  (Date.today + 1.months).strftime("%b'%y") %></th>
+                  <% count = 0 %>
+                </tr>
+              </thead>
+              <tbody>
+                <% @students_list.order(:position).each do |student| %>
+                  <% @instructor_student_award = InstructorStudentAward.where(:instructor_student_id => student.id)#.where("award_progress NOT IN (?)", @award_progress) %>
+                  <% @achieved_award = InstructorStudentAward.where(:instructor_student_id => student.id).where("award_progress IN (?)", @award_progress).order('achieved_date desc').limit(1) %>
+
+                  <% count = count + 1 %>
+                  <tr id="<%= student.id %>">
+                    <%= render "common_data_fee_view_group_class", :count => count, student: student %>
+
+                    <% @precnt = "" %>
+                    <% @curcnt = "" %>
+                    <% @feucnt = "" %>
+                    <!-- Fees id for edit fee & delete fee -->
+                    <% @pre_id = '' %>
+                    <% @cur_id = '' %>
+                    <% @fue_id = '' %>
+
+                    <% @fee = student.fees.where(:course_type=>"per month") %>
+                    <% if @fee.length > 0 %>
+                      <% @fee.each do |fee| %>
+                        <% if !fee.monthly_detail.blank? %>
+                          <% if fee.monthly_detail.strftime("%b") == (1.month.ago).strftime("%b")%>
+                            <% @precnt = fee.payment_date ? fee.payment_date.strftime("%e %b") : nil %>
+                            <% if fee.payment_date? %>
+                              <% @pre_id = fee %>
+                            <% end %>
+                          <% elsif fee.monthly_detail.strftime("%b") == Date.today.strftime("%b")%>
+                            <% @curcnt = fee.payment_date ? fee.payment_date.strftime("%e %b") : nil %>
+                            <% if fee.payment_date? %>
+                              <% @cur_id = fee %>
+                            <% end %>
+                          <% elsif fee.monthly_detail.strftime("%b") == (Date.today + 1.months).strftime("%b")%>
+                            <% @feucnt = fee.payment_date ? fee.payment_date.strftime("%e %b") : nil  %>
+                            <% if fee.payment_date? %>
+                              <% @fue_id = fee %>
+                            <% end %>
+                          <% end %>
+                        <% end %> 
+                      <% end %>
+                    <% end %>
+                    <% if (@precnt == "" && @curcnt == "" && @feucnt == "") %>
+                      <td id="previous" class="<%=  (1.month.ago).strftime("%b-%Y") %> ">
+                        <a  data-toggle="modal" data-fees_for="<%= (1.month.ago).strftime("%B %Y") %>" href="#basic-<%= student.id %>" id="basic1" data-str="<%= student.id %>-p" data-group-class="<%= @group_class.id %>">
+                          <i class="fa fa-plus"></i>Fee
+                        </a>
+                      </td>
+                      <td id="current" class="<%=  Date.today.strftime("%b-%Y") %>" >
+                        <a  data-toggle="modal" data-fees_for="<%= Date.today.strftime("%B %Y") %>" href="#basic-<%= student.id %>" id="basic1" data-str="<%= student.id %>-c" data-group-class="<%= @group_class.id %>">
+                          <i class="fa fa-plus"></i>Fee
+                        </a>
+                      </td>
+                      <td id="next" class="<%= (Date.today + 1.months).strftime("%b-%Y") %>">
+                        <a  data-toggle="modal" data-fees_for="<%= (Date.today + 1.months).strftime("%B %Y") %>" href="#basic-<%= student.id %>" id="basic1" data-str="<%= student.id %>-n" data-group-class="<%= @group_class.id %>">
+                          <i class="fa fa-plus"></i>Fee
+                        </a>
+                      </td>
+                    <% else %>
+                      <% if @precnt == ""%>
+                        <td id="previous" class="<%= (1.month.ago).strftime("%b-%Y") %>"><a  data-toggle="modal" data-fees_for="<%= (1.month.ago).strftime("%B %Y") %>" href="#basic-<%= student.id %>" id="basic1" data-str="<%= student.id %>-p" data-group-class="<%= @group_class.id %>">
+                          <i class="fa fa-plus"></i>Fee</a>
+                        </td>
+                      <% else%>
+                        <td class="<%= (1.month.ago).strftime("%b-%Y") %>">
+                          <%= link_to @precnt ,instructor_remove_fee_path(@pre_id.id)+"?student=#{student.id}&group_class=#{@group_class.id}", remote: :true, :"data-str" => "#{student.id}-p", :class => "updateFee" %>
+                        </td>
+                      <% end %>
+                      
+                      <% if @curcnt == ""%>
+                        <td id="current" class="<%=  Date.today.strftime("%b-%Y") %>" ><a  data-toggle="modal" data-fees_for="<%= Date.today.strftime("%B %Y") %>" href="#basic-<%= student.id %>" id="basic1" data-str="<%= student.id %>-c" data-group-class="<%= @group_class.id %>">
+                          <i class="fa fa-plus"></i>Fee</a>
+                        </td>
+                      <% else%>
+                        <td class="<%= Date.today.strftime("%b-%Y") %>">
+                          <%= link_to @curcnt ,instructor_remove_fee_path(@cur_id.id)+"?student=#{student.id}&group_class=#{@group_class.id}", remote: :true, :"data-str" => "#{student.id}-c", :class => "updateFee" %>
+                        </td>
+                      <% end %>
+
+                      <% if @feucnt == ""%>
+                        <td id="next" class="<%=  (Date.today + 1.months).strftime("%b-%Y") %>" >
+                          <a  data-toggle="modal" data-fees_for="<%= (Date.today + 1.months).strftime("%B %Y") %>" href="#basic-<%= student.id %>" id="basic1" data-str="<%= student.id %>-n" data-group-class="<%= @group_class.id %>">
+                            <i class="fa fa-plus"></i>Fee
+                          </a>
+                        </td>
+                      <% else%>
+                        <td class="<%=  (Date.today + 1.months).strftime("%b-%Y") %>">
+                          <%= link_to @feucnt ,instructor_remove_fee_path(@fue_id.id)+"?student=#{student.id}&group_class=#{@group_class.id}", remote: :true, :"data-str"=>"#{student.id}-n", :class => "updateFee" %>
+                        </td>
+                      <% end %>
+                    <% end %>
+                  </tr>
+                  <%= render "add_fee", :student => student %>
+                <% end %>
+              </tbody>
+            </table>
+          <% else %>
+            <div class="col-sm-12 column-selector">
+              <% @data_column = ["profile-picture","Name", "Contact", 'ic-number','date-of-birth','joined-date','description','ready-for','training-for','registered-for','Course-fee' ] %>
+              <div class="form-group ">
+                <div class="col-md-6">
+                  <select class="bs-select form-control selectpicker" multiple >
+                    <option <%= @hide_show_columns.profile_pic? ? "selected" : "" %>>Profile-pic</option>
+                    <option <%= @hide_show_columns.name? ? "selected" : "" %>>Name</option>
+                    <option <%= @hide_show_columns.contact? ? "selected" : "" %>>Contact</option>
+                    <option <%= @hide_show_columns.ic_number? ? "selected" : "" %>>IC Number</option>
+                    <option <%= @hide_show_columns.date_of_birth? ? "selected" : "" %>>Date of birth</option>
+                    <option <%= @hide_show_columns.join_date? ? "selected" : "" %>>Joined date</option>
+                    <option <%= @hide_show_columns.description? ? "selected" : "" %>>Description</option>
+                    <option <%= @hide_show_columns.ready_for? ? "selected" : "" %>>Ready for</option>
+                    <option <%= @hide_show_columns.training_for? ? "selected" : "" %>>Training for</option>
+                    <option <%= @hide_show_columns.registered_for? ? "selected" : "" %>>Registered for</option>
+                    <option selected>Course Fee</option>
+                  </select>
+                </div>
+                <div class="col-md-6 ">
+                    <a href="javascript:;" class="font-button minus pull-right">A-</a>
+                    <a href="javascript:;" class="font-button plus pull-right">A+</a>
+                </div>
+              </div>
+            </div>
+            <br />
+            <h2><%= @day_array[@group_class.day] +' '+ @group_class.time.strftime("%I:%M %p").to_s%> - Unallocated</h2>
+            <% show_cnt = 1 %>
+
+            <table class="table table-hover sample_editable_2" >
+              <thead>
+                <tr>
+                  <%= render "common_table_header_fee_view_group_class" %>
+
+                  <th class="Course-fee">Course fee</th>
+                  <th></th>
+                  <% count = 0 %>
+                </tr>
+              </thead>
+              <tbody>
+                <% @students_list.each do |student| %>
+                  <% @instructor_student_award = InstructorStudentAward.where(:instructor_student_id => student.id)#.where("award_progress NOT IN (?)", @award_progress) %>
+                  <% @achieved_award = InstructorStudentAward.where(:instructor_student_id => student.id).where("award_progress IN (?)", @award_progress).order('achieved_date desc').limit(1) %>
+                  <% count = count + 1 %>
+                  <tr id="student_<%= student.id %>" data-student_id="student-<%= student.id %>">
+                    <%= render "common_data_fee_view_group_class", :count => count, student: student %>
+                    <td id="course_detail" class="col-xs-hidden Course-fee">
+                      <% @fee = student.fees.where(:course_type => "per course") %>
+                      <% if @fee.length > 0%>
+                        <% @fee.each do |fee| %>
+                          <a href="<%= instructor_edit_per_course_fee_path(fee.id)+"?student=#{student.id}&group_class=#{@group_class.id}" %>" data-remote="true" class="updateFee" data-str="<%= student.id %>-c">
+                            <% if !fee.amount.blank? %>
+                              <strong>$<%= fee.amount %></strong> 
+                            <% end %>  
+                            <% if !fee.course_start.blank? && !fee.course_end.blank? %>
+                              <small><%= fee.course_start.strftime("%e %b %Y") + ' - ' + fee.course_end.strftime("%e %b %Y") %></small><br/>
+                            <% end %>
+                          </a>
+                        <% end %>
+                        <%# @fee.each do |fee| %>
+                          <%# if !fee.amount.blank? %>
+                            <!-- <strong>$<%#= fee.amount %></strong>  -->
+                          <%# end %>
+                          <%# if !fee.course_start.blank?  &&  !fee.course_end.blank? %>
+                            <!-- <small><%#= fee.course_start.strftime("%e %b %Y") + ' - ' +  fee.course_end.strftime("%e %b %Y") %></small><br/> -->
+                          <%# end %>
+                        <%# end %>
+                      <% end %>
+                    </td>
+                    <td><a data-toggle="modal" href="#basic-<%= student.id %>" id="student-<%= student.id %>">
+                        <i class="fa fa-plus"></i> Fee </a>
+                    </td>
+                  </tr>
+                  <%= render "add_fee_course", :student => student %>
+                <% end %>
+              </tbody>
+            </table>
+          <% end %>
+        <% end %>
+      <!-- Groupvise student -->
+      <% @group_class.groups.each do |group| %>
+        <% if group.instructor_students.count > 0 %>
+
+          <% if show_cnt == 0 %>
+              <div class="col-sm-12 column-selector">
+                <% @data_column = ["profile-picture","Name", "Contact", 'ic-number','date-of-birth','joined-date','description','ready-for','training-for','registered-for',(1.month.ago).strftime("%b-%Y"), Date.today.strftime("%b-%Y"), (Date.today + 1.months).strftime("%b-%Y") ] %>
+      
+                <div class="form-group ">
+                  <div class="col-md-4">
+                    <select class="bs-select form-control selectpicker" multiple >
+                      <option <%= @hide_show_columns.profile_pic? ? "selected" : "" %>>Profile-pic</option>
+                      <option <%= @hide_show_columns.name? ? "selected" : "" %>>Name</option>
+                      <option <%= @hide_show_columns.contact? ? "selected" : "" %>>Contact</option>
+                      <option <%= @hide_show_columns.ic_number? ? "selected" : "" %>>IC Number</option>
+                      <option <%= @hide_show_columns.date_of_birth? ? "selected" : "" %>>Date of birth</option>
+                      <option <%= @hide_show_columns.join_date? ? "selected" : "" %>>Joined date</option>
+                      <option <%= @hide_show_columns.description? ? "selected" : "" %>>Description</option>
+                      <option <%= @hide_show_columns.ready_for? ? "selected" : "" %>>Ready for</option>
+                      <option <%= @hide_show_columns.training_for? ? "selected" : "" %>>Training for</option>
+                      <option <%= @hide_show_columns.registered_for? ? "selected" : "" %>>Registered for</option>
+                      <option selected><%= (1.month.ago).strftime("%b'%y") %></option>
+                      <option selected><%= Date.today.strftime("%b'%y") %></option>
+                      <option selected><%= (Date.today + 1.months).strftime("%b'%y") %></option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <%= form_tag instructor_group_class_view_add_more_months_path, :method => 'post', :class=> "form-horizontal columnForm", :style => "display: inline-flex !important;" do %>
+
+                      <%= select_tag(:start_month, options_for_select(@previousMonths.reverse, selected: (1.month.ago).strftime("%b-%y") ), class: "form-control input-xsmall startMon") %>
+                      <%= select_tag(:end_month, options_for_select(@nextMonths.reverse, selected: (Date.today + 1.months).strftime("%b-%y") ), class: "form-control input-xsmall endMon") %>
+                      <%= hidden_field_tag :group_class, @group_class.id %>
+                      <button class="btn btn-success btnGo" name="commit" type="submit" value="GO">
+                        <i class="fa fa-arrow-left fa-fw"></i> Go
+                      </button>
+                    <% end %>
+                  </div>
+                  <div class="col-md-2">
+                    <span class="pull-right">
+                      <a href="javascript:;" class="font-button plus">A+</a>
+                      &nbsp;&nbsp;
+                      <a href="javascript:;" class="font-button minus">A-</a>
+                    </span>
+                  </div>
+                </div>
+
+                <input type="hidden" name="<%=  (1.month.ago).strftime("%b-%Y") %>" class="a_1" />
+                <input type="hidden" name="<%=  Date.today.strftime("%b-%Y") %>" class="a_2" />
+                <input type="hidden" name="<%=  (Date.today + 1.months).strftime("%b-%Y") %>" class="a_3" />
+              </div>
+              <% show_cnt = 1 %>
+            <% end %>
+            <br />
+          <h2><%= @day_array[@group_class.day] +' '+ @group_class.time.strftime("%I:%M %p").to_s%> - <%= group.group_name %></h2>
+          <% if (FeeType.find(@group_class.fee_type_id).name.downcase == "per month") %>
+            
+            <table class="table table-hover sample_editable_2" >
+              <thead>
+                <tr>
+                  <%= render "common_table_header_fee_view_group_class" %>
+
+                  <th class="col-sm-1 <%=  (1.month.ago).strftime("%b-%Y") %>"><%=  (1.month.ago).strftime("%b'%y") %></th>
+                  <th class="col-sm-1 <%=  Date.today.strftime("%b-%Y") %>"><%=  Date.today.strftime("%b'%y") %></th>
+                  <th class="col-sm-1 <%=  (Date.today + 1.months).strftime("%b-%Y") %>"><%=  (Date.today + 1.months).strftime("%b'%y") %></th>
+                  <% count = 0 %>
+                </tr>
+              </thead>
+              <tbody>
+                <% group.instructor_students.order(:position).each do |student| %>
+                  <% @instructor_student_award = InstructorStudentAward.where(:instructor_student_id => student.id)#.where("award_progress NOT IN (?)", @award_progress) %>
+                  <% @achieved_award = InstructorStudentAward.where(:instructor_student_id => student.id).where("award_progress IN (?)", @award_progress).order('achieved_date desc').limit(1) %>
+
+                  <% count = count + 1 %>
+                  <tr id="<%= student.id %>">
+                    <%= render "common_data_fee_view_group_class", :count => count, student: student %>
+                    <% @precnt = "" %>
+                    <% @curcnt = "" %>
+                    <% @feucnt = "" %>
+                    <!-- Fees id for edit fee & delete fee -->
+                    <% @pre_id = '' %>
+                    <% @cur_id = '' %>
+                    <% @fue_id = '' %>
+
+                    <% @fee = student.fees.where(:course_type=>"per month") %>
+                    <% if @fee.length > 0 %>
+                      <% @fee.each do |fee| %>
+                        <% if !fee.monthly_detail.blank? %>
+                          <% if fee.monthly_detail.strftime("%b") == (1.month.ago).strftime("%b")%>
+                            <% @precnt = fee.payment_date ? fee.payment_date.strftime("%e %b") : nil %>
+                            <% if fee.payment_date? %>
+                              <% @pre_id = fee %>
+                            <% end %>
+                          <% elsif fee.monthly_detail.strftime("%b") == Date.today.strftime("%b")%>
+                            <% @curcnt = fee.payment_date ? fee.payment_date.strftime("%e %b") : nil %>
+                            <% if fee.payment_date? %>
+                              <% @cur_id = fee %>
+                            <% end %>
+                          <% elsif fee.monthly_detail.strftime("%b") == (Date.today + 1.months).strftime("%b")%>
+                            <% @feucnt = fee.payment_date ? fee.payment_date.strftime("%e %b") : nil  %>
+                            <% if fee.payment_date? %>
+                              <% @fue_id = fee %>
+                            <% end %>
+                          <% end %>
+                        <% end %> 
+                      <% end %>
+                    <% end %>
+                    <% if (@precnt == "" && @curcnt == "" && @feucnt == "") %>
+                      <td id="previous" class="<%=  (1.month.ago).strftime("%b-%Y") %>">
+                        <a  data-toggle="modal" data-fees_for="<%= (1.month.ago).strftime("%B %Y") %>" href="#basic-<%= student.id %>" id="basic1" data-str="<%= student.id %>-p" data-group-class="<%= @group_class.id %>">
+                          <i class="fa fa-plus"></i>Fee
+                        </a>
+                      </td>
+                      <td id="current" class="<%=  Date.today.strftime("%b-%Y") %>" >
+                        <a  data-toggle="modal" data-fees_for="<%= Date.today.strftime("%B %Y") %>" href="#basic-<%= student.id %>" id="basic1" data-str="<%= student.id %>-c" data-group-class="<%= @group_class.id %>">
+                          <i class="fa fa-plus"></i>Fee
+                        </a>
+                      </td>
+                      <td id="next" class="<%=  (Date.today + 1.months).strftime("%b-%Y") %>">
+                        <a  data-toggle="modal" data-fees_for="<%= (Date.today + 1.months).strftime("%B %Y") %>" href="#basic-<%= student.id %>" id="basic1" data-str="<%= student.id %>-n" data-group-class="<%= @group_class.id %>">
+                          <i class="fa fa-plus"></i>Fee
+                        </a>
+                      </td>
+                    <% else %>
+                      <% if @precnt == ""%>
+                        <td id="previous" class="<%=  (1.month.ago).strftime("%b-%Y") %>"><a  data-toggle="modal" data-fees_for="<%= (1.month.ago).strftime("%B %Y") %>" href="#basic-<%= student.id %>" id="basic1" data-str="<%= student.id %>-p" data-group-class="<%= @group_class.id %>">
+                          <i class="fa fa-plus"></i>Fee</a>
+                        </td>
+                      <% else%>
+                        <td class="<%= (1.month.ago).strftime("%b-%Y") %>">
+                          <%= link_to @precnt ,instructor_remove_fee_path(@pre_id.id)+"?student=#{student.id}&group_class=#{@group_class.id}", remote: :true, :"data-str" => "#{student.id}-p", :class => "updateFee" %>
+                        </td>
+                      <% end %>
+                      
+                      <% if @curcnt == ""%>
+                        <td id="current" class="<%=  Date.today.strftime("%b-%Y") %>" ><a  data-toggle="modal" data-fees_for="<%= Date.today.strftime("%B %Y") %>" href="#basic-<%= student.id %>" id="basic1" data-str="<%= student.id %>-c" data-group-class="<%= @group_class.id %>">
+                          <i class="fa fa-plus"></i>Fee</a>
+                        </td>
+                      <% else%>
+                        <td class="<%= Date.today.strftime("%b-%Y") %>">
+                          <%= link_to @curcnt ,instructor_remove_fee_path(@cur_id.id)+"?student=#{student.id}&group_class=#{@group_class.id}", remote: :true, :"data-str" => "#{student.id}-c", :class => "updateFee" %>
+                        </td>
+                      <% end %>
+
+                      <% if @feucnt == ""%>
+                        <td id="next" class="<%=  (Date.today + 1.months).strftime("%b-%Y") %>" >
+                          <a  data-toggle="modal" data-fees_for="<%= (Date.today + 1.months).strftime("%B %Y") %>" href="#basic-<%= student.id %>" id="basic1" data-str="<%= student.id %>-n" data-group-class="<%= @group_class.id %>">
+                            <i class="fa fa-plus"></i>Fee
+                          </a>
+                        </td>
+                      <% else%>
+                        <td class="<%=  (Date.today + 1.months).strftime("%b-%Y") %>">
+                          <%= link_to @feucnt ,instructor_remove_fee_path(@fue_id.id)+"?student=#{student.id}&group_class=#{@group_class.id}", remote: :true, :"data-str"=>"#{student.id}-n", :class => "updateFee" %>
+                        </td>
+                      <% end %>
+                    <% end %>
+                  </tr>
+                  <%= render "add_fee", :student => student %>
+                <% end %>
+              </tbody>
+            </table>
+          <% else %>
+            <% if show_cnt == 0 %>
+              <div class="col-sm-12 column-selector">
+                <% @data_column = ["profile-picture","Name", "Contact", 'ic-number','date-of-birth','joined-date','description','ready-for','training-for','registered-for','Course-fee' ] %>
+
+                <div class="form-group ">
+                  <div class="col-md-6">
+                    <select class="bs-select form-control selectpicker" multiple >
+                      <option <%= @hide_show_columns.profile_pic? ? "selected" : "" %>>Profile-pic</option>
+                      <option <%= @hide_show_columns.name? ? "selected" : "" %>>Name</option>
+                      <option <%= @hide_show_columns.contact? ? "selected" : "" %>>Contact</option>
+                      <option <%= @hide_show_columns.ic_number? ? "selected" : "" %>>IC Number</option>
+                      <option <%= @hide_show_columns.date_of_birth? ? "selected" : "" %>>Date of birth</option>
+                      <option <%= @hide_show_columns.join_date? ? "selected" : "" %>>Joined date</option>
+                      <option <%= @hide_show_columns.description? ? "selected" : "" %>>Description</option>
+                      <option <%= @hide_show_columns.ready_for? ? "selected" : "" %>>Ready for</option>
+                      <option <%= @hide_show_columns.training_for? ? "selected" : "" %>>Training for</option>
+                      <option <%= @hide_show_columns.registered_for? ? "selected" : "" %>>Registered for</option>
+                      <option selected>Course Fee</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6 ">
+                    <a href="javascript:;" class="font-button minus pull-right">A-</a>
+                    <a href="javascript:;" class="font-button plus pull-right">A+</a>
+                  </div>
+                </div>
+              </div>
+              <% show_cnt = 1 %>
+            <% end %>
+            <table class="table table-hover sample_editable_2" >
+              <thead>
+                <tr>
+                  <%= render "common_table_header_fee_view_group_class" %>
+
+                  <th class="Course-fee">Course fee</th>
+                  <th></th>
+                  <% count = 0 %>
+                </tr>
+              </thead> 
+              <tbody>
+                <% group.instructor_students.each do |student| %>
+                  <% @instructor_student_award = InstructorStudentAward.where(:instructor_student_id => student.id)#.where("award_progress NOT IN (?)", @award_progress) %>
+                  <% @achieved_award = InstructorStudentAward.where(:instructor_student_id => student.id).where("award_progress IN (?)", @award_progress).order('achieved_date desc').limit(1) %>
+                  <% count = count + 1 %>
+                  <tr id="student_<%= student.id %>" data-student_id="student-<%= student.id %>">
+                    <%= render "common_data_fee_view_group_class", :count => count, student: student %>
+
+                    <td id="course_detail" class="col-xs-hidden Course-fee">
+                      <% @fee = student.fees.where(:course_type => "per course") %>
+                      <% if @fee.length > 0%>
+                        <% @fee.each do |fee| %>
+                          <a href="<%= instructor_edit_per_course_fee_path(fee.id)+"?student=#{student.id}&group_class=#{@group_class.id}" %>" data-remote="true" class="updateFee" data-str="<%= student.id %>-c">
+                            <% if !fee.amount.blank? %>
+                              <strong>$<%= fee.amount %></strong> 
+                            <% end %>  
+                            <% if !fee.course_start.blank? && !fee.course_end.blank? %>
+                              <small><%= fee.course_start.strftime("%e %b %Y") + ' - ' + fee.course_end.strftime("%e %b %Y") %></small><br/>
+                            <% end %>
+                          </a>
+                        <% end %>
+                      <% end %>
+                    </td>
+                    <td><a data-toggle="modal" href="#basic-<%= student.id %>" id="student-<%= student.id %>">
+                        <i class="fa fa-plus"></i> Fee </a>
+                    </td>
+                  </tr>
+                  <%= render "add_fee_course", :student => student %>
+                <% end %>
+              </tbody>
+            </table>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+  
+</div>  
+<div class="modal fade bs-modal-sm removeFee" id="small" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-body">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+    
+  // jQuery(document).ready(function($) {
+  //   $('.selectpicker').selectpicker();
+  //   setTimeout(function() {
+  //     $(".selectpicker li a").each(function(){
+  //       if(!$(this).parents('li').hasClass('selected')) {
+  //         var column = "table ." + $(this).attr("name");
+  //         $(column).hide();
+  //       }
+  //     });
+  //   }, 2000);
+  // });
+
+  var myTransaction1 = [];
+    $('.checkedAll').click(function(event) {
+      if(this.checked) {
+        $(this).parents('table').find('.check_student').each(function() {
+          this.checked = true;
+          if($.inArray($(this).val(),myTransaction1)){
+            myTransaction1.push($(this).val());
+          }
+        });
+      } else {
+        $(this).parents('table').find('.check_student').each(function() {
+          this.checked = false;
+          if($.inArray($(this).val(),myTransaction1) != -1){
+            myTransaction1.splice($.inArray($(this).val(),myTransaction1), 1);
+          }
+        });         
+      }
+      $('#send_message').val(myTransaction1);
+    });
+
+
+    $(".check_student").click(function() {
+      if($(this).is(":checked")){
+        var flag = 0;
+        $(this).parents('table').find('.check_student').each(function() {
+          if(!this.checked)
+          flag = 1;
+        })              
+        if(flag == 0) { $(this).parents('table').find(".checkedAll").prop("checked", true); }
+        if($.inArray($(this).val(),myTransaction1)){
+          myTransaction1.push($(this).val());
+        }
+      }
+      else {
+        if($.inArray($(this).val(),myTransaction1) != -1){
+          myTransaction1.splice($.inArray($(this).val(),myTransaction1), 1);
+        }
+        $(this).parents('table').find(".checkedAll").prop("checked", false);
+      }
+      var id = $(this).attr('id');
+      $('#send_message').val(myTransaction1);
+      $(this).parents(".fields").remove();
+    });
+
+    $('#send_msg').click(function(){
+      if ($('#send_message').val().length == 0 ){
+        $('#error_msg').show();
+        return false;  
+      }
+      else{
+        $('#error_msg').hide(); 
+        return true;
+      }
+    });
+
+    $("#text_msg").keyup(function(event) {
+      if(!$("#text_msg").val())
+        $("#send_msg").attr('disabled','disabled');
+      else
+        $("#send_msg").removeAttr('disabled','disabled');
+    });
+    $("#send_msg").attr('disabled','disabled');
+    
+
+    // $("input:checkbox").click(function(){
+    //     var column = "table ." + $(this).attr("name");
+    //     $(column).toggle();
+    // }); 
+    jQuery(document).ready(function($) {
+      setTimeout(function() {
+        $( ".selectpicker li:eq(0)" ).find('a').attr("name", "profile-picture");
+        $( ".selectpicker li:eq(1)" ).find('a').attr("name", "Name");
+        $( ".selectpicker li:eq(2)" ).find('a').attr("name", "Contact");
+        $( ".selectpicker li:eq(3)" ).find('a').attr("name", "ic-number");
+        $( ".selectpicker li:eq(4)" ).find('a').attr("name", "date-of-birth");
+        $( ".selectpicker li:eq(5)" ).find('a').attr("name", "joined-date");
+        $( ".selectpicker li:eq(6)" ).find('a').attr("name", "description");
+        $( ".selectpicker li:eq(7)" ).find('a').attr("name", "ready-for");
+        $( ".selectpicker li:eq(8)" ).find('a').attr("name", "training-for");
+        $( ".selectpicker li:eq(9)" ).find('a').attr("name", "registered-for");
+        
+
+        if($(".selectpicker li").length == 11) {
+          $( ".selectpicker li:eq(10)" ).find('a').attr("name", "Course-fee");
+        }
+        else {
+          $( ".selectpicker li:eq(10)" ).find('a').attr("name", $(".a_1").attr('name'));
+          $( ".selectpicker li:eq(11)" ).find('a').attr("name", $(".a_2").attr('name'));
+          $( ".selectpicker li:eq(12)" ).find('a').attr("name", $(".a_3").attr('name'));
+        }
+
+        $(".selectpicker li a").click(function(){
+          $this = $(this);
+          var column = "table ." + $(this).attr("name");
+          var isSelected;
+          $(column).toggle();
+          setTimeout(function() {1315
+            isSelected = $this.closest('li').attr('class');
+
+            if(isSelected == "")
+              isSelected = "false"
+            else
+              isSelected = "true"
+
+            $.ajax({
+              url: '/instructor/set-columns',
+              type: 'POST',
+              dataType: 'script',
+              data: { tableName: "group_class", columnName: $this.attr("name"), isSelected: isSelected },
+            });
+          }, 300);
+        });
+
+        $('.dropdown-menu').find('.glyphicon-ok').removeClass('glyphicon glyphicon-ok').addClass("fa fa-check"); 
+      }, 1500);
+    });
+    
+    
+</script>
+<style>
+.dataTables_filter { display: none;}
+</style>
+<style>
+  .avatar{
+    border-radius: 50% !important;
+    width: 45px !important;
+    height: 45px !important;
+  }
+  .startMon {
+    float: left;
+    margin-right: 5px;
+  }
+  .columnForm {
+    
+  }
+  .btnGo {
+    margin-left: 5px;
+  }
+</style>
+
+<script type="text/javascript">
+  $(document).on('click','.updateFee',function(){
+    var data_str = $(this).data("str");
+    $("#dataStr").val(data_str);
+  });
+  $(function () {
+    $(".font-button").bind("click", function () {
+      var size = parseInt($('table').css("font-size"));
+      if ($(this).hasClass("plus")) {
+          size = size + 2;
+      } else {
+          size = size - 2;
+          if (size <= 10) {
+              size = 10;
+          }
+      }
+      $('table').css("font-size", size);
+    });
+  });
+</script>

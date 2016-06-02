@@ -1,0 +1,28 @@
+<div class="modal-dialog">
+  <div class="modal-content">
+		<%= form_tag  manage_reset_invoice_time_path(@invoice),:method => :get do |f|   %>
+		 	<div class="modal-header">
+		    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		  </div>
+		  <div class="modal-body">
+		    <div class="form-group amount_paid" style="margin-bottom: 0px;">	
+		    	<div class="row">
+		    		<div class="col-sm-4">
+		    		<h3>Set timer</h3>
+		    		</div>
+		    		<div class="col-sm-3" style="margin-top: 3%;">
+		    		<%= text_field_tag :invoice_time, nil, class: "form-control" %>
+		    		</div>
+		    		<div class="col-sm-2" style="margin-top: 4%;">hours</div>
+		    	</div>
+		    	<%= link_to "Click here to remove timer", manage_clear_invoice_time_path(@invoice) %>
+		  
+		  	</div>
+		  </div>
+		  <div class="modal-footer">
+		    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		    <%= submit_tag 'Save' ,class: "btn btn-primary" %>
+		  </div>
+		<% end %>
+	</div>
+</div>

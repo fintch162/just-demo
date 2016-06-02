@@ -1,0 +1,471 @@
+<script type="text/javascript">
+  // HIDE SHOW GROUP_CLASS_LIST PAGE FOR NSTRUCTOR
+    function hideShowColumns(columnName) {
+      var whichColumnToHide = columnName.id;
+      $("."+whichColumnToHide).hide();
+      $("#"+whichColumnToHide).parents('th').hide();
+      $(".unhideAllColumns").show();
+      isSelected = $(this).is(":visible");
+      $.ajax({
+        url: '/instructor/set-columns',
+        type: 'POST',
+        dataType: 'script',
+        data: { tableName: "group_class_list", columnName: columnName.className, isSelected: isSelected },
+      });
+    }
+</script>
+<%= title "Instructor" %>
+<% if !admin_user_signed_in? %>
+  <%= render "instructor/shared/login" %>
+<% else %>
+  <% total_student = 0%>
+  <div class="main">
+    <div class="container">
+      <ul class="breadcrumb">
+        <li>
+          <a href="/instructor">Home</a>
+        </li>
+        <li class="active">Group Classes</li>
+      </ul>
+      <div class="row margin-bottom-40">
+        <%#= render :partial => "ac_side_bar" %>
+        <div class="col-sm-12">
+          <div class="row">
+          <h1>Group Classes</h1>
+          </div>
+          <div class="content-page">
+            <div class="row">
+
+              <%= form_tag instructor_unpaid_fee_student_path do %>
+                <div class="col-md-2">
+                  <%=select_tag :timing_id,options_for_select(Timing.all.map { |t| [t.title,t.id] })%>
+                </div>
+                <div class="col-md-2">
+                  <%= text_field_tag :time,nil,placeholder: "Faster than", :maxlength=>"4",:class=> "ready_cell_month",style: "width: 100%;"%>
+                </div>
+                <div class="col-md-2">
+                  <button class="btn btn-success btnGo" name="commit" type=" submit" value="GO"><i class="fa fa-arrow-left"></i> Go</button>
+                </div>
+              <% end %>
+            </div>
+
+            <div>
+              <%if (@unpaid_fee_hash["#{@previous_two_month}"]).count > 0 %>
+                <%if (@unpaid_fee_hash["#{@previous_two_month}"]).count == 1 %>
+                  <%= link_to (@unpaid_fee_hash["#{@previous_two_month}"]).count.to_s+" student" ,instructor_unpaid_fee_student_path(month: @previous_two_month)  ,class: "unpaid_student" %> have not paid for <%=@previous_two_month.strftime('%B')%>
+                <%else %>
+                  <%= link_to (@unpaid_fee_hash["#{@previous_two_month}"]).count.to_s+" students" ,instructor_unpaid_fee_student_path(month: @previous_two_month)  ,class: "unpaid_student" %> have not paid for <%=@previous_two_month.strftime('%B')%>
+                <%end %>
+              <%else %>
+                0 student have not paid for <%=@previous_two_month.strftime('%B')%>
+              <%end %>
+            </div>
+
+            <div>
+              <%if (@unpaid_fee_hash["#{@previous_one_month}"]).count > 0 %>
+                <%if (@unpaid_fee_hash["#{@previous_one_month}"]).count ==1 %>
+                  <%= link_to (@unpaid_fee_hash["#{@previous_one_month}"]).count.to_s+ " student" ,instructor_unpaid_fee_student_path(month: @previous_one_month) ,class: "unpaid_student" %> have not paid for <%=@previous_one_month.strftime('%B')%>
+                <%else %>
+                  <%= link_to (@unpaid_fee_hash["#{@previous_one_month}"]).count.to_s+ " students" ,instructor_unpaid_fee_student_path(month: @previous_one_month) ,class: "unpaid_student" %> have not paid for <%=@previous_one_month.strftime('%B')%>
+                <%end %>
+              <%else %>
+                0 student have not paid for <%=@previous_one_month.strftime('%B')%>
+              <%end %>
+            </div>
+
+            <div>
+              <%if (@unpaid_fee_hash["#{@current_month}"]).count > 0 %>
+                <%if (@unpaid_fee_hash["#{@current_month}"]).count == 1 %>
+                  <%= link_to (@unpaid_fee_hash["#{@current_month}"]).count.to_s+" student" ,instructor_unpaid_fee_student_path(month: @current_month) ,class: "unpaid_student" %> have not paid for <%=@current_month.strftime('%B')%>
+                <%else %>
+                  <%= link_to (@unpaid_fee_hash["#{@current_month}"]).count.to_s+" students" ,instructor_unpaid_fee_student_path(month: @current_month) ,class: "unpaid_student" %> have not paid for <%=@current_month.strftime('%B')%>
+                <%end %>
+              <%else %>
+                0 student have not paid for <%=@current_month.strftime('%B')%>
+              <%end %>
+            </div>
+
+            <div class="row">
+
+              <div class="col-sm-4 text-left hidden-print">
+                <a href="javascript:;" class="unhideAllColumns" style="display: <%= @isUnhideBtnShow == true ? "" : "none;" %>">Unhide all columns</a>
+              </div>
+              <div class="col-sm-8 text-right hidden-print">
+                <%= link_to instructor_group_classes_deatil_print_path(group_class_ids: ''),class: "print-details btn default",target:'_blank' do %>
+                  <!-- <a href="javascript:;" class="btn hidden-print" > -->
+                    <i class="fa fa-print"></i> Print
+                  <!-- </a> -->
+                <% end %>
+                <a href="javascript:;" class="btn red updateClassVacancy">Enable Quick Edit</a>
+                <a href="/instructor/home/new" class="btn green">Create new group class</a>
+              </div>
+              <div class="col-sm-12">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th style="width:30px;"></th>
+                      <th style="width:30px;"><input type="checkbox" name="checkedAll" id="checkedAll" value="" class="checkedAll"></input></th>
+                      <th>Day</th>
+                      <th>Time</th>
+                      <th class="" style="display: <%= @hide_show_columns_grp_cls_index.venue? ? "" : "none;"  %>">
+                        <a href="javascript:;" id="hideVenue" onclick="hideShowColumns(this)" class="venue"><i class="fa fa-eye-slash"></i></a>Venue
+                      </th>
+                      <th class="" style="display: <%= @hide_show_columns_grp_cls_index.age_group? ? "" : "none;"  %>">
+                        <a href="javascript:;" id="hideAgeGroup" onclick="hideShowColumns(this)" class="age_group"><i class="fa fa-eye-slash"></i></a>Age Group
+                      </th>
+                      <th class="" style="display: <%= @hide_show_columns_grp_cls_index.level? ? "" : "none;"  %>">
+                        <a href="javascript:;" id="hideLevel" onclick="hideShowColumns(this)" class="level"><i class="fa fa-eye-slash"></i></a>Level
+                      </th>
+                      <th class="" style="display: <%= @hide_show_columns_grp_cls_index.fee? ? "" : "none;"  %>">
+                        <a href="javascript:;" id="hideFee" onclick="hideShowColumns(this)" class="fee"><i class="fa fa-eye-slash"></i></a>Fee
+                      </th>
+                      <th class="" style="display: <%= @hide_show_columns_grp_cls_index.fee_type? ? "" : "none;"  %>">
+                        <a href="javascript:;" id="hideFeeType" onclick="hideShowColumns(this)" class="fee_type"><i class="fa fa-eye-slash"></i></a>Fee type
+                      </th>
+                      <th class="" style="display: <%= @hide_show_columns_grp_cls_index.students? ? "" : "none;"  %>">
+                        <a href="javascript:;" id="hideStudents" onclick="hideShowColumns(this)" class="students"><i class="fa fa-eye-slash"></i></a>Student(s)
+                      </th>
+                      <th class="" style="display: <%= @hide_show_columns_grp_cls_index.max_slot? ? "" : "none;"  %>">
+                        <a href="javascript:;" id="hideMaxSlot" onclick="hideShowColumns(this)" class="max_slot"><i class="fa fa-eye-slash"></i></a>Max Slot
+                      </th>
+                      <th class="" style="display: <%= @hide_show_columns_grp_cls_index.vacancy? ? "" : "none;"  %>">
+                        <a href="javascript:;" id="hideVacancy" onclick="hideShowColumns(this)" class="vacancy"><i class="fa fa-eye-slash"></i></a>Vacancy
+                      </th>
+                      <% count = 0 %>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% days_arry = [] %>
+                    <% all_days_arr = [] %>
+                    <% @group_classes.each do |group_class| %>
+                      <% if group_class.day.to_i == 0 %>
+                        <% days_arry << group_class %>
+                      <% else %>
+                         <% all_days_arr << group_class %>
+                      <% end %>
+                    <% end %>
+                    <% all_days_arr = all_days_arr + days_arry %>
+                    <% all_days_arr.each do |group_class| %>
+                      <% count = count + 1 %>
+                      <tr class="hidden-print">
+                        <td style="width:30px;">
+                          <%= count %>
+                        </td>
+                        <td style="width:30px;">
+                          <input type="checkbox" name="checkAll" id="checkAll" class="check_grp_class" value="<%= group_class.id %>"></input>
+                        </td>
+                        <td>
+                          <%= Date::DAYNAMES[group_class.day] %>
+                        </td>
+                        <td>
+                          <% if group_class.time? %>
+                            <% if @add_or_more_less_months_saved_settings.blank? %>
+                              <%#= link_to group_class.time.strftime("%I:%M %p").to_s + " - " + (group_class.time + group_class.duration*60).strftime("%I:%M %p").to_s, instructor_group_class_view_add_more_months_path(group_class) %> 
+                              <%= link_to group_class.full_time, instructor_group_class_view_add_more_months_path(group_class) %> 
+                            <% else %>
+                              <%#= link_to group_class.time.strftime("%I:%M %p").to_s + " - " + (group_class.time + group_class.duration*60).strftime("%I:%M %p").to_s, instructor_group_class_view_add_more_months_path(group_class), :method=> :post %> 
+                              <%= link_to group_class.full_time, instructor_group_class_view_add_more_months_path(group_class), :method=> :post %> 
+                            <% end %>
+                          <% end %>
+                        </td>
+
+                        <td class=" hideVenue" style="display: <%= @hide_show_columns_grp_cls_index.venue? ? "" : "none;"  %>">
+                          <%= Venue.find(group_class.venue_id).name %>
+                        </td>
+
+                        <td class=" hideAgeGroup" style="display: <%= @hide_show_columns_grp_cls_index.age_group? ? "" : "none;"  %>">
+                          <a href="javascript:;" id="editAgegroup_<%= group_class.id %>" class="editAgegroup"><i class="fa fa-pencil"></i></a>
+                          <%= best_in_place group_class, :age_group_id, :type => :select,:collection => AgeGroup.all.map { |e| [e.id, e.title]  }, :url => update_slot_vacancy_instructor_group_class_path(group_class), :activator => "#editAgegroup_#{group_class.id}" %>
+                        </td>
+
+                        <td class=" hideLevel" style="display: <%= @hide_show_columns_grp_cls_index.level? ? "" : "none;"  %>">
+                          <a href="javascript:;" id="editLevel_<%= group_class.id %>" class="editLevel"><i class="fa fa-pencil"></i></a>
+                          <%= best_in_place group_class, :level_id, :type => :select,:collection => Level.all.map { |e| [e.id, e.title]  }, :url => update_slot_vacancy_instructor_group_class_path(group_class), :activator => "#editLevel_#{group_class.id}" %>
+                        </td>
+
+                        <td class=" hideFee" style="display: <%= @hide_show_columns_grp_cls_index.fee? ? "" : "none;"  %>">
+                          <a href="javascript:;" id="editFee_<%= group_class.id %>" class="editFee"><i class="fa fa-pencil"></i></a>
+                          <%= best_in_place group_class, :fee, :as => :input, :url => update_slot_vacancy_instructor_group_class_path(group_class), :activator => "#editFee_#{group_class.id}", inner_class: "form-control input-xsmall bestinplaceInputFee" %>
+                        </td>
+
+                        <td class=" hideFeeType" style="display: <%= @hide_show_columns_grp_cls_index.fee_type? ? "" : "none;"  %>">
+                          <%= FeeType.find(group_class.fee_type_id).name  %>
+                        </td>
+
+                        <td class=" hideStudents" style="display: <%= @hide_show_columns_grp_cls_index.students? ? "" : "none;"  %>">  
+                          <%= group_class.instructor_students.count.to_s%>
+                          <% total_student = total_student + group_class.instructor_students.count %>
+                        </td>
+                        <td class="hideMaxSlot" style="display: <%= @hide_show_columns_grp_cls_index.max_slot? ? "" : "none;"  %>">
+                          <a href="javascript:;" id="editMaxSlot_<%= group_class.id %>" class="editMaxSlot"><i class="fa fa-pencil"></i></a>
+                          <%= best_in_place group_class, :slot_maximum, :as => :input, :url => update_slot_vacancy_instructor_group_class_path(group_class), :activator => "#editMaxSlot_#{group_class.id}", inner_class: "form-control input-xsmall bestinplaceInputSlotMaxSlot" %>
+                        </td>
+
+                        <td class="hideVacancy" style="display: <%= @hide_show_columns_grp_cls_index.vacancy? ? "" : "none;"  %>">
+                          <a href="javascript:;" id="editVacancy_<%= group_class.id %>" class="editVacancy"><i class="fa fa-pencil"></i></a>
+                          <%= best_in_place group_class, :slot_vacancy, :as => :input, :url => update_slot_vacancy_instructor_group_class_path(group_class), :activator => "#editVacancy_#{group_class.id}", inner_class: "form-control input-xsmall bestinplaceInputSlotVacancy", html_attrs: { maxlength: 2 } %>
+                        </td>
+                      </tr>
+                    <% end %>
+                      <tr id="total_students" class="hidden-print">
+                        <td></td>
+                        <td>Total Students</td>
+                        <td><%= total_student %></td>
+                        <td></td>  
+                        <td></td>
+                      </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>  
+        </div>
+      </div>
+    </div>   
+  </div>
+<% end %>
+<style type="text/css">
+  .btnGo{
+    margin-left: -19%;
+    height: 28px;
+    padding-top: 4px;
+    margin-bottom: 6%;
+  }
+  .label{
+    color: #000 !important;
+  }
+  .content-page .unpaid_student{
+    color: #E02222;
+  }
+  .error_msg{
+  border-color: #FF0000!important;
+  }
+  .editVacancy, .editMaxSlot, .editFee, .editAgegroup, .editLevel { display: none; }
+  @media print {
+    body {
+
+      background-color: #fff !important;
+    }
+    .breadcrumb{
+      display: none;
+    }
+    a[href]:after {
+      content: none !important;
+    }
+    .add_s{
+      display: none;
+    }
+    .nav{
+      display: none;
+    }
+    .header {
+      display: none;
+    }
+    .pre-header{
+      display: none;
+    }
+    .sidebar {
+      display: none;
+    }
+
+    .theme-panel {
+      display: none;
+    }
+
+    .hidden-print {
+      display: none;
+    }
+
+    .page-footer {
+      display: none;
+    }
+
+    .page-container {
+      margin: 0px !important;
+      padding: 0px !important;
+    }
+
+    .page-content {
+      min-height: 300px !important;
+      padding: 0px 20px 20px !important;
+      margin: 0 !important;
+    }
+    .footer{
+      display: none;
+    }
+    .column-selector{
+     display: none; 
+    }
+   html, body, .main,.container, .scrollspy-example, .tab-pane, .content-page, .row, .col-sm-12{ float: none; }
+    h2{
+      padding-top: 50px!important;
+    }
+  }
+</style>
+<script type="text/javascript">
+  
+  $(document).ready(function($) {
+    $('.checkedAll').click(function(event) {
+      link = $(".print-details").attr('href');
+      if(this.checked) {
+        $(this).parents('table').find('.check_grp_class').each(function() {
+          this.checked = true;
+          link += ","+$(this).val();
+          $(".print-details").attr('href',link);
+          $(this).parents('tr').removeClass('hidden-print');
+          $('#total_students').removeClass('hidden-print');
+        });
+      } else {
+        $(this).parents('table').find('.check_grp_class').each(function() {
+          this.checked = false;
+          link = link.replace(','+$(this).val(),'');
+          $(".print-details").attr('href',link);
+          $(this).parents('tr').addClass('hidden-print');
+          $('#total_students').addClass('hidden-print');
+        });         
+      }
+    });
+    $(".check_grp_class").click(function() {
+      if($(this).is(":checked")){
+        $(this).parents('tr').removeClass('hidden-print');
+        link = $(".print-details").attr('href');
+        link += ","+$(this).val();
+        $(".print-details").attr('href',link);
+        var flag = 0;
+        $(this).parents('table').find('.check_grp_class').each(function() {
+          if(!this.checked)
+          flag = 1;
+        })
+        $('#total_students').removeClass('hidden-print');              
+        if(flag == 0) { $(this).parents('table').find(".checkedAll").prop("checked", true); }
+      }
+      else {
+        link = $(".print-details").attr('href');
+        link = link.replace(','+$(this).val(),'');
+        $(".print-details").attr('href',link);
+        $(this).parents('tr').addClass('hidden-print');
+        $(this).parents('table').find(".checkedAll").prop("checked", false);
+        if ($('.check_grp_class:checked').length == 0){
+          $('#total_students').addClass('hidden-print');
+        }
+      }
+    });
+  });
+
+  $(function(){
+    $('.best_in_place').best_in_place();
+    $(".updateClassVacancy").click(function(event) {
+      var btn_text = $(this).text();
+      if (btn_text == "Enable Quick Edit"){
+        $(this).text("Disable Quick Edit");
+        $(".editVacancy").show();
+        $(".editMaxSlot").show();
+        $(".editFee").show();
+        $(".editAgegroup").show();
+        $(".editLevel").show();
+      }
+      else{
+        $(this).text("Enable Quick Edit");
+        $(".editVacancy").hide();
+        $(".editMaxSlot").hide();
+        $(".editFee").hide();
+        $(".editAgegroup").hide();
+        $(".editLevel").hide();
+      }
+    });
+
+    $(".editVacancy").click(function(event) {
+      $(document).on('keydown', '.bestinplaceInputSlotVacancy', function (e) {
+        checkNumberOnly(e);
+      });
+    });
+    function checkNumberOnly(e) {
+      if(e.currentTarget.className.indexOf("bestinplaceInputSlotVacancy") != -1) {
+        $(".bestinplaceInputSlotVacancy").css("border", "2px solid #0F7311");
+        $(".bestinplaceInputSlotVacancy").attr("title", "Please enter numbers");
+      }
+
+      if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 || (e.keyCode == 65 && e.ctrlKey === true) || (e.keyCode >= 35 && e.keyCode <= 40)) {
+        return;
+      }
+      if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+        if(e.currentTarget.className.indexOf("bestinplaceInputSlotVacancy") != -1) {
+          $(".bestinplaceInputSlotVacancy").css("border", "2px solid #ff0000");
+          $(".bestinplaceInputSlotVacancy").attr("title", "Please enter numbers");
+        }
+        e.preventDefault();
+      }
+    }
+    $(".unhideAllColumns").click(function(event) {
+      $(this).hide();
+      
+      $.ajax({
+        url: '/instructor/set-columns',
+        type: 'POST',
+        dataType: 'script',
+        data: { tableName: "group_class_list", columnName: "updateall" },
+      }).complete(function(data) {
+        var whichColumnToHide = data.responseText.substring(1, data.responseText.length-1).replace(/\"/g, '').split(",")
+        for(var i=0; i < whichColumnToHide.length; i++) {
+          $("."+$.trim(whichColumnToHide[i])).show();
+          $("#"+$.trim(whichColumnToHide[i])).parents('th').show();
+        }
+      });
+    });
+
+
+    $(document).on('change','#time',function(event){
+        var text_value=$('#time').val();
+          if(text_value.length == 4 || text_value.indexOf(':')!= -1)
+          {
+            text_value=text_value.replace(':', '')
+            mm=text_value.slice(0,2);
+            ss=text_value.slice(2,4);
+            error_fun(ss,mm);
+            time =mm+":"+ss
+          }
+          if(text_value.length == 3 || text_value.indexOf(':')!= -1)
+          {
+            text_value=text_value.replace(':', '')
+            mm=text_value.slice(0,1);
+            ss=text_value.slice(1,3);
+            error_fun(ss,mm);
+            time =mm+":"+ss
+           
+          }
+          if(text_value.length == 2 || text_value.indexOf(':')!= -1)
+          {
+            text_value=text_value.replace(':', '')
+            ss=text_value
+            mm=00
+            error_fun(ss,mm);
+            time ="00:"+ss
+
+          }
+          if(text_value.length == 1 || text_value.indexOf(':')!= -1)
+          {
+            text_value=text_value.replace(':', '')
+            ss=text_value
+            mm=00
+            error_fun(ss,mm);
+            time ="00:0"+ss
+        
+          }
+          console.log(time);
+          $('#time').val(time);
+    });
+  
+  function error_fun(sec,min)
+  {
+    if(min >= 60 || sec >=60 )
+    {
+      $('#time').addClass('error_msg')
+    }
+    else
+    {
+      $('#time').removeClass('error_msg')
+    }
+  }
+  
+  });
+</script>

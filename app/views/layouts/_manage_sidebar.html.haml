@@ -1,0 +1,102 @@
+.page-sidebar-wrapper
+  .page-sidebar.navbar-collapse.collapse
+    %ul.page-sidebar-menu{"data-auto-scroll" => "false", "data-auto-speed" => "200"}
+      %li.sidebar-toggler-wrapper
+        .sidebar-toggler
+      %li{class: (current_page?(manage_root_path) == true ? "active open" : "start")}
+        = link_to manage_root_path do
+          %i.fa.fa-home
+          %span.title Dashboard
+      %li{class: (current_page?(manage_jobs_path) == true ? "active open" : "")}
+        = link_to manage_jobs_path do
+          %i.fa.fa-list
+          %span.title All Jobs
+          %span.arrow
+      %li{class: (current_page?(manage_manual_payments_path) == true ? "active open" : "")}
+        = link_to manage_manual_payments_path do
+          %i.fa.fa-list
+          %span.title Payments
+          %span.arrow
+      - if policy(OnlinePayment).index?  
+        %li{class: (current_page?(manage_online_payments_path) == true ? "active open" : "")}
+          = link_to manage_online_payments_path do
+            %i.fa.fa-list
+            %span.title Transactions
+            %span.arrow
+      - if policy(Venue).index?
+        %li{class: (current_page?(manage_venues_path) == true ? "active open" : "")}
+          = link_to manage_venues_path do
+            %i.fa.fa-list
+            %span.title Venues
+            %span.arrow
+      - if policy(GroupClass).index?
+        %li{class: (current_page?(manage_group_classes_path) || current_page?(manage_group_class_beta_path) ? "active open": "")}
+          = link_to manage_group_classes_path do
+            %i.fa.fa-list
+            %span.title Group Classes
+            %span.arrow
+          %ul.sub-menu
+            %li
+              = link_to 'Group Class List',manage_group_classes_path
+            %li
+              = link_to 'Group Class Beta',manage_group_class_beta_path 
+      - if policy(Instructor).index?
+        %li{class: (current_page?(manage_instructors_path) == true  || current_page?(new_manage_instructor_path) == true || params[:controller] == "instructors" && params[:action] == "edit" ||  params[:controller] == "instructors" && params[:action] == "create" ? "active open" : "" )}
+          = link_to manage_instructors_path do
+            %i.fa.fa-list
+            %span.title Instructor
+            %span.arrow{class: (current_page?(manage_instructors_path) == true ? "open" : "")} 
+      - if policy(Message).index?
+        %li{class: (current_page?(manage_messages_path) == true ? "active open" : "")}
+          = link_to manage_messages_path do
+            %i.fa.fa-list
+            %span.title SMS
+            %span.arrow{class: (current_page?(manage_messages_path) == true ? "open" : "")}
+      %li{class: (current_page?(manage_invoices_path) == true ? "active open" : "")}
+        = link_to manage_invoices_path do
+          %i.fa.fa-list
+          %span.title All Invoices
+          %span.arrow     
+      %li{class: (current_page?(manage_reports_path) == true ? "active open" : "")}
+        = link_to manage_reports_path do
+          %i.fa.fa-list
+          %span.title Reports
+          %span.arrow{class: (current_page?(manage_reports_path) == true ? "open" : "")}
+      %li{class: (current_page?(manage_award_tests_path) == true  || current_page?(manage_new_award_test_path) == true ? "open" : "" )}
+        = link_to manage_award_tests_path do
+          %i.fa.fa-list
+          %span.title Award Tests
+          %span.arrow{class: (current_page?(manage_award_tests_path) == true ? "open" : "")}
+      %li{class: (current_page?(manage_job_feedbacks_path) == true  || current_page?(manage_job_feedbacks_path) == true ? "open" : "" )}
+        = link_to manage_job_feedbacks_path do
+          %i.fa.fa-list
+          %span.title Feedbacks
+          %span.arrow{class: (current_page?(manage_job_feedbacks_path) == true ? "open" : "")}
+      %li{class: (current_page?(manage_rewards_path) == true  || current_page?(new_manage_reward_path) == true ? "open" : "" )}
+        = link_to manage_rewards_path do
+          %i.fa.fa-list
+          %span.title Rewards
+          %span.arrow{class: (current_page?(manage_rewards_path) == true ? "open" : "")}
+
+      %li{class: (current_page?(manage_terms_and_conditions_path) == true || params[:controller] == "manage/terms_and_conditions"  ? "active open" : "")}
+        = link_to manage_terms_and_conditions_path do
+          %i.fa.fa-list
+          %span.title T & C
+          %span.arrow{class: (current_page?(manage_terms_and_conditions_path) == true || params[:controller] == "manage/terms_and_conditions" ? "open" : "")}
+
+      %li{class: (current_page?(manage_message_templates_path) == true || params[:controller] == "manage/message_templates"  ? "active open" : "")}
+        = link_to manage_message_templates_path do
+          %i.fa.fa-list
+          %span.title Automation
+          %span.arrow{class: (current_page?(manage_message_templates_path) == true || params[:controller] == "manage/message_templates" ? "open" : "")} 
+
+      %li{class: (current_page?(manage_identity_cards_path) == true || params[:controller] == "manage/identity_cards"  ? "active open" : "")}
+        = link_to manage_identity_cards_path do
+          %i.fa.fa-list
+          %span.title Identity Card
+          %span.arrow{class: (current_page?(manage_identity_cards_path) == true || params[:controller] == "manage/identity_cards" ? "open" : "")} 
+      %li{class: (current_page?(manage_swimming_lessons_registration_generator_path) == true || params[:controller] == "manage/generate_forms"  ? "active open" : "")}
+        = link_to manage_swimming_lessons_registration_generator_path do
+          %i.fa.fa-list
+          %span.title Generate Form
+          %span.arrow{class: (current_page?(manage_swimming_lessons_registration_generator_path) == true || params[:controller] == "manage/generate_forms" ? "open" : "")}

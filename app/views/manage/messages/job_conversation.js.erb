@@ -1,0 +1,11 @@
+$('#instructor_conversation').html('');
+$(".caption").find("#inst_number").html('<a href="'+baseUrl+'/manage/instructors/<%= @instructor.id %>"><%= @instructor.name %></a>').attr("data-mobile", <%= @instructor.mobile %>);
+<% if @messages.count > 0 %>
+	$('#instructor_conversation').append("<%= escape_javascript(render partial: 'manage/messages/message_listing') %>");
+<% else %>
+	$('#instructor_conversation').append('<li><div class="panel panel-danger"><div class="panel-heading"><h4 class="panel-title"> No conversation found!!!</h4></div></div></li>');
+<% end %>
+<% if @messages.count < 20 %>
+	$('#load_more_sms').remove();
+<% end %>
+$('.inst_scroller').animate({scrollTop: $('#instructor_conversation li:last-child').position().top}, 'slow');

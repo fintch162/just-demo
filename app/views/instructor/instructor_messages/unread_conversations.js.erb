@@ -1,0 +1,4 @@
+$('.inbox-content').html('<%= escape_javascript(render partial: "inst_conversation") %>');
+$('.sms-heading').html('Unread Conversation');
+$('ul.inbox-nav li.active').removeClass('active');
+$('ul.inbox-nav li.conversation').addClass('active');

@@ -1,0 +1,28 @@
+<%= title "New Group Class" %>
+<% if !admin_user_signed_in? %>
+  <%= render "instructor/shared/login" %>
+<% else %>
+  <div class="main">
+    <div class="container">
+      <ul class="breadcrumb">
+        <li>
+          <a href="/instructor">Home</a>
+        </li>
+        <li>
+          <a href="/instructor/home">Group Classes</a>
+        </li>
+        <li class="active">New</li>
+        <% #%li %>
+        <% #  %a{:href => "/instructor"} Home %>
+        <% #%li.active Group Classes %>
+      </ul>
+      <div class="row margin-bottom-40">
+        <!-- = render :partial => 'ac_side_bar'
+        -->
+        <div class="col-md-9 col-sm-9">
+          <%= render "instructor/home/form" %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

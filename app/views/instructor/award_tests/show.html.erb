@@ -1,0 +1,410 @@
+<%= title "Award Test" %>
+<% if !admin_user_signed_in? %>
+  <%= render "instructor/shared/login" %>
+<% else %>
+<div class="main">
+  <div class="container">
+    <ul class="breadcrumb">
+      <li><a href="/instructor">Home</a></li>
+      <li><a href="<%= instructor_award_tests_path %>">Award Tests</a></li>
+      <li class="active"><%= @award_test.test_date.strftime("%e %b %Y") + " - " + @award_test.test_time.strftime("%I:%M %p")%></li>
+    </ul>
+    <div class="row margin-bottom-40">
+      <%#= render :partial => "ac_side_bar" %>
+      <div class="col-sm-12">
+        <h3><%= @award_test.award.name %></h3>
+        <h4><%= @award_test.test_date.strftime("%e %b %Y") + " - " + @award_test.test_time.strftime("%I:%M %p") %>
+          <small><!-- <a href="<%#= edit_instructor_award_test_path(@award_test.id) %>" class="btn"> Edit Award Test</a> --></small>
+        </h4> 
+        <h4>Venue: <%= Venue.find(@award_test.venue_id) ? Venue.find(@award_test.venue_id).name : '' %></h4>
+        <h4>Assesment Ref No : <%= @award_test.assesment_ref_no != '' ? @award_test.assesment_ref_no : '-' %> </h4>
+        <% if @award_test.assessor %>
+          <h4>Organiser : <%= AdminUser.find(@award_test.assessor) ?  AdminUser.find(@award_test.assessor).name : '' %> </h4>
+        <% end %>
+        <h4>Test Fee : $<%=  format('%.2f', @award_test.test_fee) %> </h4>
+
+        <div class="content-page">
+          <div class="row">
+            <div class="col-sm-12 text-right">
+              <div class="tabbable-custom" >
+                <div class="tab-content" style="border:0px;">
+                  <div class="tab-pane active" id="tab_5_1">
+                    <div class="sms-tab">
+                      <% if current_admin_user.is_account_activated? %> 
+                        <a href="javascript:;" class="pull-left-show" id="smsSend"><i class="fa fa-envelope"></i> SMS</a>
+                      <% else %>
+                        <a href="<%= instructor_check_for_message_telerivet_sms_settings_path %>" class="pull-left-show" data-remote="true"><i class="fa fa-envelope"></i> SMS</a>
+                      <% end %> 
+                      <a href="javascript:;" class="btn hidden-print" onclick="setPrint();">
+                            <i class="fa fa-print"></i> Print</a>
+                    </div>
+                    <% if current_admin_user.is_account_activated? %>
+                      <div class="row newSmsSend">
+                        <div class="col-sm-12">
+                          <div class="col-sm-5 text-left">
+                            <div class="note note-info">
+                              <h4 class="block">SMS Shortcodes</h4>
+                              <p>You may use the following shortcodes in this SMS.</p>
+                              <strong>&lt;student_name&gt;<br>&lt;student_link&gt;<br>&lt;award_name&gt;<br>&lt;award_date&gt;<br>&lt;award_time&gt;<br>&lt;award_venue&gt;
+                              </strong>
+                            </div>
+                          </div>
+                          <%= form_tag (  instructor_send_msg_preview_path + "?isReqXhr=true"), remote: true, class: "sendMessages"  do %>
+                            <input type="hidden" id="send_message" name="stundent_ids"/>
+                            <input type="hidden" id="send_award" name="awaard_id" value="<%= @award_test.award_id %>"/>
+                            <input type="hidden" id="send_award" name="award_test_id" value="<%= @award_test.id %>"/>
+                            <div class="col-sm-5">
+                              <label>Message to student</label>
+                              <textarea class="form-control" cols="20" id="text_msg" name="text_msg" rows="5" onkeyup="textAreaAdjust(this)" style="overflow:hidden"></textarea>
+                              <%#= text_area_tag(:text_msg, nil,{:class => "form-control", :rows => 5, :cols => 20,:autocomplete => "off"}) %>
+                              <div>
+                                <span style="float: left; margin-top: 10px; display: none; color: #E02222;" id="error_msg">You need to select at least 1 student to send your message.</span>
+                                <span style="float: left; margin-top: 10px; display: none;" id="successMsg"></span>
+                                <div class="text-right margin-top-10" style="float: right; margin-bottom: 10px;">
+                                  <%= submit_tag " Preview & Send", {:class => "btn red", :id => "send_msg"} %>
+                                </div>
+                              <br/>
+                              </div>
+                            </div>
+                          <% end %>
+                          <div class="col-sm-2" style="color: #E02222; text-align: left;">
+                            <h4>Bulk SMS History</h4>
+                            <% @bulk_history = current_admin_user.instructor_messages.where('bulk_sms_id IS NOT NULL AND award_test_id = (?)',@award_test.id).order('bulk_sms_id desc').group_by(&:bulk_sms_id) %>
+                            <% @bulk_history.each do |bulk_id| %>
+                              <% bulk_sms_id = Time.at(bulk_id[0].to_i).strftime('%d/%m/%y %-I.%M%P') %>
+                              <%= link_to bulk_sms_id, instructor_instructor_outing_messages_path(bulk_id: bulk_id[0]) %>
+                              <br>
+                            <% end %>
+                          </div>
+                        </div>
+                      </div>
+                    <% end %> 
+                    <table class="table table-hover" id="sample_2">
+                      <thead>
+                        <tr class="text-left" >
+                          <th style="width:30px;"></th>
+                          <th><input type="checkbox" name="checkedAll" id="checkedAll" value="" class="checkedAll"></input></th>
+                          <th>Name</th>
+                          <th>Contact</th>
+                          <th>NRIC</th>
+                          <th>Sex</th>
+                          <th>Date Of Bith</th>
+                          <th>Status</th>
+                          <th>Payment</th>
+                          <th>Instructor</th>
+                          <th>Action</th>
+                          <% @count = 0 %>
+                        </tr>
+                      </thead>
+                     
+                      <tbody>
+                        <% @instructor_student_award.order("position").each do |ins| %>
+                          <% student = InstructorStudent.find_by_id(ins.instructor_student_id) %>  
+                          <% if !student.blank? %>
+                            <% if student.admin_user_id == current_admin_user.id %>  
+                                <% @count = @count + 1 %> 
+                                <tr class="text-left" id="award-test-student-<%= ins.id %>">
+                                  <td><%= @count %></td>
+                                  <td><input type="checkbox" name="checkAll" id="checkAll" value="<%= student.id %>" class="check_student"></input></td>
+                                  <td><%= link_to student.student_name, instructor_instructor_student_path(student) %></td> 
+                                  <td>
+                                    <% if student.student_contacts.count > 0 %>
+                                      <% if student.student_contacts.where(:primary_contact => true).count > 0 %>
+                                        <%= student.student_contacts.where(:primary_contact => true).first.contact %>
+                                      <% else  %> 
+                                       <%= student.student_contacts.first.contact %>
+                                      <% end %>
+                                    <% else %>
+                                      -
+                                    <% end %>
+                                  </td>
+                                  <td><%= student.ic_number %></td>
+                                  <td><%= student.gender %></td>
+                                  <td><%= student.date_of_birth ? student.date_of_birth.strftime("%d %b %Y") :nil %></td>
+                                  <td><%= ins.status %></td>
+                                  <td>
+                                    <%= AwardTestPaymentNotification.check_paid_or_not(ins.award_test.id,ins.instructor_student_id) ? 'Paid' : 'Unpaid' %>
+
+                                  </td>
+                                  <td>
+                                    <%= student.admin_user.name %>
+                                  </td>
+                                  <td>
+                                    <div class="btn-group">
+                                      <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                                      Select <i class="fa fa-angle-down"></i>
+                                      </button>
+                                      <ul class="dropdown-menu" role="menu">
+                                        <li>
+                                          <% unless AwardTestPaymentNotification.check_paid_or_not(ins.award_test.id,ins.instructor_student_id) %>
+                                            <%= link_to 'Paid',award_test_paid_remove_popup_instructor_award_test_path(@award_test.id,ins.id,status: 'paid'),remote: true %>
+                                          <% end %>
+                                        </li>
+                                        <li>
+                                           <%= link_to 'Remove',award_test_paid_remove_popup_instructor_award_test_path(@award_test.id,ins.id,status: 'remove'),remote: true %>
+                                        </li>
+                                      </ul>
+                                    </div>
+                                    <!-- <select class="paid_remove form-control" data-student-award="<%#= ins.id %>" data-test="<%#= @award_test.id %>">
+                                      <option value="">Select</option>
+                                      <%# unless AwardTestPaymentNotification.check_paid_or_not(ins.award_test.id,ins.instructor_student_id) %>
+                                        <option value="paid">Paid</option>
+                                      <%# end %>
+                                      <option value="remove">Remove</option>
+                                    </select> -->
+                                  <!-- <a class=" default" data-toggle="modal" href="#basic_<%#= student.id %>"> Remove</a> -->
+                                  <%#= link_to "Remove" , remove_student_from_award_test_instructor_award_test_path(@award_test.id, ins.id), :method => :delete %>
+                                  
+                                  </td>
+                                </tr>
+                            <% else %> 
+                                <% @count = @count + 1 %>
+                              <tr class="text-left">
+                                <td><%= @count %></td>
+                                <td></td>
+                                <td>Slot taken</td> 
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td><%= ins.status %></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                              </tr>
+                            <% end %>
+                          <% end %>    
+                        <% end %>
+                        <% if !@award_test.total_slot.blank? %>
+                         <% for i in @count+1..@award_test.total_slot %>
+                            <tr class="text-left">
+                              <td><%= i %></td>
+                              <td></td>
+                              <td>Available for booking</td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                            </tr> 
+                          <% end %>   
+                        <% end %>  
+                      </tbody>
+                    </table>
+                  </div>                    
+                </div>
+              </div>
+            </div>  
+          </div>
+        </div>  
+      </div>
+    </div>
+  </div>   
+</div>
+<% end %>
+<div class="modal fade inst_student" tabindex="-1" style="display: none;"></div>
+<script type="text/javascript">
+  function textAreaAdjust(o) {
+    o.style.height = "1px";
+    o.style.height = (25+o.scrollHeight)+"px";
+  }
+  jQuery(document).ready(function() {       
+    Metronic.init(); 
+    // instructorStudentTableEditable.init();
+    SendSMSInGp.init();
+    $("#smsSend").click(function() {
+       //document.getElementById("text_msg").value = "Please use the link below to update your child's particulars. - <student_link>";
+        $(".newSmsSend").slideToggle("500");
+         });
+          $('form.sendMessages').on('ajax:beforeSend', function(xhr, settings) {
+         //$("#send_msg").val("Sending..").prop('disabled', true);
+      // });
+    });
+    $(document).on('change', '.paid_remove', function(event) {
+      event.preventDefault();
+      console.log($(this).data('student-award'));
+      console.log($(this).data('test'));
+      console.log($(this).val());
+      $.ajax({
+        url: '/instructor/award_tests/'+$(this).data('test')+'/paid_remove_popup/'+$(this).data('student-award'),
+        dataType: 'script',
+        data: {status: $(this).val()},
+      })
+      .done(function() {
+        console.log("success");
+      })
+      .fail(function() {
+        console.log("error");
+      })
+      .always(function() {
+        console.log("complete");
+      });
+      
+    });
+    $('#sample_2').dataTable({
+        responsive: true, 
+        "aLengthMenu": [
+            [5, 15, 20, -1],
+            [5, 15, 20, "All"] // change per page values here
+        ],
+        // set the initial value
+        "iDisplayLength": -1,
+        "sDom": "frt",
+        "paging": false,
+        "sPaginationType": "bootstrap",
+        "oLanguage": {
+          "sLengthMenu": "_MENU_ records",
+          "oPaginate": {
+              "sPrevious": "Prev",
+              "sNext": "Next"
+          },
+          "sEmptyTable": "No student records"
+         },
+        "aoColumnDefs": [{ 'bSortable': false, 'aTargets': [1] }]
+    });
+    $('#sample_2_wrapper .dataTables_filter input').addClass("form-control input-xmedium input-inline"); // modify table search input
+    $('#sample_2_wrapper .dataTables_length select').addClass("form-control input-xmedium input-inline"); // modify table per page dropdown
+    $("#sample_2_wrapper").find(".table-scrollable").removeClass("table-scrollable");
+    });
+
+function setPrint(){  
+     window.print();
+    }
+
+
+
+</script>
+<style type="text/css">
+  .newSmsSend a {
+    color: #E02222;
+  }
+  #sample_2{
+    width: 100% !important;
+  }
+  .cust-err {
+    float: left;
+    font-size: 12px;
+  }
+
+  @media print {
+    
+    body {
+      background-color: #fff !important;
+      font-size: 10px !important;
+    }
+    .breadcrumb{
+      display: none;
+    }
+    a[href]:after {
+      content: none !important;
+    }
+    .add_s{
+      display: none;
+    }
+    .hidden-xs{
+      display: block !important;
+    }
+    .nav{
+      display: none;
+    }
+    .header {
+      display: none;
+    }
+    .pre-header{
+      display: none;
+    }
+    .sidebar {
+      display: none;
+    }
+
+    .theme-panel {
+      display: none;
+    }
+
+    .hidden-print {
+      display: none;
+    }
+
+    .page-footer {
+      display: none;
+    }
+    .sms-tab{
+      display: none;
+    }
+
+    .dataTables_filter{
+      display: none;
+    }
+
+    .checkedAll{
+      display: none;
+    }
+
+    .check_student{
+      display: none;
+    }
+
+    .no-page-break {
+      page-break-after: avoid;
+    }
+
+    .page-container {
+      margin: 0px !important;
+      padding: 0px !important;
+    }
+    .btn{
+      display: none;
+    }
+
+    .page-content {
+      min-height: 300px !important;
+      padding: 0px 20px 20px !important;
+      margin: 0 !important;
+    }
+    .column-selector{
+     display: none; 
+    }
+    .avatar{
+      border-radius: 50% !important;
+      width: 45px !important;
+      height: 45px !important;
+    }
+    .visible_group{
+      display: block;
+    }
+    .invisible_group{
+      display: none;
+    }
+    .pb {
+      page-break-after: always;
+    }
+    .heading{
+      display: block;
+    }
+    .footer{
+      display: none;
+    }
+    .groupClassCheck{
+      display: none;
+    }
+    .groupClassCheckBox{
+      display: none;
+    }
+    .add_group_time {
+      display: block; 
+    }
+    .Profile-pic{
+      display: none;
+    }
+    .manage_view_index{
+    display: none;
+    }
+  .newSmsSend{
+      display: none !important;
+    }
+  }
+</style>
+  

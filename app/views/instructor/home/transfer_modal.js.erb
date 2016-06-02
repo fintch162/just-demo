@@ -1,0 +1,21 @@
+$modal = $('.modal'),
+$modalBody = $('.modal .modal-body'),
+$modalHeading = $('.modal .modal-heading');
+$modalHeading.html("HI Savan");
+$modalBody.html('<%= escape_javascript(render "/instructor/home/transfer_student_group_class_selection", :day_list => @day_list) %>');
+$modal.modal();
+
+<% if @transfer.transfer_status == "Rejected" %>
+	$(".modal-title").html("");
+	$modalBody.css('padding', '0 10px');
+	$(".modal-header").css('border-bottom', '0');
+<% else %>
+	$(".modal-title").html("Select group class");
+<% end %>
+
+$(".modal-footer").css("padding", "10px 0 0");
+$("#selectGrpCls").validate();
+$('#select2_sample2').select2({
+  placeholder: "Select Group Classes",
+  allowClear: true
+});

@@ -1,0 +1,12 @@
+<%= "Add video " %>
+
+<%= nested_form_for [:instructor,@instructor_student,@instructor_student.gallery] do |f| %>
+	 <%= f.fields_for :videos do |f| %> 
+	  <label>Video</label>
+      <%= f.file_field :student_video %>
+      <%= f.link_to_remove "Remove" %>
+	 <% end %>
+	 <%= f.link_to_add "Add", :videos %>
+	 <%= f.submit "Submit" %>
+<% end %>
+<%= link_to 'Back', instructor_instructor_student_path(@instructor_student.id) %>

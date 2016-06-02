@@ -1,0 +1,8 @@
+$modal = $('.smsFeature'),
+$modalBody = $('.smsFeature .modal-body'),
+$modalHeading = $('.smsFeature .modal-heading');
+$modalHeading.html("");
+$modalBody.html('<%= escape_javascript(render "telerivet_account_setting_modal") %>');
+$modal.modal();
+$(".modal-footer").css({"display":"none"});
+$(".modal-title").html("SMS feature");

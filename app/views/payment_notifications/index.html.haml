@@ -1,0 +1,27 @@
+%h1 Listing payment_notifications
+
+%table
+  %tr
+    %th Params
+    %th Online payment
+    %th Status
+    %th Transaction
+    %th Create
+    %th
+    %th
+    %th
+
+  - @payment_notifications.each do |payment_notification|
+    %tr
+      %td= payment_notification.params
+      %td= payment_notification.online_payment_id
+      %td= payment_notification.status
+      %td= payment_notification.transaction_id
+      %td= payment_notification.create
+      %td= link_to 'Show', payment_notification
+      %td= link_to 'Edit', edit_payment_notification_path(payment_notification)
+      %td= link_to 'Destroy', payment_notification, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Payment notification', new_payment_notification_path

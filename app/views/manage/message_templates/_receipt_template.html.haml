@@ -1,0 +1,80 @@
+.portlet.box
+  .portlet-body.form
+    = form_for [:manage, @message_template_receipt], :html => { :id => "message_template_receipt" } do |f|
+      = hidden_field_tag :job_status, 'receipt'
+      .form-body
+        .form-group
+          .checkbox-list
+            %label
+              %span
+                = f.check_box :has_instructor, :class => "checked-receipt", :id => "receipt_message_template_has_instructor"
+              Instructor's Message
+        .form-group.receipt_instructor_template_body
+          %label Instructor Template Description
+          = f.text_area :instructor_template_body, :class => "form-control", :rows => 5, :id => "receipt_message_template_instructor_template_body"
+        .form-group
+          .checkbox-list
+            %label
+              %span
+                = f.check_box :has_customer, :class => "checked-receipt", :id => "receipt_message_template_has_customer"
+              Customer's Message
+        .form-group.receipt_customer_template_body
+          %label Customer Template Description
+          = f.text_area :customer_template_body, :class => "form-control", :rows => 5, :id => "receipt_message_template_customer_template_body"
+        .form-group.app_receipt_template_body
+          %label App receipt template
+          = f.text_area :app_receipt_template, :class => "form-control", :rows => 5, :id => "app_receipt_template"
+
+        .left
+          %button.btn.green{type: "submit"} Save
+          %button.btn.default{type: "button"} Cancel
+:css
+  .receipt_instructor_template_body {
+    display: none;
+  }
+  .receipt_customer_template_body {
+    display: none;
+  }
+:javascript
+  $("#new_message_template").validate();
+  $(document).ready(function(){
+    var instructor_template_body_is_check = $("#receipt_message_template_has_instructor").is(":checked");
+    var customer_template_body_is_check = $("#receipt_message_template_has_customer").is(":checked");
+    if(instructor_template_body_is_check == true) {
+      $(".receipt_instructor_template_body").show();
+    }
+    if(customer_template_body_is_check == true) {
+      $(".receipt_customer_template_body").show();
+    }
+    $('#receipt_message_template_has_instructor').click(function() {
+      if($(this).is(":checked")) {
+        $(".receipt_instructor_template_body").show();
+        $(".receipt_instructor_template_body").attr("required");
+      }
+
+      else
+        $(".receipt_instructor_template_body").hide();
+    });
+    $('#receipt_message_template_has_customer').click(function() {
+      if($(this).is(":checked"))
+        $(".receipt_customer_template_body").show();
+      else
+        $(".receipt_customer_template_body").hide();
+    });
+  });
+  $('#message_template_receipt').submit(function(){
+    if($(".receipt_instructor_template_body").is(":visible"))
+    {
+      if($("#receipt_message_template_instructor_template_body").val() == ""){
+        $("#receipt_message_template_instructor_template_body").after("<span style='color: #f00;'>Instructor template description can not be blank!</span>");
+        return false;
+      }
+    }
+    if($(".receipt_customer_template_body").is(":visible"))
+    {
+      if($("#receipt_message_template_customer_template_body").val() == ""){
+        $("#receipt_message_template_customer_template_body").after("<span style='color: #f00;'>Customer template description can not be blank!</span>")
+        return false;
+      }
+    }
+  });

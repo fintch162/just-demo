@@ -1,0 +1,200 @@
+<div class="row margin-bottom-20">
+  <div class="col-xs-12 col-sm-4">
+    <h3>Progress &amp; Awards<br><!-- <small><a href="javascript:;" id="edit_award">Add/edit</a></small> --></h3>
+  </div>
+  <div class="edit_award_details col-sm-12">
+    <%= render "/instructor/instructor_students/award_progress_div" %>
+  </div>  
+</div>
+
+<div class="row margin-bottom-20">
+  <div class="col-xs-12 col-sm-4">
+    <h3>Timing</h3>
+  </div>
+  <div class="award_details">
+    <div class="col-sm-8 col-xs-12 padding-top-10">
+      <%Timing.all.each do |time| %>
+        <%=time.title %> <small style="color:#0A0A0A;background-color: #e7e7e7;" class="timing">
+         <%= link_to "Add" ,instructor_student_timing_path(time.id,:instructor_student=>@instructor_student.id),class: 'timing', remote: :true%></small><br>
+         <%@inst_stu_time=InstructorStudentTiming.where(:timing_id=>time.id,:instructor_student_id=>@instructor_student.id)%>
+          <div id="display_time_<%=time.id %>">
+            <%if @inst_stu_time.count > 0 %>
+              <%@inst_stu_time.each do |inst_stu_time| %>
+                <div id="inst_stud_<%=inst_stu_time.id %>">
+                  <%= link_to instructor_student_timing_path(inst_stu_time.id),class: 'timing', remote: :true do%>
+                    <small><%=inst_stu_time.date.strftime('%d-%m-%y') %> <%=inst_stu_time.time.strftime('%M')== "00" ? inst_stu_time.time.strftime('%S') : inst_stu_time.time.strftime('%-M:%S') %>s</small><br>
+                  <%end %>
+                </div>
+              <%end %>
+            <%end %>
+          </div>
+      <%end %>
+    </div>
+  </div>
+</div>
+
+<div class="row margin-bottom-20">
+  <div class="col-xs-12 col-sm-4">
+    <h3>Registerd Test </h3>
+  </div>
+  <div class="">
+    <div class="col-sm-8 col-xs-12 padding-top-10">
+       <% if @ins_student_award.count > 0 %>
+        <div class="row">
+          <% Award.all.order(:position).each do |award_p| %>
+            <% @ins_student_award.each do |award| %>
+              <% if award.award_id == award_p.id %>
+                <% if award.status == "Confirmed" || award.status == "Pending"%>
+                  <% if award.award_progress == "ready_for" && award.is_registered? %>
+                  <% if award.award_id.present? %>
+                    <% if  !award.award_test.nil? && !award.award_test.nil? %>
+                      <div class="col-xs-4 text-right text-muted" >Date & Time</div>
+                      <div class="col-xs-8 ">
+                      <%= link_to award.award_test.test_date.strftime("%e %b %Y") +", "+ award.award_test.test_time.strftime("%-I.%M%P") ,instructor_award_test_path(award.award_test) %>
+                      </div>
+                      <div class="col-xs-4 text-right text-muted">Award</div>
+                      <div class="col-xs-8">
+                        <%= Award.find(award.award_id).name %>
+                      </div> 
+                      <!-- <a data-toggle="modal" style="margin-left: 60%;" href="#<%= award.award_id %>"><small>(Unregister Test)</small></a> -->
+                      <%# @remaining_days = (award.award_test.test_date - Date.today()).to_i - 22 %>
+                      <%# if  @remaining_days > 0 %>
+                        <!-- <div class="modal fade" id="<%= award.award_id %>" tabindex=" -1" role="xyz" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                              </div>
+                              <div class="modal-body">
+                               Are you sure you want to unregister student for test?   
+                              </div>
+                              <div class="modal-footer">
+                                <a href="<%#= instructor_unregister_for_test_path(@instructor_student.id, award.award_test.id, :instructorStudent => true) %>" class="btn default">Unregister</a>
+                                <button type="button" class="btn default" data-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div> -->
+                      <%# else %>
+                        <!-- <div class="modal fade" id="<%= award.award_id %>" tabindex=" -1" role="xyz" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                              </div>
+                            </div>
+                            <div class="modal-body">
+                              Sorry. you are not able to unregister as booking has closed.
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn default" data-dismiss="modal">okay</button>
+                            </div>
+                          </div>
+                        </div> -->
+                      <%# end %>
+                    <% end %>
+                  <% end %>
+                  <% end %>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>  
+      <% end %>
+    </div>
+  </div> 
+</div>
+
+<div class="modal fade inst_student add_timing" id="add_timing" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-sm" style="margin-top: 100px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss = "modal" aria-hidden="true"></button>
+        <h4 class="modal-title">Data is loading..</h4>
+      </div>
+      <div class="modal-body" style="padding-top: 0px; padding-bottom: 0px;">
+        <div class="portlet-body form">
+          <div class="form-body">
+            <center><img src="/assets/select2-spinner.gif" alt="Loading.."></center>
+            <%#= img("/assets/select2-spinner.gif") %>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="margin-top: 0px;">
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  var save_count=0
+  $(document).ready(function(){
+    $('.date-picker').each(function(){
+      $(this).datepicker({
+        format: 'd MM yyyy'
+      }).on('changeDate',function(e){
+        $(e.target).parent().next().find('input').removeClass('disabled');
+        $(e.target).parent().next().find('a').removeClass('disabled');
+        save_count++;
+        $(e.target).parent().next().find('input').click(function(event) {
+          save_count--;
+        });
+      });
+    });
+
+    $('.award_progress').each(function(){
+      var progress = $(this).val();
+      if (progress == "achieved"){
+        $(this).closest('.row').find('.achieved_date').show();
+      }
+    });
+    $(document).on('change', '.award_progress', function(){
+      var progress = $(this).find("option:selected").text();
+      if (progress == "Achieved"){
+        $(this).closest('.row').find('.achieved_date').removeAttr('disabled');
+        $(this).closest('.row').find('.achieved_date').next().find('button').removeAttr('disabled');
+      }
+      else{
+        $(this).closest('.row').find('.achieved_date').attr('disabled', true);
+        $(this).closest('.row').find('.achieved_date').next().find('button').attr('disabled', true);
+      }
+      $(this).closest('.row').find('.save_enable').find('input[type="submit"]').removeClass('disabled')
+      $(this).closest('.row').find('.save_enable').find('input[type="submit"]').click(function(event) {
+        save_count=0;
+      });
+      save_count++;
+      $(this).closest('.row').find('.save_enable').find('a').removeClass('disabled');
+    });
+    $('.cross_browser').datepicker({
+      dateFormat: 'dd/mm/yy'
+    });
+
+    // $(document).on('change', '.achieved_date', function(){
+    //   $(this).closest('.row').find('.save_enable').find('input[type="submit"]').removeClass('disabled');
+    //   $(this).closest('.row').find('.save_enable').find('input[type="submit"]').click(function(event) {
+    //     save_count=0;
+    //   });
+    //   save_count++;
+    //   $(this).closest('.row').find('.save_enable').find('a').removeClass('disabled');
+    // });
+
+    $(document).on('click','.cancel',function(event) {
+      $(this).closest('.row').find('.save_enable').find('input[type="submit"]').addClass('disabled')
+      progress_id = $(this).closest('.row').find('.instructor_student_award_id').val();
+      award_id=$(this).closest('.row').find('.award_progress_id').val();
+      save_count--;
+      $.ajax({
+        url: '/instructor/instructor_student/cancle_student_award/'+progress_id,
+        type: 'GET',
+        dataType: 'script',
+        data: {award_id: award_id,instructor_student: '<%=@instructor_student.id %>'}
+      })
+    });
+  });  
+
+  window.onbeforeunload = function() {
+    if(save_count > 0){
+        console.log("in if");
+        return "Data will be lost if you leave the page, are you sure?";
+    }
+  };
+</script>

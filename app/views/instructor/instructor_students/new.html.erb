@@ -1,0 +1,20 @@
+<%= title "New Group Class" %>
+<% if !admin_user_signed_in? %>
+  <%= render "instructor/shared/login" %>
+<% else %>
+  <div class="main">
+    <div class="container">
+      <ul class="breadcrumb">
+        <li><a href="/instructor">Home</a></li>
+        <li><a href="/instructor/instructor_students">Students</a></li>
+        <li class="active">New</li>
+      </ul>
+      <div class="margin-bottom-40">
+        <%#= render :partial => 'instructor/home/ac_side_bar' %>
+        <div class="col-md-12 col-sm-12">
+          <%= render "form" %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

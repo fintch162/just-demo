@@ -1,0 +1,92 @@
+- if !admin_user_signed_in?
+  = render "/instructor/shared/login"
+- else
+  .main
+    %ul.breadcrumb
+      %li
+        %a{:href => "/instructor"} Instructor
+      %li.active Home
+      -#%li
+      -#  %a{:href => "/instructor"} Home
+      -#%li.active Group Classes
+
+    .main
+      .container
+        / BEGIN SIDEBAR &amp; CONTENT
+        .row.margin-bottom-40
+          / BEGIN SIDEBAR
+          .sidebar.col-md-3.col-sm-3
+            %ul.list-group.margin-bottom-25.sidebar-menu
+              %li.list-group-item.clearfix
+                %a{:href => "#"}
+                  %i.fa.fa-angle-right>
+                  Group Classes
+              %li.list-group-item.clearfix
+                %a{:href => "#"}
+                  %i.fa.fa-angle-right>
+                  Students
+              %li.list-group-item.clearfix
+                %a{:href => "#"}
+                  %i.fa.fa-angle-right>
+                  Acount Settings
+          / END SIDEBAR
+          -#/ BEGIN CONTENT
+          -#.col-md-9.col-sm-9
+          -#  %h1 Group Classes
+          -#  .content-page
+          -#    %table.table.table-hover
+          -#      %thead
+          -#        %tr
+          -#          %th
+          -#          %th Day
+          -#          %th Time
+          -#          %th Venue
+          -#          %th
+          -#      %tbody
+          -#        %tr
+          -#          %td
+          -#            1
+          -#          %td Monday
+          -#          %td 4.00pm - 5.00pm
+          -#          %td Yishun Swimming Complex
+          -#          %td
+          -#            %span.label.label-success View
+          -#        %tr
+          -#          %td
+          -#            2
+          -#          %td Monday
+          -#          %td 5.00pm - 6.00pm
+          -#          %td Yishun Swimming Complex
+          -#          %td
+          -#            %span.label.label-success View
+          -#        %tr
+          -#          %td 3
+          -#          %td Monday
+          -#          %td 6.00pm - 7.00pm
+          -#          %td Yishun Swimming Complex
+          -#          %td
+          -#            %span.label.label-success View
+          -#        %tr
+          -#          %td 4
+          -#          %td Tuesday
+          -#          %td 6.00pm - 7.00pm
+          -#          %td Sengkang Swimming Complex
+          -#          %td
+          -#            %span.label.label-success View
+          -#        %tr
+          -#          %td 5
+          -#          %td Tuesday
+          -#          %td 7.00pm - 8.00pm
+          -#          %td Sengkang Swimming Complex
+          -#          %td
+          -#            %span.label.label-success View
+          -#        %tr
+          -#          %td 6
+          -#          %td Tuesday
+          -#          %td 8.00pm - 9.00pm
+          -#          %td Sengkang Swimming Complex
+          -#          %td
+          -#            %span.label.label-success View
+          -#/ END CONTENT
+        / END SIDEBAR &amp; CONTENT
+

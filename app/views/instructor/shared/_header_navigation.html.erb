@@ -1,0 +1,58 @@
+<div class="header-navigation">
+  <ul>
+    <li class="<%=(current_page?(instructor_dashboard_path) == true || current_page?(instructor_root_path) == true  ? "active" : "")%>"><a href="<%= instructor_dashboard_path %>">Dashboard</a></li>
+   <!--  <li class="<%=(current_page?(instructor_referrals_path) == true  ? "active" : "")%>"><a href="<%= instructor_referrals_path %>">Referrals</a></li>
+ -->    <li class="<%=(current_page?(instructor_group_classes_index_path) == true  || current_page?(new_instructor_home_path) == true ? "active" : "")%>"><a href="<%= instructor_group_classes_index_path %>">Group Classes</a></li>
+     <li class="<%=(current_page?(instructor_award_tests_path) == true  || current_page?(new_instructor_award_test_path) == true ? "active" : "")%>"><a href="<%= instructor_award_tests_path %>">Award Test</a></li>
+    <li class="<%=(current_page?(instructor_instructor_students_path) == true || current_page?( new_instructor_instructor_student_path) == true  ? "active" : "")%>"><a href="<%= instructor_instructor_students_path %>">Students</a></li>
+    <li class="<%=(current_page?(instructor_instructor_student_photos_path) == true ? "active" : "")%>"><a href="<%= instructor_instructor_student_photos_path %>">Photos</a></li>
+    
+       <!--  <li class="<%#=(current_page?(instructor_opportunity_path) == true ? "active" : "")%>">
+            <a href="<%#= instructor_opportunity_path %>">Opportunity</a>
+        </li> -->
+   
+     <li class="<%=(current_page?(instructor_quick_add_fee_path) == true ? "active" : "")  %>"><%= link_to "Quick Add Fee", instructor_quick_add_fee_path %></li>
+     <!-- <li class="<%#=(current_page?(instructor_print_student_path) == true ? "active" : "") %>"><a href= "<%#= instructor_print_student_path %>">Print</a></li> -->
+     <!-- <li><a href= "javascript:;">Sort Student</a></li> -->
+    <li class="menu-search">
+      <span class="sep"></span>
+      <i class="fa fa-search search-btn"></i>
+      <div class="search-box search" >
+        <%= form_tag instructor_search_result_path, :method => 'get', :html => { :class=> "form-horizontal" } do %>          
+          <div class="input-group" style="height: 55px important;">
+            <%= text_field_tag :search, params[:search],:autofocus => "autofocus",:placeholder =>"Search" ,:class =>"form-control" ,:style => "font-size: 25px !important; height: 56px !important;"%>
+            <span class="input-group-btn">
+            <%= submit_tag "Search", :name => nil,:class => "btn btn-primary"  ,:style => "font-size: 30px !important;"%>         
+          </div>
+        <% end %>
+      </div> 
+    </li>
+  </ul>
+</div>
+
+<style type="text/css">
+  .header-navigation > ul > li > a {
+    color: #767f88;
+    padding: 34px 12px 32px;
+  }
+  .header-navigation {
+    font: 19px "PT Sans Narrow", sans-serif;
+    letter-spacing: 1px;
+  }
+  .search{
+    font-size: 30px !important;
+    width: 340px !important;
+  }
+</style>
+<script type="text/javascript">
+ $(document).ready(function(){
+    $(".search-btn").click(function() {
+      if ($(".search-box").is(':visible')){
+        $(".search-box").hide();
+      }else{
+        $(".search-box").show();
+        $("#search").focus();
+      }      
+    });
+ });
+</script>

@@ -1,0 +1,35 @@
+<% if !@fee.course_start.blank? && !@fee.course_end.blank? %>
+  console.log("nkjdsndf");
+  var replace_str = $(".student_id").val();
+	var generateLink = '<a href="/instructor/edit-per-course-fee/<%= @fee.id %>?show_amount=<%= @show_amount %>&amp;student=<%= @student.id %>&amp;group_class=<%= @group_class %>" data-remote="true" class="updateFee" data-str="'+replace_str+'" id="perCourseFee_<%= @fee.id %>">'+
+			    '<br><span class="grp_small_size">$<%= @fee.amount %></span>'+
+			    '<small><%= @fee.course_start.strftime("%e %b %Y") + ' - ' + @fee.course_end.strftime("%e %b %Y") %></small><br>'+
+			'</a>';
+
+  $("#perCourseFee_<%= @fee.id %>").replaceWith(generateLink);
+<% else %>
+  // var replace_str = $("#dataStr").val();
+  // console.log(replace_str)
+  <% month = @fee.monthly_detail.strftime("%b-%y") %>
+  var show_amount="<span class='grp_small_size' id='<%= @student.id %>-<%= month %>'>$<%=@fee.amount %></span>"
+  <% if @fee.payment_date.present? %>
+
+  	var date_of_payment = '<%= @fee.payment_date.strftime("%e %b") %>';
+	  var generateLink = '<%= link_to(instructor_remove_fee_path(@fee,group_class: @group_class,student: @student.id),class: "updateFee #{month}-#{@student.id}", remote: true) do %>'+date_of_payment+'<% end %><br>' + show_amount
+  <% else %>
+    // var generateLink = '<a class="updateFee" data-remote="true" data-str='+replace_str+' href="/instructor/remove-fee/<%#= @fee.id %>?show_amount=<%#= @show_amount %>&amp;student=<%#= @student.id %>&amp;group_class=<%#= @group_class %>">'+date_of_payment+'</a><br>'+show_amount;
+
+    var generateLink = '<%= link_to(instructor_group_class_get_fee_data_path(@group_class,@student.id,month: params[:fee][:monthly_detail], fee: @fee), class: "clr-red load-modal #{month}-#{@student.id}", remote: true) do %><i class="fa fa-plus"></i>Due<% end %><br>' + show_amount
+
+  <% end %>
+
+  $("#<%= @student.id %>-<%= month %>").remove();
+  $(".<%= month %>-<%= @student.id %>").parent().find('br').remove()
+  $(".<%= month %>-<%= @student.id %>").replaceWith(generateLink)
+  $(".<%= month %>-<%= @student.id %>").parent().css({'background-color':'green'}).animate({'background-color':'#ffffff'},1000);
+
+  // $("[data-str='"+replace_str+"']").parent().find("span").remove();
+  // $("[data-str='"+replace_str+"']").replaceWith(generateLink);
+<% end %>
+$modal = $('.modal'),
+$modal.modal('hide');

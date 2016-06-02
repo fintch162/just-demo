@@ -1,0 +1,46 @@
+<% if @outgoing_messages["data"].count > 0 %>
+  <% init_class = Test.new %>
+  var outgoing_message = [];
+  <% @outgoing_messages["data"].each do |message| %>
+    <% seconds = message["time_sent"] / 1000 if !message["time_sent"].nil? %>
+    <% content = message["content"].split("\n").join("<br />") if !message["content"].nil? %>
+    <% color = '' %>
+    <% if message["starred"] == true %>
+      <% color= 'style="color: #f8be2c;"' %>
+    <% end %>
+
+    <% if message["status"] == "sent" %>
+      <% label = "Sent" %>
+      <% lable_bg = "label-warning" %>
+    <% elsif message["status"] == "delivered" %>
+      <% label = "Delivered" %>
+      <% lable_bg = "label-success" %>
+    <% elsif message["status"] == "queued" %>
+      <% label = "Queued" %>
+      <% lable_bg = "label-danger" %>
+    <% end %>
+
+    <% name = init_class.get_name_from_number(message["from_number"], @arr_contact) %>
+    outgoing_message.push('<tr class="unread" data-messageid="1"><td class="inbox-small-cells"><div class="checker"><span><input class="mail-checkbox" type="checkbox"></input></span></div></td><td class="inbox-small-cells"><i class="fa fa-star" <%= color %>></i></td><td><span class="label label-sm <%= lable_bg %>"><%= label %></span></td><td class="view-message hidden-xs"><%= name %></td><td class="view-message"><%= simple_format(content).html_safe %></td><td class="view-message text-right"><%= Time.at(seconds).strftime("%H:%M %P") if !message["time_sent"].nil? %></td></tr>');
+  <% end %>
+  if($(".parent_incomming").find(".conversation_tbody").length > 0){
+    $(".conversation_tbody").find(".portlet").remove();
+    $(".conversation_tbody").find(".table").show();
+    $('tbody').html(outgoing_message);
+  }
+  else {
+    $('tbody').html(outgoing_message);
+  }
+<% else %>
+  if($(".parent_incomming").find(".conversation_tbody").length > 0){
+    $(".conversation_tbody").find(".portlet").remove();
+    $(".conversation_tbody").find(".table").show();
+    $('tbody').html('No messages yet.');
+  }
+  else {
+    $('tbody').html('No messages yet.');
+  }
+<% end %>
+
+$( ".inbox-nav" ).find( "li" ).removeClass('active');
+$( ".inbox-nav" ).find( "li.draft" ).addClass('active');

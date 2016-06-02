@@ -1,0 +1,29 @@
+<div class="row margin-bottom-40">
+  <div class="col-md-9 col-sm-9">
+    <h1>Lightning Risk</h1>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Venue</th>
+          <th>Risk</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @lightning_risks.each do |lightning_risk| %>
+          <tr>
+            <td>
+              <%= lightning_risk.location %>
+            </td>
+            <td>
+              <% if lightning_risk.risk == "Yes"  %>
+                <%= lightning_risk.time[0..3].insert(2,':').to_time.strftime("%l:%M%P")+' - ' +lightning_risk.time[5..8].insert(2,':').to_time.strftime("%l:%M%P") %>
+              <% else %>
+                -
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+<%= link_to 'Back', instructor_instructor_student_gallery_path(@instructor_student.id,@gallery.id) %>
+
+<%= form_for [:instructor, @instructor_student,@instructor_student.gallery, @video], html: { multipart: true, :class => "dropzone"}  do |f| %>
+  <div class="fallback">
+	  <%= f.file_field :video_file ,as: :file %>
+	  <%= f.submit "Submit" %>
+  </div>
+<% end %>
+
+
+

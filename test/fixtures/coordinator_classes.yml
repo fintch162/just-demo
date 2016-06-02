@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  day: 1
+  venue_id: 
+  instructor_id: 
+  age_group_id: 
+
+two:
+  day: 1
+  venue_id: 
+  instructor_id: 
+  age_group_id: 

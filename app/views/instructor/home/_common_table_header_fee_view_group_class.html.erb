@@ -1,0 +1,40 @@
+<th style="width: 12px;"></th>
+<th style="width:10px;"><input type="checkbox" name="checkedAll" id="checkedAll" value="" class="checkedAll"></input></th>
+<% @font_size = current_admin_user.more_or_less_months.count != 0  && !current_admin_user.more_or_less_months.first.font_size.nil? ? "font-size: #{current_admin_user.more_or_less_months.first.font_size*0.8}px" : "font-size: 16px;" %>
+<% if browser.mobile? %>
+	<th class="Name" style=" max-width: 200px; white-space:nowrap; <%=  current_admin_user.more_or_less_months.count == 0 ? "font-size: 16px;" : "font-size: #{current_admin_user.more_or_less_months.first.font_size*0.8}px" %>">Name</th>
+	<!-- <th class="profile-picture" style="<%#= @hide_show_columns.profile_pic? ? '' : 'display: none;'%>" ></th> -->
+<% else %>
+	<th class="profile-picture" style="<%= @hide_show_columns.profile_pic? ? '' : 'display: none;'%>" ></th>
+
+	<th class="Name" style=" max-width: 280px; white-space:nowrap; <%= @font_size %>">Name</th>
+<% end %>
+
+<th class="student_id" style="<%= @hide_show_columns.student_id? ? '' : 'display: none;'%> white-space:nowrap;<%= @font_size %>">Student Id</th>
+
+<th class="Contact" style="<%= @hide_show_columns.contact? ? '' : 'display: none;'%> white-space:nowrap;<%= @font_size %>">Contact</th>
+
+<th class="ic-number" style="<%= @hide_show_columns.ic_number? ? '' : 'display: none;' %> white-space:nowrap;<%= @font_size %>">IC Number</th>
+
+<th class="date-of-birth" style="<%= @hide_show_columns.date_of_birth? ? '' : 'display: none;' %> white-space:nowrap; <%= @font_size %>">Date of birth</th>
+
+<th class="joined-date" style="<%= @hide_show_columns.join_date? ? '' : 'display: none;' %> white-space:nowrap; <%= @font_size %>">Joined date</th>
+
+<th class="description" style="<%= @hide_show_columns.description? ? '' : 'display: none;' %> white-space:nowrap; <%= @font_size %>">Description</th>
+
+<th class="training-for" style="<%= @hide_show_columns.training_for? ? '' : 'display: none;' %> white-space:nowrap; <%= @font_size %>">Training</th>
+
+<th class="ready-for" style="<%= @hide_show_columns.ready_for? ? '' : 'display: none;' %> white-space:nowrap; <%= @font_size %>">Ready</th>
+
+<th class="registered-for" style="<%= @hide_show_columns.registered_for? ? '' : 'display: none;' %> white-space:nowrap; <%= @font_size %>">Booked</th>
+
+<th class="achieved" style="<%= @hide_show_columns.achieved? ? '' : 'display: none;' %> white-space:nowrap; <%= @font_size %>">Achieved</th>
+
+<th class="fee" style="<%= @hide_show_columns.fee? ? '' : 'display: none;' %> white-space:nowrap; <%= @font_size %>">Fee</th>
+
+<% if @hide_show_columns.timing? %>
+	<% Timing.where("id IN (?)",@hide_show_columns.timing.split(',')).each do |time| %>
+		<th class="<%=time.title %>" style="white-space:nowrap; <%= @font_size %>"><%= time.custom_name %></th>
+	<%end %>
+<% end %>
+                

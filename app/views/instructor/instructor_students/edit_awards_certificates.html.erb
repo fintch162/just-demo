@@ -1,0 +1,105 @@
+<div class="main">
+  <div class="container">
+    <ul class="breadcrumb">
+      <li><a href="/instructor">Home</a></li>
+      <% if !@group_class.blank? %>
+        <li>Group Class</li>
+        <li><%= link_to @day_array[@group_class.day] +' '+ @group_class.time.strftime("%I:%M %p").to_s + " - " + (@group_class.time + @group_class.duration*60).strftime("%I:%M %p").to_s, instructor_home_path(@group_class.id) %></li>
+      <% else %>
+        <li><a href="<%= instructor_instructor_students_path %>">Student</a></li>
+      <% end %>  
+      <li><%= @instructor_student.student_name %></li>
+      <li class="active">Certificates & Awards</li>
+    </ul>
+    <div class="row margin-bottom-40">
+      <div class="col-sm-6">
+        <h2><%= @instructor_student.student_name %></h2>
+        <h3>Certificates & awards</h3>
+        <div class="content-page">
+          <h4>Current Progress</h4>
+          <%= nested_form_for [:instructor, @instructor_student], :html => {:class=> "form-horizontal",:multipart => true} do |f| %>
+            <div>
+              <% items = ["training_for","ready_for"] %>
+              <%= f.fields_for :instructor_student_awards do |award| %> 
+                <% if award.object.new_record? && @instructor_student.instructor_student_awards.where("award_progress IN (?)", items).count == 0 %>
+                  <div class="form-group">
+                    <%= award.label :award_progress, "Progress", :class=>"control-label col-sm-4" %>
+                    <div class="input-group" style="margin-top: 6px;">
+                      <% [['Training for', 'training_for'], ['Ready for', 'ready_for']].each do |x,y| %>
+                        <label>
+                          <%= award.radio_button :award_progress, y, :class=>"toggle  award_progress " ,:required => true, :id => "#{x}" , :style=> "margin-left: 12px;" %>
+                          <%= x %>
+                        </label>
+                      <% end %>
+                    </div>
+                    <!--  <%#= award.radi :award_progress, [['Training for', 'training_for'], ['Ready for', 'ready_for']] ,{  }, :class => "form-control award_progress", :id => "award_progress" %>
+                    -->
+                  </div>
+                  <div class="form-group">
+                    <%= award.label :award_id, "Award Name", :class=>"control-label col-sm-4" %>
+                    <div class="col-sm-8">
+                      <%#= f.collection_select :award_ids, Award.all, :id, :name %>
+                      <%= award.select :award_id, Award.all.map{ |c| [c.name, c.id] }, {:prompt => " Please Select"}, :class => "form-control award_id" %>
+                    </div>
+                  </div>
+                <% else %>
+                  <% if award.object.award_progress == "training_for" || award.object.award_progress == "ready_for"  %>
+                    <div class="form-group">
+                      <%= award.label :award_progress, "Progress", :class=>"control-label col-sm-4" %>
+                        <div class="input-group" style="margin-top: 6px;" >
+                          <% [['Training for', 'training_for'], ['Ready for', 'ready_for']].each do |x,y| %>
+                            <label>
+                              <%= award.radio_button :award_progress, y, :class=>"toggle  award_progress " ,:required => true, :id => "#{x}", :style=> "margin-left: 12px;" %>
+                              <%= x %>
+                            </label>
+                          <% end %>
+                        </div>
+                       <!--  <%#= award.radi :award_progress, [['Training for', 'training_for'], ['Ready for', 'ready_for']] ,{  }, :class => "form-control award_progress", :id => "award_progress" %>
+                         -->
+                    </div>
+                    <div class="form-group">
+                      <%= award.label :award_id, "Award Name", :class=>"control-label col-sm-4" %>
+                      <div class="col-sm-8">
+                        <%#= f.collection_select :award_ids, Award.all, :id, :name %>
+                         <%= award.select :award_id, Award.all.map{ |c| [c.name, c.id] }, {:prompt => " Please Select"}, :class => "form-control award_id" %>
+                      </div>
+                    </div>
+                  <% end %>
+                <% end %>
+              <% end %>
+            </div>
+            <div class="col-sm-4"></div> 
+            <h4>Achieved</h4>
+            <div id="award_detail">
+              <%= f.fields_for :instructor_student_awards do |award| %> 
+                <%= render 'instructor_student_awards_fields', f: award %> 
+              <% end %>
+            </div>
+            <div class="col-sm-4"></div> 
+            <div class="col-sm-8" style="margin-bottom: 5px;">
+              <%= f.link_to_add "Add Award", :instructor_student_awards, :class=>"btn default pull-left", :data => { :target => "#award_detail" } %><br/>
+            </div>
+            <%= f.submit "Save", :class=>"btn green" %>
+            <%= link_to "Cancel",  instructor_instructor_student_path(@instructor_student), :class=> "btn default" %>
+          <% end %>
+        </div>  
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  // var m;
+  // $('.award_id').each(function(i) {
+  //   m = $("#"+idAwardName+i).find('option:selected').val();
+  //   if(m == null || m == "") {
+  //     $("#"+idAwardName+i).parents(".form-group").remove();
+  //   }
+  // });
+  // $('.achieved_date').each(function(s) {
+  //   m = $("#"+idDateAchieved+s).val();
+  //   if(m == null || m == "") {
+  //     $("#"+idDateAchieved+s).remove();
+  //   }
+  // });
+</script>

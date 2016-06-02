@@ -1,0 +1,473 @@
+<div class="se-pre-con"></div>
+<!-- for new page checkbox condition -->
+<% new_page = 0 %>
+<% if @fee_attendance != "no" %>
+  <% @m = @previousMonths.index(@startMonth)..@nextMonths.index(@endMonth)%>
+  <% @mon = [] %>
+  <% (@startMonth..@endMonth).each do |date| %>
+   <% temp_month = date.strftime("%b-%y") %>
+   <% unless @mon.include?(temp_month) %>
+     <% @mon << temp_month %>
+   <% end   %>
+  <% end %>
+  <% @mon = @mon.uniq %>
+<% end %>
+
+<div class="content-page" id="content-page">
+  <div class="row">
+    <% @previous =  (1.month.ago).strftime("%B %Y")  %>
+    <% @current = Date.today.strftime("%B %Y") %>
+    <% @next = (Date.today + 1.months).strftime("%B %Y") %>
+  </div>
+
+  <% show_cnt = 0 %>
+  <%= render 'manage_view' %>
+  
+  <%if @stu_group_class.present? %>
+    <div class="row">
+      <div class="col-md-offset-1" style="margin-left: 54px;">
+        <label><input type="checkbox" class="select_all"> Select all</label>
+      </div>
+    </div>
+    <div class="row">
+      <% days_arry = [] %>
+      <% all_days_arr = [] %>
+      <%@stu_group_class.order('day asc,time asc').each do |gp_class| %>
+        <% if gp_class.day.to_i == 0 %>
+          <% days_arry << gp_class %>
+        <% else %>
+          <% all_days_arr << gp_class %>
+        <% end %>
+      <%end%>
+      <%all_days_arr = all_days_arr + days_arry %>
+      <%all_days_arr.each do |gp| %>
+        <%@students_list = gp.instructor_students.includes(:fees).includes(:instructor_student_awards).includes(:student_contacts).where("instructor_student_id IN (?)",@inst_stu).where(group_id: nil) %>
+        <%#@students_list = gp.instructor_students.where("instructor_student_id IN (?)",@inst_stu) %>
+        <%#@students_list = @students_list.where(group_id: nil) %>
+          <!-- Unallocated student -->
+        <div class="col-sm-12">
+          <% if @students_list.count != 0%>
+            <% if !gp.fee_type_id.blank? %>
+              <% if (FeeType.find(gp.fee_type_id).name.downcase == "per month") %>
+                <% new_page = 1 %>
+                <% show_cnt = 1 %>
+                <% if params[:action] != "group_classes_deatil_print" %>
+                  <%#= render 'manage_view' %>
+                <% end %>
+                <br />
+                <div id="group_print_1 no-page-break-before">
+                <div class="row row-padding">
+                  <div class="col-xs-10">
+                    <% if current_admin_user.more_or_less_months.count > 0 %>
+                      <h2 style="<%= current_admin_user.more_or_less_months.first.font_size.nil?  ? "font-size: 25px;" : "font-size: #{current_admin_user.more_or_less_months.first.font_size + 9 }px" %>" class="unallocated-header"><%= gp.heading %> - Unallocated</h2>
+                    <% else %>
+                      <h2 style="font-size: 25px;" class="unallocated-header"><%= @day_array[gp.day] +' '+ gp.time.strftime("%I:%M %p").to_s%> - Unallocated</h2>
+                    <% end %>
+                  </div>
+                  <div class="col-xs-2" >
+                    <!-- <input type="checkbox" class="group_print" id="group_print_1"> New page -->
+                  </div>
+                </div>
+                 <!-- Unallocated student -->
+                <%= render "per_month_group_class_table", students_list: @students_list %>
+              </div>
+              <%end %>
+            <%end %>
+          <%end %>
+          <!-- Groupvise student -->
+          <% gp.groups.order("created_at").each do |group| %>
+            <% if group.instructor_students.where("Id IN (?)",@inst_stu).count > 0 %>
+              <% if show_cnt == 0 %>
+              <% if params[:action] != "group_classes_deatil_print" %>
+                  <%#= render 'manage_view'%>
+                <% end %>
+                <% show_cnt = 1 %>
+              <% end %>
+              <br>
+              <div id="group_print_3_<%=group.id %>" class="<%=new_page != 0 ? "page-break-before" : ""%>">
+                <div class="row row-padding">
+                  <div class="col-xs-10">
+                    <% if current_admin_user.more_or_less_months.count > 0 %>
+                        <h2 style="<%= current_admin_user.more_or_less_months.first.font_size.nil?  ? "font-size: 25px;" : "font-size: #{current_admin_user.more_or_less_months.first.font_size + 9 }px" %>"><%= gp.heading %> - <%= group.group_name %></h2>
+                      <% else %>
+                        <h2 style="font-size: 25px;"><%= @day_array[gp.day] +' '+ gp.time.strftime("%I:%M %p").to_s%> - <%= group.group_name %></h2>
+                      <% end %>
+                  </div>
+                  <div class="col-xs-2 hide_print">
+                    <% if new_page != 0 %>
+                      <label><input type="checkbox" checked class="group_print" id="group_print_3_<%=group.id %>"> New page</label>
+                    <% end %>
+                    <% new_page = 1 %>
+                  </div>
+                </div>
+                
+                <% if !gp.fee_type_id.blank? %>
+                  <% if (FeeType.find(gp.fee_type_id).name.downcase == "per month") %>
+                    <!-- Allocated student -->
+                    <%= render "per_month_group_class_table", students_list: group.instructor_students.includes(:fees).includes(:instructor_student_timings).includes(:instructor_student_awards).includes(:student_contacts).where("id IN (?)",@inst_stu) %>
+                  <% end %>
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      <%end %>
+    </div>
+  <%else %>
+    <div class="row">
+      <div class="col-md-8">
+        No Record Found !!
+      </div>
+    </div>
+  <%end %>
+</div>
+
+
+<div class="modal fade bs-modal-sm removeFee" id="small" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-body">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade smsFeature" id="delete_student" tabindex="-1" role="basic" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+        <h4 class="modal-title"></h4>
+      </div>
+      <div class="modal-body">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+    
+  var myTransaction1 = [];
+  $('.checkedAll').click(function(event) {
+    if(this.checked) {
+      if($('.checkedAll').filter( ':checked' ).length == $('.checkedAll').length){
+       $(".select_all").prop("checked", true)
+      }
+      $(this).parents('table').find('.check_student').each(function() {
+        this.checked = true;
+        if($.inArray($(this).val(),myTransaction1)){
+          myTransaction1.push($(this).val());
+        }
+      });
+    } else {
+      $(".select_all").prop("checked", false)
+      $(this).parents('table').find('.check_student').each(function() {
+        this.checked = false;
+        if($.inArray($(this).val(),myTransaction1) != -1){
+          myTransaction1.splice($.inArray($(this).val(),myTransaction1), 1);
+        }
+      });
+    }
+    $('#send_message').val(myTransaction1);
+  });
+
+
+  $(".check_student").click(function() {
+    if($(this).is(":checked")){
+      if($('.check_student').filter( ':checked' ).length == $('.check_student').length){
+       $(".select_all").prop("checked", true)
+      }
+      var flag = 0;
+      $(this).parents('table').find('.check_student').each(function() {
+        if(!this.checked)
+        flag = 1;
+      })
+      if(flag == 0) { $(this).parents('table').find(".checkedAll").prop("checked", true); }
+      if($.inArray($(this).val(),myTransaction1)){
+        myTransaction1.push($(this).val());
+      }
+    }
+    else {
+      $(".select_all").prop("checked", false)
+      if($.inArray($(this).val(),myTransaction1) != -1){
+        myTransaction1.splice($.inArray($(this).val(),myTransaction1), 1);
+      }
+      $(this).parents('table').find(".checkedAll").prop("checked", false);
+    }
+    var id = $(this).attr('id');
+    $('#send_message').val(myTransaction1);
+    $(this).parents(".fields").remove();
+  });
+
+  $('#send_msg').click(function(){
+    if ($('#send_message').val().length == 0 ){
+      $('#error_msg').show();
+      return false;  
+    }
+    else{
+      $('#error_msg').hide(); 
+      return true;
+    }
+  });
+
+  $("#text_msg").keyup(function(event) {
+    if(!$("#text_msg").val())
+      $("#send_msg").attr('disabled','disabled');
+    else
+      $("#send_msg").removeAttr('disabled','disabled');
+  });
+  $("#send_msg").attr('disabled','disabled');
+    
+     
+  jQuery(document).ready(function($) {
+      var myTransaction3 = [];
+      $(".student_field_checkbox:checked").each(function(){
+        selected_options = $(this).val();
+        console.log(selected_options);
+        myTransaction3.push(selected_options);
+      });
+      $('#columnName').val(myTransaction3);
+      $('.student_field_checkbox').click(function(){
+        if($(this).is(":checked")){
+          if($.inArray($(this).val(),myTransaction3)){
+            selected_value = $(this).val()
+            myTransaction3.push(selected_value);
+            $('#columnName').val(myTransaction3);
+          }
+        }
+        else{
+          if($.inArray($(this).val(),myTransaction3) != -1){
+            myTransaction3.splice($.inArray($(this).val(),myTransaction3), 1);
+            $('#columnName').val(myTransaction3);
+          }
+        }  
+      });
+
+      var mytiming = [];
+      $(".student_timing:checked").each(function() {
+        selectedtiming1=$(this).val();
+        console.log(selectedtiming1);
+        mytiming.push(selectedtiming1);
+      });
+      $('#columnTiming').val(mytiming);
+      $('.student_timing').click(function() {
+        if($(this).is(':checked')){
+          if($.inArray($(this).val(),mytiming)){
+            selectedvalue1=$(this).val();
+            mytiming.push(selectedvalue1)
+            $('#columnTiming').val(mytiming);
+          }
+        }
+        else{
+
+          if($.inArray($(this).val(),mytiming) != -1){
+            mytiming.splice($.inArray($(this).val(),mytiming), 1);
+            $('#columnTiming').val(mytiming);
+          }
+        }
+      });
+   
+  });
+
+  $(".select_all").click(function(event) {
+    if (this.checked==true){
+      $(".checkedAll").prop("checked", false)
+      $(".checkedAll").trigger('click');
+    }
+    else{
+      $(".checkedAll").trigger('click');
+    }
+  });
+  
+
+  
+</script>
+<style>
+.dataTables_filter { display: none;}
+</style>
+<style>
+  .avatar{
+    border-radius: 50% !important;
+    width: 45px !important;
+    height: 45px !important;
+  }
+
+  .btnGo {
+    margin-left: 5px;
+  }
+  .startMon {
+    float: left;
+    margin-right: 5px;
+  }
+  .columnForm {
+    
+  }
+  .drop-down{
+    width: 100px;
+  }
+   .sample_editable_2{
+    width: 100% !important;
+  }
+
+  body { 
+  font: 300 16px 'Open Sans', Arial, sans-serif;
+}
+
+/***
+General typography 
+***/
+h2 {
+  font: 200 'Open Sans', sans-serif;
+}
+
+</style>
+<script type="text/javascript">
+  var a = 0;
+  $(document).on('click','.updateFee',function(){
+    var data_str = $(this).data("str");
+    $("#dataStr").val(data_str);
+    // $('.sample_editable_2').DataTable( {
+    //     responsive: true
+    // } );
+  });
+  $(function () {
+    
+    $(".font-button").bind("click", function () {
+      var size = parseInt($('table').css("font-size"));
+      if ($(this).hasClass("plus")) {
+          size = size + 2;
+      } else {
+          size = size - 2;
+          if (size <= 10) {
+              size = 10;
+          }
+      }
+
+      $('table').css("font-size", size);
+      $('h2').css("font-size", size+9);
+      $('table th').css("font-size", size*0.8);
+
+      $.ajax({
+        url: '/instructor/save-font-size',
+        type: 'GET',
+        dataType: 'script',
+        data: { size: size },
+      });
+      
+    });
+
+  });
+
+  function set_fees_dropdown(){
+    var checkbox = document.getElementById ("fee_check");
+    if(checkbox.checked){
+      enable_fee();
+      disable_mark_attendance();
+      disable_view_fee_attendance();
+      document.getElementById ("latestLesson").checked =false;
+    }
+    else
+    {
+      disable_fee(); 
+    }
+  }
+
+  function disable_view_fee_attendance(){
+    document.getElementById ("view_fee_attendance").checked =false;
+    document.getElementById ("view_start_month").disabled=true;
+    document.getElementById ("view_end_month").disabled=true;
+  }
+  function enable_view_fee_attendance(){
+    document.getElementById ("view_start_month").disabled=false;
+    document.getElementById ("view_end_month").disabled=false;
+  }
+  function disable_mark_attendance(){
+    document.getElementById ("atte_check").checked =false;
+    document.getElementById ("start_month_atte").disabled=true;
+    document.getElementById ("end_month_atte").disabled=true;
+  }
+  function enable_mark_attendance(){
+    document.getElementById ("start_month_atte").disabled=false;
+    document.getElementById ("end_month_atte").disabled=false;
+  }
+  function disable_fee(){
+    document.getElementById ("fee_check").checked =false;
+    document.getElementById ("start_month").disabled=true;
+    document.getElementById ("end_month").disabled=true;
+  }
+  function enable_fee(){
+    document.getElementById ("start_month").disabled=false;
+    document.getElementById ("end_month").disabled=false;
+  }
+
+  function set_view_fee_attendance_dropdown(){
+    var checkbox = document.getElementById ("view_fee_attendance");
+    if(checkbox.checked){
+      disable_fee();
+      disable_mark_attendance();
+      enable_view_fee_attendance();
+      document.getElementById ("latestLesson").checked =false;
+    }
+    else
+    {
+      disable_view_fee_attendance();
+    }
+  }
+
+  function set_att_dropdown(){
+    var checkbox = document.getElementById ("atte_check");
+    if(checkbox.checked){
+      disable_fee();
+      enable_mark_attendance();
+      disable_view_fee_attendance();
+      document.getElementById ("latestLesson").checked =false;
+    }
+    else
+    {
+      disable_mark_attendance();
+    }
+  }
+  function set_att_fee_dropdown(){
+    var checkbox = document.getElementById ("latestLesson");
+    if(checkbox.checked){
+      disable_fee();
+      disable_mark_attendance();
+      disable_view_fee_attendance();  
+    }
+  }
+
+  function height_light_cell(){
+    var checkbox = document.getElementById ("highlight_ready");
+    if (checkbox != null){
+      if(checkbox.checked)
+      { 
+        document.getElementById ("ready_cell_month").disabled=false; 
+      }
+      else
+      {
+        document.getElementById ("ready_cell_month").disabled=true; 
+      }
+    }
+  }
+  
+  // $(window).load(function() {
+  //   $(".se-pre-con").show();
+  // });
+
+  $(document).ready(function() {
+
+    // var high_checkbox = $('.highlight_ready_chk')
+
+    height_light_cell();
+    var checkbox = document.getElementById ("fee_check");
+    if (checkbox != null){  
+      if(checkbox.checked)
+      {
+        // document.getElementById ("show_amount").disabled=false;   
+      }
+      else
+      {
+        // document.getElementById ("show_amount").disabled=true;   
+      }
+    }
+  });
+</script>

@@ -1,0 +1,325 @@
+<% if @awardIds.blank? %>
+  <%# @day_array = [{"Sunday" => 0}, {"Monday" => 1}, {"Tueday" =>2}, {"wednesday" => 3}, {"Thursday" => 4}, {"Friday" => 5}, {"Saturday" => 6}] %>
+  
+  <!-- application helper called to sort classes by day and sunday will be at last -->
+  <% sorted_group_classes = sort_group_classes_by_day(@group_classes) %>
+  <% sorted_group_classes.each do |group_class|%>
+    <% if group_class.instructor_students.count > 0%>
+      
+      <h2 class="pull-left">
+        <%= group_class.heading %>
+        <small style="font-size: 50%;"><%= link_to "Mange fee", instructor_group_class_view_path(group_class) %></small>
+      </h2>
+      <a href="<%= new_instructor_instructor_student_path + '?gp='+group_class.id.to_s %>" class="btn default pull-right"><i class="fa fa-plus"></i>Student</a>
+      <div class="clearfix"></div>
+      <table class="table custTable">
+        <thead>
+          <tr class="heading">
+            <th>&nbsp;</th>
+            <th class="col-sm-3">Name </th>
+            <th class="col-sm-1">Contact</th>
+            <th class="col-sm-1">Fee</th>
+            <th class="col-sm-4">Achieved</th>
+            <th class="col-sm-1">Join</th>
+            <th class="col-sm-2">Description</th>
+            <% count = 0 %>
+          </tr>
+        </thead>
+        <tbody>
+        <% count = 0 %>
+          <% group_class.instructor_students.each do |instructor_student| %>
+            <% if instructor_student.group_id == nil %>
+              <% count = count + 1 %>
+              <tr class="text-left">
+                <td><%= count %></td>
+                <td><%= link_to instructor_student.student_name, instructor_instructor_student_path(instructor_student) %></td>
+                <% @primary_contacts = instructor_student.student_contacts.where(:primary_contact => true).first%> 
+                <td>
+                  <% if !@primary_contacts.blank? %><%= @primary_contacts.contact %>
+                  <% else %>-<% end %> 
+                </td>
+                <% course_counter = 0%>
+                <% @pre_month = 0 %>
+                <% @current_month = 0 %>
+                <% instructor_student.fees.each do |fee| %>
+                  <% if fee.monthly_detail.present? %>
+                    <%if fee.monthly_detail.strftime("%b") ==  (1.month.ago).strftime("%b")%>  
+                      <% @pre_month = 1 %>
+                    <% elsif fee.monthly_detail.strftime("%b") ==  Time.now.strftime("%b") %>
+                      <% @current_month = 1 %>
+                    <% end %>
+                  <% end %>
+                <% end %>
+                <% if @current_month == 1 %>
+                  <td class="success"></td>
+                <% elsif @pre_month == 1 && @current_month == 0%>
+                  <td class="warning"></td>
+                <% elsif @pre_month == 0 && @current_month == 0 %>
+                  <td class="danger"></td>
+                <% end %>
+                <td> <% @award_progress = ["achieved", "Achieved", "ready_for", "training_for"] %>
+                <% @latest_award = instructor_student.instructor_student_awards.where("award_progress IN (?)", @award_progress).order("updated_at DESC") %>
+
+                
+                  <% @latest_award.each do |p| %>
+                    <% @award = Award.order('id').find_by_id(p.award_id)%>
+                    <span>
+                      <%= @award.name %>
+                      <small>
+                        <%= time_ago_in_words(p.achieved_date).gsub('about','') + ' ago' if p.achieved_date? %>
+                      </small><br>
+                    </span>
+                  <% end %>
+              </td>
+                <td><% if instructor_student.join_date? %>
+                <%= instructor_student.join_date.strftime("%d-%m-%y") %>
+              <% end %></td>
+                <td><%= instructor_student.additional_description %></td>
+              </tr>
+            <% end %>
+          <% end %>
+        <% group_class.groups.each do |group| %>
+          <% if group.instructor_students.count > 0 %>
+            <tr><td colspan="5"><strong><%= group.group_name %></strong></td></tr>
+            <% count = 0 %>
+            <% group.instructor_students.each do |instructor_student| %>
+              <% count = count + 1 %>
+            <tr class="text-left">
+              <td><%= count %></td>
+              <td><%= link_to instructor_student.student_name, instructor_instructor_student_path(instructor_student) %></td>
+              <% @primary_contacts = instructor_student.student_contacts.where(:primary_contact => true).first%> 
+              <td>
+                <% if !@primary_contacts.blank? %><%= @primary_contacts.contact %>
+                <% else %>-<% end %> 
+              </td>
+              <% course_counter = 0%>
+              <% @pre_month = 0 %>
+              <% @current_month = 0 %>
+              <% instructor_student.fees.each do |fee| %>
+                <% if !fee.monthly_detail.blank? %>
+                  <% if fee.monthly_detail.strftime("%b") ==  (1.month.ago).strftime("%b")%>  
+                    <% @pre_month = 1 %>
+                  <% elsif fee.monthly_detail.strftime("%b") ==  Time.now.strftime("%b") %>
+                    <% @current_month = 1 %>
+                  <% end %>
+                <% end %>
+              <% end %>
+              <% if @current_month == 1 %>
+                <td class="success"></td>
+              <% elsif @pre_month == 1 && @current_month == 0%>
+                <td class="warning"></td>
+              <% elsif @pre_month == 0 && @current_month == 0 %>
+                <td class="danger"></td>
+              <% end %>
+                                  <td> <% @award_progress = ["achieved", "Achieved", "ready_for", "training_for"] %>
+                <% @latest_award = instructor_student.instructor_student_awards.where("award_progress IN (?)", @award_progress).order("updated_at DESC") %>
+
+                
+                  <% @latest_award.each do |p| %>
+                    <% @award = Award.order('id').find_by_id(p.award_id)%>
+                    <span>
+                      <%= @award.name %>
+                      <small>
+                        <%= time_ago_in_words(p.achieved_date).gsub('about','') + ' ago' if p.achieved_date? %>
+                      </small><br>
+                    </span>
+                  <% end %>
+              </td>
+              <td>
+              <% if instructor_student.join_date? %>
+                <%= instructor_student.join_date.strftime("%d-%m-%y") %>
+              <% end %>
+              </td>
+              <td><%= instructor_student.additional_description unless instructor_student.additional_description.nil? %></td>
+            </tr>
+            <% end %>
+          <% end %>
+        <% end %>
+        </tbody>
+      </table>
+    <% end %>
+  <% end %>
+<% else %>  
+  <% @day_array = [{"Sunday" => 0}, {"Monday" => 1}, {"Tueday" =>2}, {"wednesday" => 3}, {"Thursday" => 4}, {"Friday" => 5}, {"Saturday" => 6}] %>
+  <% days_arry = [] %>
+  <% all_days_arr = [] %>
+  <% @group_classes_f.each do |group_class| %>
+    <% if !group_class.empty? %>
+      <% if group_class[0].day.to_i == 0 %>
+        <% days_arry << group_class %>
+      <% else %>
+         <% all_days_arr << group_class %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <% all_days_arr = all_days_arr + days_arry %>
+  <% cnt = 0 %>
+  <% all_days_arr.each do |group_class|%>
+    <% if cnt == 0 %>
+      <%# if group_class.instructor_students.ids.all? { |e| @instructor_student.include?(e) } %>
+        <h2 class="pull-left">
+          <%# group_class = group_class[0] %>
+          <%= group_class[0].heading %>
+          <small style="font-size: 50%;"><%= link_to "Mange fee", instructor_group_class_view_add_more_months_path(group_class[0]) %></small>
+        </h2>
+        <div class="clearfix"></div>
+        <table class="table custTable">
+          <thead>
+            <tr class="heading">
+              <th>&nbsp;</th>
+              <th class="col-sm-3">Name</th>
+              <th class="col-sm-1">Contact</th>
+              <th class="col-sm-1">Fee</th>
+              <th class="col-sm-4">Award</th>
+              <th class="col-sm-1">Join</th>
+              <th class="col-sm-2">Description</th>
+              <% count = 0 %>
+            </tr>
+          </thead>
+          <tbody>
+            <% count = 0 %>
+            <% group_class[0].instructor_students.each do |instructor_student| %>
+              <% if instructor_student.group_id == nil %>  
+                <% @award_progress = ["achieved", "Achieved", "ready_for", "training_for"] %>
+                <% @latest_award = instructor_student.instructor_student_awards.where("award_progress IN (?)", @award_progress).order("updated_at DESC").where(:award_id => @awardIds) %>
+
+                <% count = count + 1 %>
+                <%#= @latest_award.inspect %>
+                <% if !@latest_award.blank? %>
+                  <tr class="text-left">
+                    <td><%= count %></td>
+                    <td>
+                      <%= link_to instructor_student.student_name, instructor_instructor_student_path(instructor_student) %>
+                    </td>
+                    <% @primary_contacts = instructor_student.student_contacts.where(:primary_contact => true).first %>
+                    <td>
+                      <% if !@primary_contacts.blank? %><%= @primary_contacts.contact %>
+                      <% else %>-<% end %> 
+                    </td>
+                    <% course_counter = 0 %>
+                    <% @pre_month = 0 %>
+                    <% @current_month = 0 %>
+                    <% instructor_student.fees.each do |fee| %>
+                      <% if fee.monthly_detail.present? %>
+                        <% if fee.monthly_detail.strftime("%b") ==  (1.month.ago).strftime("%b")%>  
+                          <% @pre_month = 1 %>
+                        <% elsif fee.monthly_detail.strftime("%b") ==  Time.now.strftime("%b") %>
+                          <% @current_month = 1 %>
+                        <% end %>
+                      <% end %>
+                    <% end %>
+
+                    <% if @current_month == 1 %>
+                      <td class="success"></td>
+                    <% elsif @pre_month == 1 && @current_month == 0%>
+                      <td class="warning"></td>
+                    <% elsif @pre_month == 0 && @current_month == 0 %>
+                      <td class="danger"></td>
+                    <% end %>
+
+                    <td>
+                      <% @latest_award.each do |p| %>
+                        <% @award = Award.order('id').find_by_id(p.award_id)%>
+                        <span>
+                          <%= @award.name %>
+                          <small>
+                            <%= time_ago_in_words(p.achieved_date).gsub('about','') + ' ago' if p.achieved_date? %>
+                          </small><br>
+                        </span>
+                      <% end %>
+                    </td>
+                    <td>
+                      <% if instructor_student.join_date? %>
+                        <%= instructor_student.join_date.strftime("%d-%m-%y") %>
+                      <% end %>
+                    </td>
+                    <td><%= instructor_student.additional_description %></td>
+                  </tr>
+                <% end %>
+              <% end %>
+            <% end %>
+
+            <% group_class[0].groups.each do |group| %>
+              <% if group.instructor_students.count > 0 %>
+                <% headerCnt = 0 %>
+                <% group.instructor_students.each do |instructor_student| %>
+                  <% @award_progress = ["achieved", "Achieved", "ready_for", "training_for"] %>
+                  <% @latest_award = instructor_student.instructor_student_awards.where("award_progress IN (?)", @award_progress).order("updated_at DESC").where(:award_id => @awardIds) %>
+                  <% if @latest_award.count > 0 %>
+                    <% if headerCnt == 0 %><tr><td colspan="5"><strong><%= group.group_name %></strong></td></tr><% end %>
+
+                    <% headerCnt += 1 %>
+                  <% end %>
+                  <% break if headerCnt > 0 %>
+                <% end %>
+
+                <% count = 0 %>
+                <% group.instructor_students.each do |instructor_student| %>
+                  <% @award_progress = ["achieved", "Achieved", "ready_for", "training_for"] %>
+                  <% @latest_award = instructor_student.instructor_student_awards.where("award_progress IN (?)", @award_progress).order("updated_at DESC").where(:award_id => @awardIds) %>
+                  <% if !@latest_award.blank? %>
+                    <% count = count + 1 %>
+                    <tr class="text-left">
+                      <td><%= count %></td>
+                      <td><%= link_to instructor_student.student_name, instructor_instructor_student_path(instructor_student) %></td>
+
+                      <% @primary_contacts = instructor_student.student_contacts.where(:primary_contact => true).first%> 
+
+                      <td>
+                        <% if !@primary_contacts.blank? %><%= @primary_contacts.contact %>
+                        <% else %>-<% end %> 
+                      </td>
+
+                      <% course_counter = 0%>
+                      <% @pre_month = 0 %>
+                      <% @current_month = 0 %>
+                      <% instructor_student.fees.each do |fee| %>
+                        <% if !fee.monthly_detail.blank? %>
+                          <% if fee.monthly_detail.strftime("%b") ==  (1.month.ago).strftime("%b")%>  
+                            <% @pre_month = 1 %>
+                          <% elsif fee.monthly_detail.strftime("%b") ==  Time.now.strftime("%b") %>
+                            <% @current_month = 1 %>
+                          <% end %>
+                        <% end %>
+                      <% end %>
+
+                      <% if @current_month == 1 %>
+                        <td class="success"></td>
+                      <% elsif @pre_month == 1 && @current_month == 0%>
+                        <td class="warning"></td>
+                      <% elsif @pre_month == 0 && @current_month == 0 %>
+                        <td class="danger"></td>
+                      <% end %>
+
+                      <td>
+                        <% @latest_award.each do |p| %>
+                          <% @award = Award.order('id').find_by_id(p.award_id)%>
+                          <span>
+                            <%= @award.name %>
+                            <small>
+                              <%= time_ago_in_words(p.achieved_date).gsub('about','') + ' ago' if p.achieved_date? %>
+                            </small><br>
+                          </span>
+                        <% end %>
+                      </td>
+
+                      <td>
+                        <% if instructor_student.join_date? %>
+                          <%= instructor_student.join_date.strftime("%d-%m-%y") %>
+                        <% end %>
+                      </td>
+                      <td><%= instructor_student.additional_description unless instructor_student.additional_description.nil? %></td>
+                    </tr>
+                  <% end %>
+                <% end %>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      <%# end %>
+    <% end %>
+    <% cnt = 1 %>
+  <% end %>
+<% end %>
+
+

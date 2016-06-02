@@ -1,0 +1,18 @@
+%p#notice= notice
+
+%p
+  %b Bank name:
+  = @bank_detail.bank_name
+%p
+  %b Account number:
+  = @bank_detail.account_number
+%p
+  %b Created at:
+  = @bank_detail.created_at
+%p
+  %b Updated at:
+  = @bank_detail.updated_at
+
+= link_to 'Edit', edit_bank_detail_path(@bank_detail)
+\|
+= link_to 'Back', bank_details_path

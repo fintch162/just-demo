@@ -1,0 +1,20 @@
+var phone_id = $.trim($("#lead_contact").text());
+var disp = "none";
+<% if !@conversastions_messages["next_marker"].blank? %>
+  disp="block";
+  $("#customer_conversation_load_msg").attr("href", '/manage/cust_load_msg?phone='+phone_id+'&marker=<%= @conversastions_messages["next_marker"] %>');
+<% end %>
+  document.getElementById("customer_conversation_load_msg").style.display=disp;
+
+var load_msg = [];
+var str = "";
+<% @conversastions_messages["data"].each do |message| %>
+    <% seconds = message["time_created"] / 1000 if !message["time_created"].nil? %>
+    <% content = message["content"].split("\n").join("<br />") if !message["content"].nil? %>
+    var prefix = '<li class="out">';
+    <% if message["direction"] == "incoming" %>
+      prefix = '<li class="in">';
+    <% end %>
+    str = prefix + '<img class="avatar img-responsive" src="/assets/avatar.png" /><div class="message"><span class="arrow"></span>  <a class="name" href="#"> <%= message["from_number"] %> </a><span class="body"> <%= simple_format(content).html_safe %> </span></div><center><small><%= Time.at(message["time_created"]).strftime("%b %d,%Y %I:%M %P") %></small></center></li>';
+    $("#customer_conversation" ).find('li').last().after(str);
+<% end %>

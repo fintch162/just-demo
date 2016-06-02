@@ -1,0 +1,108 @@
+.portlet
+  .portlet-title
+    .actions
+      %a.btn.btn-primary.btn-xs{:href =>  new_manage_group_class_path}
+        %i.fa.fa-plus
+          Add Groupclass 
+  .portlet-body
+    .table-container
+      #datatable_ajax_wrapper.dataTables_wrapper.dataTables_extended_wrapper.no-footer
+        .row
+          /= will_paginate @venues, renderer: BootstrapPagination::Rails
+        .table-scrollable
+          %table#datatable_ajax.table.table-striped.table-bordered.table-hover.dataTable.no-footer
+            %thead
+              %tr.heading
+                %th.sorting_disabled{:colspan => "1", :rowspan => "1", :width => "2%"}
+                  .checker
+                    %span
+                      %input.group-checkable{:type => "checkbox"}
+                %th{:colspan => "1", :rowspan => "1", :tabindex => "0", :width => "3%"} #
+                %th{:colspan => "1", :rowspan => "1", :tabindex => "0", :width => "10%"} Day
+                %th{:colspan => "1", :rowspan => "1", :tabindex => "0", :width => "10%"} Time
+                %th{:colspan => "1", :rowspan => "1", :tabindex => "0", :width => "20%"} Venue
+                %th{:colspan => "1", :rowspan => "1", :tabindex => "0", :width => "20%"} Instructor
+                %th{:colspan => "1", :rowspan => "1", :tabindex => "0", :width => "10%"} Age Group
+                %th{:colspan => "1", :rowspan => "1", :tabindex => "0", :width => "10%"} Updated
+                %th{:colspan => "1", :rowspan => "1", :tabindex => "0", :width => "10%"} Actions
+              %tr.filter{:role => "row"}
+                %td{:colspan => "1", :rowspan => "1"}
+                %td{:colspan => "1", :rowspan => "1"}
+                %td{:colspan => "1", :rowspan => "1"}
+                  = select_tag 'day', options_for_select((0..6).map{|i| [Date::DAYNAMES[i], Date::DAYNAMES[i]]}), :class=>"form-control form-filter input-sm", :id => "filter_day" , :prompt => "Please Select"
+                %td{:colspan => "1", :rowspan => "1"}
+                %td{:colspan => "1", :rowspan => "1"}
+                  = select_tag "venue", options_from_collection_for_select(Venue.all, "name", "name"),{:class => "form-control form-filter input-sm" ,:prompt => "Please Select", :id=> "filter_venue"}
+                %td{:colspan => "1", :rowspan => "1"}
+                  = select_tag "instructor", options_from_collection_for_select(Instructor.all, "name", "name"),{:class => "form-control form-filter input-sm" ,:prompt => "Please Select", :id=> "filter_instructor"}
+                %td{:colspan => "1", :rowspan => "1"}
+                  = select_tag "age_group", options_from_collection_for_select(AgeGroup.all, "title", "title"),{:class => "form-control form-filter input-sm" ,:prompt => "Please Select", :id=> "filter_age_group"}
+                %td{:colspan => "1", :rowspan => "1"}
+                %td{:colspan => "1", :rowspan => "1"}
+                  .margin-bottom-5
+                    %button#apply_filter.btn.btn-sm.yellow.filter-submit.margin-bottom
+                      %i.fa.fa-search
+                      Search
+            %tbody
+              - @group_classes.each do |group_class|
+                %tr.odd{:role => "row"}
+                  %td
+                    .checker
+                      %span
+                        %input{:name => "id[]", :type => "checkbox", :value => "1"}
+                  %td.sorting_1
+                    = group_class.id
+                  %td
+                    - (0..6).each do |i|
+                      - if i == group_class.day
+                        = week_days[i]
+                  %td
+                    = group_class.time ? group_class.time.strftime("%I:%M %p") : nil
+                  %td
+                    - Venue.all.each do |venue|
+                      - if venue.id == group_class.venue_id
+                        = venue.name
+                  %td
+                    - Instructor.all.each do |instructor|
+                      - if instructor.id == group_class.instructor_id
+                        = instructor.name
+                  %td
+                    - AgeGroup.all.each do |age_group|
+                      - if age_group.id == group_class.age_group_id
+                        = age_group.title
+                  %td
+                    = time_ago_in_words(group_class.updated_at)
+                    ago
+                  %td
+                    %a.btn.default.btn-xs{:href => edit_manage_group_class_path(group_class)}
+                      %i.fa.fa-edit
+                        Edit
+                    %a.btn.default.btn-xs{:href => manage_group_class_path(group_class)}
+                      %i.fa.fa-search
+                        View   
+                    %a.btn.default.btn-xs{:href =>  manage_group_class_path(group_class), method: :delete, data: { confirm: 'Are you sure?' }}
+                      %i.fa.fa-trash-o
+                        Delete      
+                 
+        .row
+          /= will_paginate @venues, renderer: BootstrapPagination::Rails
+        .col-md-4.col-sm-12
+%script{:src => "//cdn.datatables.net/1.10.0/js/jquery.dataTables.js", :type => "text/javascript"}
+%script{:src => "/assets/custom_datatables.js", :type => "text/javascript"}
+:javascript
+  $(function(){
+      var table = $('#datatable_ajax').dataTable({"aLengthMenu": [[500, 1000, 1500, -1], [500, 1000, 1500, "All"]],
+        "iDisplayLength": 1500});
+        $('#apply_filter').on('click',function() {
+            table.fnDraw();
+        } );
+
+    $('#datatable_ajax_wrapper .dataTables_filter input').addClass("form-control input-small"); // modify table search input
+    $('#datatable_ajax_wrapper .dataTables_length select').addClass("form-control input-small"); // modify table per page dropdown
+    $('#datatable_ajax_wrapper .dataTables_length select').select2(); // initialize select2 dropdown 
+  });
+  $(".prev a").text("<");
+  $(".prev span").text("<");
+  $(".next a").text(">");
+  $(".next span").text(">");
+  $(".pagination").css({"float":"right","margin-right": "15px"});
