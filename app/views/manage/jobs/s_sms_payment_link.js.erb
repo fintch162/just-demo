@@ -1,7 +1,0 @@
-$(".page-title").after().fadeIn().html('<div id="sent_payment_info">Message Sent.</div>')
-          .delay(2000)
-          .queue(function() {
-             $("#sent_payment_info").fadeOut();
-             $(this).fadeIn('slow');
-             $(this).dequeue();
-          });

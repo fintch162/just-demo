@@ -1,0 +1,12 @@
+==========================default open dropdown======================
+
+var element = $('#add_award_form_' + student_id + ' select')[0], worked = false;
+        console.log(element);
+        if (document.createEvent) {
+            var e = document.createEvent("MouseEvents");
+            e.initMouseEvent("mousedown", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+            worked = element.dispatchEvent(e);
+        } 
+
+
+=====================================================================

@@ -1,0 +1,9 @@
+---------------check if heroku origin is set or not..
+
+git remote -v
+
+if not then...
+
+heroku auth:whomi
+
+git remote add heroku git@heroku.com:myplato.git

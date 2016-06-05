@@ -1,0 +1,28 @@
+install heroku toolbelt-------------------
+
+wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
+
+now login heroku account----------------
+heroku login
+
+
+---------------------------------------------------------------------
+
+
+pg install
+
+heroku pg:reset DATABASE
+heroku run rake db:migrate
+
+
+set email and password==
+heroku config:add GMAIL_SMTP_USER='jignesh.tps@gmail.com'
+
+
+add new project to heroku----------
+git remote add heroku git@heroku.com:hrtap2.git
+
+
+paper clip with heroku
+
+https://devcenter.heroku.com/articles/paperclip-s3

@@ -1,5 +1,0 @@
-<% if @message.direction == 'incoming' %>
-	$('#instructor_conversation').prepend('<li class="in"><img class="avatar img-responsive" src="/assets/avatar.png" /><div class="message"><span class="arrow"></span>  <a class="name" href="#"><%= @message.to_number %> </a> <span class="body replace_str"><%= @message.message_description %> </span></div><center><small><%= @message.time_created.strftime("%d %b %y,%I:%M %p") %></small></center></li>');
-<% else %>
-	$('#instructor_conversation').prepend('<li class="out"><img class="avatar img-responsive" src="/assets/avatar.png" /><div class="message"><span class="arrow"></span>  <a class="name" href="#"><%= @message.to_number %> </a> <span class="body replace_str"><%= @message.message_description %></span></div><center><small><%= @message.time_created.strftime("%d %b %y,%I:%M %p") %></small></center></li>')
-<% end %>

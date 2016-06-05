@@ -1,0 +1,4 @@
+================duplicates objects rather than just copy of reference of object=============
+person1 = "Tim"
+person2 = person1.dup
+============================================================================================

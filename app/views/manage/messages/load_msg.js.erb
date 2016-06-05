@@ -1,7 +1,0 @@
-$("#message_page").val(parseInt($("#message_page").val()) + 1);
-<% if @messages.count > 0 %>
-  $('#instructor_conversation').append("<%= escape_javascript(render partial: 'manage/messages/message_listing') %>");
-<% else %>
-$("#message_page").val('0');
-$("#load_more_sms").remove();
-<% end %>

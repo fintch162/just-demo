@@ -1,0 +1,28 @@
+dropdown selected value---------------
+
+this.options[this.selectedIndex].value
+
+
+
+select multiple elements by same id-----------------
+jQuery("[id=elemid]") 
+
+jQuery("div[id=elemid]") 
+
+
+get click anywhere on document------------------
+
+$(document).click(function(event) {
+      if (!$(event.target).is("i.fa.fa-plus") && !$(event.target).is("select#instructor_student_award_id") && !$(event.target).is("select#cmb_training_for_award") && !$(event.target).is(".award_ready") && !$(event.target).is(".award_training")) {
+        $('.add_award_form').hide();
+        $('.award_ready').css('color','#3e4d5c');
+        $('.award_training').css('color','#3e4d5c');
+        $('.award_ready span').hide();
+        $('.award_training span').hide();
+      }
+      // $('.add_award_form').hide();
+    }); 
+
+
+call ajax from js.erb-----------------------
+$.ajax("/instructor/update_contact_on_google/<%#= @instructor_student.id %>")

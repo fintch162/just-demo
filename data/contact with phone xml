@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entry gd:etag="&quot;SHg_fzVSLit7I2A9XRRUEkkCRgw.&quot;" xmlns="http://www.w3.org/2005/Atom" xmlns:batch="http://schemas.google.com/gdata/batch" xmlns:gContact="http://schemas.google.com/contact/2008" xmlns:gd="http://schemas.google.com/g/2005">
+ <id>http://www.google.com/m8/feeds/contacts/divyanghirpara%40gmail.com/base/5e30e889202f71</id>
+ <updated>2015-03-25T01:49:49.647Z</updated>
+ <app:edited xmlns:app="http://www.w3.org/2007/app">2015-03-25T01:49:49.647Z</app:edited>
+ <category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/contact/2008#contact"/>
+ <title>Krunal Patel</title>
+ <link rel="http://schemas.google.com/contacts/2008/rel#photo" type="image/*" href="https://www.google.com/m8/feeds/photos/media/divyanghirpara%40gmail.com/5e30e889202f71" gd:etag="&quot;fStpCQoDbCt7I2A5BxUOTg54AnlCBk0xRgM.&quot;"/>
+ <link rel="self" type="application/atom+xml" href="https://www.google.com/m8/feeds/contacts/divyanghirpara%40gmail.com/full/5e30e889202f71"/>
+ <link rel="edit" type="application/atom+xml" href="https://www.google.com/m8/feeds/contacts/divyanghirpara%40gmail.com/full/5e30e889202f71"/>
+ <gd:name>
+  <gd:fullName>Krunal Patel</gd:fullName>
+  <gd:givenName>Krunal</gd:givenName>
+  <gd:familyName>Patel</gd:familyName>
+ </gd:name>
+ <gd:email rel="http://schemas.google.com/g/2005#other" address="krunal7190@gmail.com" primary="true"/>
+ <gd:phoneNumber rel="http://schemas.google.com/g/2005#mobile" uri="tel:+91-90999-28549">9099928549</gd:phoneNumber>
+ <gd:structuredPostalAddress rel="http://schemas.google.com/g/2005#home">
+  <gd:formattedAddress>Ahmedabad Gujarat IN</gd:formattedAddress>
+  <gd:city>Ahmedabad</gd:city>
+  <gd:region>Gujarat</gd:region>
+  <gd:country>IN</gd:country>
+ </gd:structuredPostalAddress>
+ <gContact:website href="http://www.google.com/profiles/117566086166945529151" rel="home-page"/>
+ <gContact:groupMembershipInfo deleted="false" href="http://www.google.com/m8/feeds/groups/divyanghirpara%40gmail.com/base/6"/>
+</entry>

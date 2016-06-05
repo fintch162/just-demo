@@ -1,9 +1,0 @@
-<% if @jobs.count > 0 %>
-  var str = [];
-  <% @jobs.each do |p| %>
-    str.push('<option value="<%= p.id %>">Ref <%= p.id %></option>');
-  <% end %>
-  $('#reward_job_id').html('<option value="">Select Job Ref</option>' + str);
-<% else %>
-  $('#reward_job_id').html('<option value="">No jobs to display</option>');
-<% end %>

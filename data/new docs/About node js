@@ -1,0 +1,7 @@
+for phantomjs_server---------------------- (https://phantomss.herokuapp.com/screenshot)
+
+npm install aws-sdk express --save
+
+nodemon web.js for start node server locally
+
+npm install -g phantomjs (install package globaly)

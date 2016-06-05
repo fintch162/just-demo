@@ -1,0 +1,21 @@
+jQuery.fn.highlight = function (str, className) {
+	console.log(str);
+    var regex = new RegExp(str, "gi");
+    return this.each(function () {
+        $(this).contents().filter(function() {
+                console.log(this.nodeType);
+            return this.nodeType == 3 && regex.test(this.nodeValue);
+        }).replaceWith(function() {
+            return (this.nodeValue || "").replace(regex, function(match) {
+                return "<span class=\"" + className + "\">" + match + "</span>";
+            });
+        });
+    });
+};
+
+$(document).ready(function() {
+	
+$('.portlet-body table tr td').highlight('Mr','highlight');
+// $('.caption').highlight('e','highlight');
+});
+console.log('script');

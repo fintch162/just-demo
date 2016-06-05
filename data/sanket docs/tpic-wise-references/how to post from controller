@@ -1,0 +1,15 @@
+uri = URI("#{telerivet_api_url}/projects/#{@project_id}/messages/outgoing")
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+
+    http.ca_file = "#{Rails.root}/certificate/cacert.pem"
+
+    if @phone_id.blank?
+      http.start {
+        @req = Net::HTTP::Post.new(uri.path)
+        @req.form_data = {
+          "content" => content.html_safe,
+          "to_number" => to_number
+        }
+      }

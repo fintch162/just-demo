@@ -1,0 +1,369 @@
+.showcase-large{ 'data-top-color' => @piece.gradient_top_color, 'data-bottom-color' => @piece.gradient_bottom_color, 'data-backdrop' => @piece.primary_image.url(:backdrop).gsub("%","?") }
+  / .inner 
+  /   .crown
+  /     .triangle
+  /       %i.icon-triangle
+  /     .logo
+  .back-button
+    %span.icon 
+      =link_to @piece.status == 'Gallery' ? galleries_path : discover_path do
+        %img{:alt => "Back", :src => "/assets/back_icon.png"}
+  .snapshot
+    .dynamic-section
+      .gallery.clearfix{style: "background: none;"}
+        .row.show-for-small
+          .columns.small-12
+            .highlighted
+              .main-image{ image_attributes(@piece.primary_image, :medium) }
+                .center= image_tag @piece.primary_image.url(:medium).gsub("%","?")
+              &nbsp;
+        .row.show-for-medium-up
+          .columns.small-12
+            .highlighted{style: "height:500px; margin-top:20%;"}
+              - if @piece.primary_image.present?
+                = image_tag @piece.primary_image.url(:original).gsub("%","?"),{"data-img-width"=>350, "data-img-height"=>350 }.merge({ 'data-i' => @piece.images.count, 'data-zoom-image' => @piece.primary_image.url(:backdrop).gsub("%", "?") })
+
+                - @piece.images.each_with_index do |image, i|
+                  = image_tag image.image.url(:original).gsub("%", "?"), {"data-img-width"=>350, "data-img-height"=>350}.merge({ 'data-i' => i, 'data-zoom-image' => image.image.url(:backdrop).gsub("%", "?") })
+                
+              - else
+                - @piece.images.each_with_index do |image, i|
+                  = image_tag image.image.url(:original).gsub("%", "?"), {"data-img-width"=>350, "data-img-height"=>350}.merge({ 'data-i' => i, 'data-zoom-image' => image.image.url(:backdrop).gsub("%", "?") })
+                 
+            .thumbs{style: "margin-top:20px; float: left;"}
+              %ul.thumb-count
+                - @piece.images.each_with_index do |image, i|
+                  %li{ 'data-i' => i,style: " background: none; border-top: none #{ @piece.expanded_color }; margin-right:10px;" }= image_tag image.image.url(:medium).gsub("%", "?")
+                 
+                - if @piece.primary_image.present?    
+                  %li{ 'data-i' => @piece.images.count ,style: " background: none; border-top: none #{ @piece.expanded_color }; margin-right:10px;" }= image_tag @piece.primary_image.url(:medium).gsub("%", "?")
+
+    .info-section{style: "margin-top:-3%;"} 
+      .inner 
+        .crown
+          .triangle
+            %i.icon-triangle
+          .logo
+        .info-data
+          .inner{style: "font-family: raleway,sans-serif;"}
+            %h1{style: "font-family: raleway,sans-serif;"}
+              = @piece.name
+            .description
+              = simple_format @piece.description,{style: "font-family: raleway,sans-serif;"}
+              %br/
+              %br/ 
+              .golPiece
+                Diamonds
+              .golPiece
+                %span= @piece.total_diamonds
+                pieces
+
+              .golPiece
+                Diamond Weight
+              .golPiece
+                %span= number_with_precision @piece.total_carat_weight, precision: 2
+                carats              
+
+              .golPiece
+                Gross Weight
+              .golPiece
+                %span= @piece.total_gross_weight
+
+              .golPiece
+                Metal
+              .golPiece
+                %span= @piece.metal_content
+
+              - if @piece.status.present?
+                .golPiece
+                  Status
+                .golPiece
+                  %span= @piece.status 
+                
+              - if @piece.stones.any?
+                .center.center1
+                  %br/
+                  -if @piece.status != 'Gallery'
+                    .leftPt
+                      .golPiece{:style => "width: 100%; margin-top: 20px;"}
+                        = link_to new_piece_inquiry_path(@piece), :class => "btn viewCert pull-left", :style => " text-align: center; width: 150px; font-family: raleway,sans-serif;" do
+                          %img{:src => "/assets/white-icon.png", style: "height: 22px; margin: 0 2px -1px -6px;" }Inquire
+
+                    .rightPt
+                      .golPiece{:style => "width: 100%; margin-top: 20px;"}
+                        -if !current_user
+                          = link_to login_path, :class => "btn viewCert pull-left", :style => "text-align: center; width: 150px; font-family: raleway,sans-serif;" do
+                            %img{:src => "/assets/white-icon.png", style: "height: 22px; margin: 0 2px -1px -7px;" }Acquire
+                        -else
+                          = link_to order_piece_path(@piece), :class => "btn viewCert pull-left", :style => "text-align: center; width: 150px; font-family: raleway,sans-serif;" do
+                            %img{:src => "/assets/white-icon.png", style: "height: 22px; margin: 0 2px -1px -7px;" }Acquire
+                    / .rightPt
+                    /   .golPiece{:style => "width: 100%; margin-top: 20px;"}
+                    /     %a.pull-left{:href => "javascript:;", :id => "piecePrice", :class => "btn viewCert", :style => "text-align: center; width: 150px; font-family: raleway,sans-serif; margin-left: 20px;"} Price
+                    /   .golPiece.price{:style => "width: 100%; display: none; margin-left: -20px;"}
+                    /     #{humanized_money_with_symbol @piece.price}
+                      
+                  .leftPt
+                    .golPiece{:style => "width: 100%; margin-top: 0px;"}
+                      = link_to piece_stones_path(@piece, :json), :class => 'btn btn-certs certBtn viewCert pull-left', :id => "view-certificate", :style => "text-align: center; width: 150px; font-family: raleway,sans-serif;" do
+                        %img{:src => "/assets/white-icon.png", style: "height: 22px; margin: 0 2px -1px -3px;" }Certificates
+
+                    / .leftPt
+                    /   = link_to " + View Certificates", piece_stones_path(@piece, :json), :class => 'btn btn-certs certBtn viewCert pull-left', :id => "view-certificate", :style => "text-align: center; width: 150px; font-family: raleway,sans-serif;"
+                  -if @piece.status != 'Gallery'
+                    .rightPt
+                      .golPiece{:style => "width: 100%; margin-top: 20px;"}
+                        %a.pull-left{:href => "javascript:;", :id => "piecePrice", :class => "btn viewCert", :style => "text-align: center; width: 150px; font-family: raleway,sans-serif;"} 
+                          %img{:src => "/assets/white-icon.png", style: "height: 22px; margin: 0 2px -1px -8px;" }Price
+                      .golPiece.price{:style => "width: 100%; display: none; margin-left: -20px;"}
+                        #{humanized_money_with_symbol @piece.price}
+
+                    / -if @piece.feature && @piece.feature.is_active?
+                    /   .leftPt
+                    /     .golPiece{:style => "width: 100%; margin-top: 20px;"}
+                    /       %a.pull-left{:href => feature_path(@piece.feature), target: '_blank', :class => "btn viewCert", :style => "text-align: center; width: 150px; font-family: raleway,sans-serif;"} Features
+                    
+                  / .rightPt
+                  /   .golPiece{:style => "width: 100%; margin-top: 20px;"}
+                  /     %a.form{:href => "javascript:;",:class => "btn viewCert", :style => "text-align: center; width: 150px; font-family: raleway,sans-serif;"} Send an Inquiry
+
+              .golPiece{:style => "width: 100%; margin-top: 20px;"}
+                %ul.rrssb-buttons.clearfix{:style =>"margin-left: -6px;"}
+                  %li.facebook
+                    /
+                      Replace with your URL. For best results, make sure you page has the proper FB Open Graph tags in header:
+                      https://developers.facebook.com/docs/opengraph/howtos/maximizing-distribution-media-content/
+                    %a.popup{:href => "https://www.facebook.com/sharer/sharer.php?u=#{request.original_url}", :class => "facebppkIcon"}
+                      %span.icon
+                        %img{:alt => "facebook", :src => "/assets/facebook.png" , :"data-hover" => "/assets/facebook_over.png"}
+                      %span.text
+                  %li.twitter
+                    / Replace href with your Meta and URL information
+                    %a.popup{:href => "http://twitter.com/home?status=See this beautiful piece #{@piece.name} from #{Rails.application.secrets.site_name} #{request.original_url}",:style => "background-color: none;"}
+                      %span.icon
+                        %img{:alt => "twitter", :src => "/assets/twitter.png" , :"data-hover" => "/assets/twitter_over.png"}
+                      %span.text
+                  %li.googleplus
+                    / Replace href with your meta and URL information.
+                    %a.popup{:href => "https://plus.google.com/share?url=See this beautiful piece #{@piece.name} from #{Rails.application.secrets.site_name} #{request.original_url}"}
+                      %span.icon
+                        %img{:alt => "googleplus", :src => "/assets/googlepls.png", :"data-hover" => "/assets/googlepls_over.png"}
+                      %span.text
+                  %li.pinterest
+                    / Replace href with your meta and URL information.
+                    %a{:href => "http://pinterest.com/pin/create/button/?url=#{request.original_url}&amp;media=#{@piece.primary_image.url(:medium).gsub("%","?")}&amp;description=See this beautiful piece '#{title}"}
+                      %span.icon
+                        %img{:alt => "pinterest", :src => "/assets/pintrest.png", :"data-hover" => "/assets/pintrest_over.png" }
+                      %span.text
+                  %li.googleplus
+                    / Replace href with your meta and URL information.
+                    %a.form{:href => "#"}
+                      %span.icon
+                        %img{:alt => "email", :src => "/assets/email.png", :"data-hover" => "/assets/email_over.png" }
+                      %span.text
+                  %li.googleplus
+                    / Replace href with your meta and URL information.
+                    %a.print{:href => "#"}
+                      %span.icon
+                        %img{:alt => "print", :src => "/assets/print.png", :"data-hover" => "/assets/print_over.png"}
+                      %span.text
+                  %li.googleplus
+                    / Replace href with your meta and URL information.
+                    / %a.popup{:href => "#"}
+                    /   %span.icon
+                    /     %img{:alt => "instagram", :src => "/assets/instagram.png", :"data-hover" => "/assets/instagram_over.png"}
+                    /   %span.text
+
+              / = link_to PieceLinkPolicy.new(@piece).expand_link, :class => 'open-showcase' do
+              /   %span
+              /     Explore
+              /     %br
+              /     %i.fa.fa-angle-right
+.specs
+  .row  
+    .columns.small-12.medium-6.large-3.pieceDetail
+      .center{ style:"margin-top: -50px; margin-bottom: -100px;"}= image_tag @piece.primary_image.url(:medium).gsub("%","?")
+      &nbsp;
+  .row  
+    .columns.small-12.medium-6.large-3.pieceDetail{style:"text-align: left"}
+      %h1.center{style: "font-family: raleway,sans-serif; color: #9d7e41; margin-top: 20%;"}
+        = @piece.name
+      .description
+        = simple_format @piece.description,{style: "font-family: raleway,sans-serif;"}
+  .row  
+    .columns.small-12.medium-6.large-3.pieceDetail
+      %h5 Diamonds
+      %span{ style: "color: black" }= @piece.total_diamonds
+      pieces
+
+    .columns.small-12.medium-6.large-3.pieceDetail
+      %h5 Diamond Weight
+      %span{ style: "color: black" }= number_with_precision @piece.total_carat_weight, precision: 2
+      carats
+
+    .columns.small-12.medium-6.large-3.pieceDetail
+      %h5 Gross Weight
+      %span{ style: "color: black" }= @piece.total_gross_weight
+
+    .columns.small-12.medium-6.large-3.pieceDetail
+      %h5 Metal
+      %span{ style: "color: black" }= @piece.metal_content
+
+    .columns.small-12.medium-6.large-3.pieceDetail
+      %h5 Price
+      %span{ style: "color: black" }#{humanized_money_with_symbol @piece.price}
+
+    .columns.small-12.medium-6.large-3.pieceDetail
+      - if @piece.status.present?
+        %h5 Status
+        %span{ style: "color: black" }= @piece.status
+  .row
+    .columns.small-12
+      - if @piece.images.any?
+        .center.pieceDetail.more-image-btn
+          = link_to '',:class => 'btn btn-certs-image' do
+            More Images
+        .inner_images{style:"display: none;"}
+          %ul
+            - @piece.images.each_with_index do |image, i|
+              %li.img{ 'data-i' => i,style: " background: none; border-top: none #{ @piece.expanded_color }; margin-right:10px;  "}= image_tag image.image.url(:medium).gsub("%", "?")
+  
+  - if @piece.extra_spec_data.present? 
+    .row
+      .columns.small-12
+        = simple_format @piece.extra_spec_data, style: "color: black; text-align: center"
+
+  .row
+    .columns.small-12
+      - if @piece.stones.any?
+        .center.pieceDetail
+          = link_to "View Certificates", piece_stones_path(@piece, :json), :class => 'btn btn-certs'
+
+        / %table
+        /   %thead
+        /     %tr
+        /       %th{ style: "color: #222222; background: #{@piece.expanded_color}" } Image
+        /       %th{ style: "color: #222222; background: #{@piece.expanded_color}" } Gem Type
+        /       %th{ style: "color: #222222; background: #{@piece.expanded_color}" } Quantity
+        /       %th{ style: "color: #222222; background: #{@piece.expanded_color}" } Weight
+        /       %th{ style: "color: #222222; background: #{@piece.expanded_color}" } Color
+        /       %th{ style: "color: #222222; background: #{@piece.expanded_color}" } Clarity
+        /       %th{ style: "color: #222222; background: #{@piece.expanded_color}" } Shape
+        /       %th{ style: "color: #222222; background: #{@piece.expanded_color}" } Certificate
+        /   %tbody
+        / %a{"data-reveal-id" => "myModal", :href => "#", :class => 'btn giaReport'} How to read GIA Report
+        / / %h4{ style: "color: #{@piece.expanded_color}; border-top: 3px solid #{@piece.expanded_color}" }
+        / /   #{ @piece.normalized_name } Specifications.
+
+- if @piece.videos.any?
+  .videos.clearfix.show-for-large-up
+    - @piece.videos.each do |video|
+      .video
+        = video_tag [video.video.url(:original, false), video.video.url(:webmvideo, false), video.video.url(:oggvideo, false)], controls: false, autobuffer: false, size: '850x480', loop: true, autoplay: true
+
+.piece-description.hide
+  / .backdrop-image= image_tag @piece.primary_image.url(:backdrop).gsub("%","?")
+  .backdrop-color{ style: "background: #{@piece.expanded_color}" }
+  .row
+    .columns.small-12
+      = simple_format @piece.description
+      %h4
+        About the #{ @piece.normalized_name }.
+-if browser.mobile?
+  -if @piece.status != 'Gallery'
+    .piece-acquire#piece-acquire
+      /.backdrop-image= image_tag @piece.primary_image.url(:backdrop).gsub("%","?")
+      .backdrop-color{ style: "background: #{@piece.expanded_color}" }
+      - margin = @piece.slug == 'pulse' ? '50px' : '20px'
+      .row.limit-to-1000{style: "margin-top: #{margin}; margin-bottom: 55px;"}
+        .columns.medium-6
+          .communication.inquiry{style: "background: 'none' border:none"}
+            .toggle-button.inquiryForm
+              .overlay.toggled
+                
+              = link_to new_piece_inquiry_path(@piece),style: "font-family: raleway,sans-serif;" do
+                Send an Inquiry
+              %i.icon-logomark
+
+        .columns.medium-6
+          .communication.purchase{style: " background: 'none' border:none"}
+            .toggle-button.inquiryForm
+              .overlay.toggled
+              -if current_user
+                = link_to order_piece_path(@piece),style: "font-family: raleway,sans-serif;" do
+                  Acquire
+                %i.icon-logomark
+              -else
+                = link_to login_path,style: "font-family: raleway,sans-serif;" do
+                  Acquire
+                %i.icon-logomark
+          .clear
+
+.specs{ style: "padding: 0 0 0 0; margin-bottom: 5rem;" }
+  .row.piece-acquire
+    .columns.small-12
+      - if @piece.stones.any?
+        .center.pieceDetail
+          
+        %table.certBtn1
+          %thead
+            %tr
+              / %th{ style: "color: #222222; background: #{@piece.expanded_color}" } Image
+              %th{ style: "font-size: 15px; color: #222222; background: #{@piece.expanded_color}" } Gem Type
+              %th{ style: "font-size: 15px; color: #222222; background: #{@piece.expanded_color}" } Quantity
+              %th{ style: "font-size: 15px; color: #222222; background: #{@piece.expanded_color}" } Weight
+              %th{ style: "font-size: 15px; color: #222222; background: #{@piece.expanded_color}" } Color
+              %th{ style: "font-size: 15px; color: #222222; background: #{@piece.expanded_color}" } Clarity
+              %th{ style: "font-size: 15px; color: #222222; background: #{@piece.expanded_color}" } Shape
+              %th{ style: "font-size: 15px; color: #222222; background: #{@piece.expanded_color}" } Certificate
+          %tbody
+        %a{"data-reveal-id" => "myModal", :href => "#", :class => 'btn giaReport'} How to read GIA Report
+        / %h4{ style: "color: #{@piece.expanded_color}; border-top: 3px solid #{@piece.expanded_color}" }
+        /   #{ @piece.normalized_name } Specifications.
+
+.more.clearfix.hide-for-small
+  .row.full-width
+    / #= render partial: 'more_piece', locals: { piece: @neighbor_locator.prev, type: 'prev' }
+    / #= render partial: 'more_piece', locals: { piece: @neighbor_locator.next, type: 'next' }
+
+-if @piece.status == 'Gallery'        
+  = link_to gallery_path(@neighbor_locator.prev, ({ collection: params[:collection] } if params[:collection])), :class => 'prev-piece align-vertically' do
+    .extension= image_tag @neighbor_locator.prev.primary_image.url(:small_bw).gsub("%","?"), style: "margin-top: #{(100 - @neighbor_locator.prev.primary_image.height(:small_bw)) / 2}px"
+    .core
+      %div.angle-left
+      / %i.icon-angle-double-left
+
+  = link_to gallery_path(@neighbor_locator.next, ({ collection: params[:collection] } if params[:collection])), :class => 'next-piece align-vertically' do
+    .core
+      %div.angle-right
+      /%i.icon-angle-double-right
+    .extension= image_tag @neighbor_locator.next.primary_image.url(:small_bw).gsub("%","?"), style: "margin-top: #{(100 - @neighbor_locator.next.primary_image.height(:small_bw)) / 2}px"
+-else
+  = link_to piece_path(@neighbor_locator.prev, ({ collection: params[:collection] } if params[:collection])), :class => 'prev-piece align-vertically' do
+    .extension= image_tag @neighbor_locator.prev.primary_image.url(:small_bw).gsub("%","?"), style: "margin-top: #{(100 - @neighbor_locator.prev.primary_image.height(:small_bw)) / 2}px"
+    .core
+      %div.angle-left
+      / %i.icon-angle-double-left
+
+  = link_to piece_path(@neighbor_locator.next, ({ collection: params[:collection] } if params[:collection])), :class => 'next-piece align-vertically' do
+    .core
+      %div.angle-right
+      /%i.icon-angle-double-right
+    .extension= image_tag @neighbor_locator.next.primary_image.url(:small_bw).gsub("%","?"), style: "margin-top: #{(100 - @neighbor_locator.next.primary_image.height(:small_bw)) / 2}px"
+#myModal.reveal-modal.vdoModal{"data-reveal" => ""}
+  %center
+    %script{:language => "JavaScript", :src => "http://admin.brightcove.com/js/BrightcoveExperiences.js", :type => "text/javascript"}
+    %object#myExperience2976926381001.BrightcoveExperience
+      %param{:name => "bgcolor", :value => "#FFFFFF"}/
+      %param{:name => "width", :value => "486"}/
+      %param{:name => "height", :value => "412"}/
+      %param{:name => "playerID", :value => "2019054650001"}/
+      %param{:name => "playerKey", :value => "AQ~~,AAABovPGb_E~,4ZCe6UcTDG9T3TYuzNSlRP8K_FcJ2HuE"}/
+      %param{:name => "isVid", :value => "true"}/
+      %param{:name => "isUI", :value => "true"}/
+      %param{:name => "dynamicStreaming", :value => "true"}/
+      %param{:name => "@videoPlayer", :value => "2976926381001"}/
+    :javascript
+      brightcove.createExperiences();
+    / End of Brightcove Player
+  %a.close-reveal-modal &#215

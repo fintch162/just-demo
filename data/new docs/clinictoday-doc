@@ -1,0 +1,8 @@
+heroku migration on staging---------------
+heroku run rake db:migrate --remote staging
+
+push on staging---------------------------
+git push staging master
+
+staging app-----------------------
+http://clinicstaging.herokuapp.com/

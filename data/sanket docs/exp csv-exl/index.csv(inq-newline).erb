@@ -1,0 +1,12 @@
+<%- headers = ['Created_at','User','Email','Piece','Message'] -%>	 		
+<%= CSV.generate_line headers %>
+<%- @inquiries_as_csv.each do |inq| -%>
+<%- if inq.user_id.nil? -%>
+<%- name=inq.name -%>
+<%- email=inq.email -%>
+<%- else -%>
+<%- name=inq.user.name -%>
+<%- email=inq.user.email -%>
+<%- end -%>
+<%= CSV.generate_line([inq.created_at.strftime('%e %b %Y %H:%M:%S%p'), name, email, inq.piece.name, inq.message]) %>
+<%- end -%>

@@ -1,0 +1,17 @@
+cd ~/.ssh
+ls
+ssh-keygen
+then give key-name
+
+cat key_name.pub --gives key 
+
+cd sites
+ssh-add -l (gives list of keys)
+
+ssh-add -D (removes all keys)
+
+
+ssh-add ~/.ssh/id_rsa_flix (adds Key)	
+
+
+ssh -T git@github.com (check you are successfully authenticated or not)

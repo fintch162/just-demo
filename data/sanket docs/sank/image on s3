@@ -1,0 +1,8 @@
+has_attached_file :photo, :styles => { :medium => "500x500>", :thumb => "100x100>" },
+  							:default_url => "book_missing.jpg",
+  							:storage => :s3,
+		                    :s3_credentials => {
+		                      :bucket => 'tps-book-becho',
+		                      :access_key_id => 'AKIAIJVDRVZLYK4WNREA',
+		                      :secret_access_key => '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'
+		                    }

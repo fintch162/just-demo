@@ -1,0 +1,27 @@
+===============gemfile================
+gem 'rails4-autocomplete'
+
+===============form tag=================
+<%= form_tag blogs_path,id: "serch_form",method: :get do %>
+    <%= autocomplete_field_tag :title,'',autocomplete_blog_title_blogs_path %>
+    <%= hidden_field_tag :blog_id %>
+    <!-- <input name="title" type="text" value="" id="blogSearchText" placeholder="Search Blog" class="ui-autocomplete-input custom-auto-complete" data-autocomplete="/blogs/autocomplete_title"> -->
+    <i class="search-icon fa fa-search"></i>
+  <% end %>
+
+$('#title').bind('railsAutocomplete.select', function(event, data){
+      $('#blog_id').val(data.item.id);
+      $('#serch_form').submit();
+    });
+
+==========controller===========
+autocomplete :blog, :title, :full => true
+
+
+
+===========route===============
+resources :blogs, only: [:index,:show] do
+    get :autocomplete_blog_title, :on => :collection
+  end
+
+

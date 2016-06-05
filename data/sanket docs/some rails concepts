@@ -1,0 +1,19 @@
+from js.erb
+
+$.ajax("/instructor/update_contact_on_google/<%= @instructor_student.id %>")
+=====================================================
+
+convert string to hash
+
+@response.gsub(/[{}\n' '"']/,'').split(',').map{|h| h1,h2 = h.split(':'); {h1 => h2}}.reduce(:merge)
+
+
+
+======================================if logger not print on heroku then in production.rb
+config.logger = Logger.new(STDOUT)
+
+
+================================after update call_back in model=============
+self.changed===returns array of fields which is changed
+self.changes===returns hash of old value and new values
+self.published_date_changed? returns true if published_date changed.  

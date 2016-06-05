@@ -1,0 +1,32 @@
+install git in your system
+  1.sudo apt-get install git
+
+---------------------------set user name & email global------------------------------------------
+  Inside site folder run follow commands.
+    1.git config --global user.name "sanket"
+    2.git config --global user.email "sanket@tpswork.com"
+
+---------------------------set user name & email local------------------------------------------
+  Inside your project directory run follow commands.
+    1.git config  user.name "sanket"
+    2.git config  user.email "sanket@tpswork.com"
+
+run command inside your project directory.
+   1.git init    (this will initialize git )	
+
+
+
+-------------------------add origin url-----------------------------
+1.git remote add origin GIT-URL
+
+------------------------------for pull push-------------------------
+Inside your project directory
+  for push-------------	
+	1.git status
+	2.git add .
+	3.git commit -m "commit message"
+	4.git push origin master
+  for pull------------
+	1.git pull origin master
+
+

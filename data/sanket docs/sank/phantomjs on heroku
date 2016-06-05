@@ -1,0 +1,4 @@
+install node
+in projrct directory------------
+npm init
+npm install phantomjs --save

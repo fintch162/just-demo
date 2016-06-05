@@ -1,0 +1,4 @@
+heroku pg:backups capture --app APP_NAME
+file_path="db_$(date +%Y_%m_%d-%H_%M_%S).dump"-----------(creates file with timestamp)
+curl `heroku pg:backups public-url --app APP_NAME` > $file_path (downloads file)
+pg_restore --verbose --clean --no-acl --no-owner -d DATABASE_NAME $file_path (install file in local-database)

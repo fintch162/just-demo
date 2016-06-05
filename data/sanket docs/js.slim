@@ -1,0 +1,21 @@
+-if @flag
+	| $('.set_password').html('
+	= j render("users/update_password")
+	| ');
+	|$('.application_form').hide();
+	| $('.flash_message').html('
+	= j render("jobs/flash_message")
+	| ');
+-else
+	- flash[:notice] = 'Your application submitted successfully.'
+	| window.location.pathname = '/jobs'
+
+
+
+---------------------------------------------
+
+| $modal = $('.modal');
+| $modal.html('
+= j render("jobs/form")
+| ');
+| $modal.modal();

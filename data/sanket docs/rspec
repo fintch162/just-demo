@@ -1,0 +1,6 @@
+1.install gem
+	gem 'rspec-rails', group: [:development, :test]
+2.set test-database
+3.install rspec
+4.for formated oupput in .rspec file
+	--format documentation

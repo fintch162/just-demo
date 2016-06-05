@@ -1,0 +1,4 @@
+case [v1,v2,v3]
+when matches[v1,v2,v3]
+when matches[none]
+when matches[v1,__,v3]

@@ -1,3 +1,0 @@
-if($(".editable-gpform").is(":visible"))
-  $(".editable-gpform").remove();
-$('.group_class-<%= @group_class.id %>').after("<tr class='editable-gpform toRemoveGp-<%= @group_class.id %>'><%= escape_javascript(render @group_class) %></tr>");

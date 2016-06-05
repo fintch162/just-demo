@@ -1,0 +1,40 @@
+table = $('#sample_2').dataTable({
+      "fnDrawCallback": function(oSettings) {
+        if (oSettings.aiDisplay.length == 0) {
+            return;
+        }
+        // SUM COLUMNS WITHIN GROUPS
+        var total = 0;
+        var ref_total = 0;
+        $("#sample_2 tbody tr").each(function(index) {
+          if (this.cells[7].innerHTML){ 
+            total = parseFloat(total) + parseFloat(this.cells[7].innerHTML);
+          }
+          if (this.cells[8].innerHTML){
+            ref_total = parseFloat(ref_total) + parseFloat(this.cells[8].innerHTML);
+          }
+          $("#ref_total").html(ref_total);
+          $("#total").html(total);
+            
+        });
+          //-------------------------------------------------
+      },
+      sPaginationType: "bootstrap",
+      aaSorting: [[ 0, "desc" ]],
+      "aLengthMenu": [
+                    [20, 50, 100, -1],
+                    [20, 50, 100, "All"]
+                   ],
+      iDisplayLength: 20,
+      bProcessing: true,
+      bServerSide: true,
+      "fnServerParams": function ( aoData ) {
+        aoData.push( { "name": "astatus", "value": $('.advance_status').val() } );
+        aoData.push( { "name": "aage_group", "value": $('.advance_age_group').val() } );
+        aoData.push( { "name": "astart_date", "value": $('.start_date').val() } );
+        aoData.push( { "name": "aend_date", "value": $('.end_date').val() } );
+        aoData.push( { "name": "as_start_date", "value": $('.as_start_date').val() } );
+        aoData.push( { "name": "as_end_date", "value": $('.as_end_date').val() } );
+      },
+      sAjaxSource: $('#sample_2').data('source')
+    });

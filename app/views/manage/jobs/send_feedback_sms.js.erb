@@ -1,6 +1,0 @@
-// $('#customer_message_template').html('Please fill up your feedback at http://app.singaporeswimming.com/feedback/<%= @feedback_token %>');
-$('#customer_message_template').val('Please fill up your feedback at <%= request.base_url.to_s %>/feedback/<%= @feedback_token %>');
-textAreaAdjust1('customer_message_template');
-$('html, body').animate({
-    scrollTop: $('#customer_message_template').offset().top - 50
-}, 1500);

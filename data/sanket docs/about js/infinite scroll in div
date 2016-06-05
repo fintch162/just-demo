@@ -1,0 +1,11 @@
+$('#global-notifications').scroll(function(){
+		var scrollH = $('#global-notifications')[0].scrollHeight;
+		var containerH = $('#global-notifications').height();
+		var scrollTopVal = scrollH - containerH - 10;
+		console.log("scroll diff value" + scrollTopVal);
+
+		if($('#global-notifications').scrollTop() == scrollTopVal){
+			//ajax stuff
+			$('#global-notifications').append('<div style="height: 100px;",</div>');
+		}
+	})

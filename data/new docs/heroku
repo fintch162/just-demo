@@ -1,0 +1,17 @@
+--------------------install heroku toolbelt-------------------------
+run command from this link------------https://toolbelt.heroku.com/debian
+
+after sucessfully installation of toolbelt---------------------------
+1.heroku login
+
+--------------------inside project directory-------------------------
+1.heroku create
+
+--------------------Add git url--------------------------------------
+1.git remote add heroku URL
+
+--------------------push on heroku-----------------------------------
+1.git push heroku master
+
+--------------------pull from heroku---------------------------------
+2.git pull heroku master

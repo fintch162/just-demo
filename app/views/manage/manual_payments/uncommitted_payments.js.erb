@@ -1,4 +1,0 @@
-$("#referral").html("<%= @manual_payments.sum('referral') %>");
-$("#balance").html("<%= @manual_payments.sum('balance') %>");
-$("#amount").html("<%= @manual_payments.sum('amount') %>");
-$("#manualPayments").html("<%= escape_javascript(render '/manage/manual_payments/uncommitted_manual_payment_data')  %>")

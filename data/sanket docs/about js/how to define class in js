@@ -1,0 +1,26 @@
+function MessageProcessor(message) {
+	this.message = message;
+}
+
+
+MessageProcessor.prototype.cleanAll = function() {
+	this.cleanNewLine().cleanTab();
+	return this.message;
+}
+
+
+MessageProcessor.prototype.cleanNewLine = function() {
+	this.message = this.message.replace(/\/n/,'<br>');
+	return this;
+}
+
+MessageProcessor.prototype.cleanTab = function() {
+	this.message = this.message.replace(/\/t/,'&nbsp;&nbsp;&nbsp;');
+	return this;
+}
+
+
+
+
+var m = new MessageProcessor(string)
+m.cleanAll

@@ -1,0 +1,5 @@
+Created_at	User_name	Piece 	Amount 	Tax	Total	State	Payment type 	Street Address1	Street Address2	City	State 	Country
+
+<% @orders_as_csv.each do |order| %>
+<%= order.created_at.strftime('%e %b %Y %H:%M:%S%p') %>	<%= order.user.name %>	<%= order.piece.name %>	<%= '$'+order.amount_cents.to_s %>	<%= '$'+order.tax_cents.to_s %>	<%= '$'+order.total_cents.to_s %>	<%= order.state %>	<%= order.payment_type %>	<%= order.shipping_address.street_address1 %>	<%= order.shipping_address.street_address2 %>	<%= order.shipping_address.city+'-'+order.shipping_address.zip %>	<%= order.shipping_address.state %>	<%= order.shipping_address.country %>
+<% end %>

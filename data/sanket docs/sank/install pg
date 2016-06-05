@@ -1,0 +1,11 @@
+sudo su postgres
+psql
+
+\du
+
+\q
+
+
+
+stop/start pg service=========================================
+sudo /etc/init.d/postgresql stop/start

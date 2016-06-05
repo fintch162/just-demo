@@ -1,0 +1,2 @@
+for get container ip======================
+docker inspect --format '{{ .NetworkSettings.IPAddress }}' Container-Id

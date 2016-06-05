@@ -1,7 +1,0 @@
-$modal = $('.modal')
-<% if @status == 'paid' %>
-  $modal.html('<%= escape_javascript(render partial: "paid_modal") %>');
-<% else %>
-  $modal.html('<%= escape_javascript(render partial: "remove_modal") %>');
-<% end %>
-$modal.modal();

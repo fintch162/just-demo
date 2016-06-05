@@ -1,6 +1,0 @@
-<%= form_tag(instructor_instructor_features_path) do %>
-	<%= current_admin_user.instructor_features.find_each do |instructor_feature| %>
-	<label><input type="checkbox" name="instructor_features[<%= instructor_feature.id%>]" <%= instructor_feature.is_enabled ? 'checked' : '' %> ><%= instructor_feature.feature.feature_name%> </label><br>
-	<% end %>
-	<%= submit_tag 'Save', class: 'btn green' %>
-<% end %>
